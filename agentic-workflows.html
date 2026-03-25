@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Agentic Workflows — Safe Agentic Development</title>
+  <meta name="description" content="Deep dive into GitHub Agentic Workflows (gh-aw) — AI-powered automations from natural language instructions. The complete reference.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Noto Sans, Helvetica, Arial, sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; transition: border-color 0.2s, transform 0.2s; }
+    .card:hover { border-color: #58a6ff; transform: translateY(-2px); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    section { padding: 64px 0; }
+    section + section { border-top: 1px solid #30363d; }
+    .section-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #8b949e; margin-bottom: 8px; }
+    .section-title { font-size: 32px; font-weight: 700; margin-bottom: 16px; }
+    .section-subtitle { font-size: 18px; color: #8b949e; margin-bottom: 32px; max-width: 800px; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin: 16px 0; }
+    pre code { display: block; padding: 16px; background: transparent; }
+    code:not(pre code) { background: #161b22; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #f0883e; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; }
+    .badge-green { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+    .badge-purple { background: rgba(188,140,255,0.15); color: #bc8cff; border: 1px solid rgba(188,140,255,0.3); }
+    .badge-blue { background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); }
+    .badge-orange { background: rgba(210,153,34,0.15); color: #d29922; border: 1px solid rgba(210,153,34,0.3); }
+    .badge-red { background: rgba(248,81,73,0.15); color: #f85149; border: 1px solid rgba(248,81,73,0.3); }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #30363d; font-size: 14px; }
+    th { color: #8b949e; font-weight: 600; background: #161b22; }
+    tr:hover { background: rgba(88,166,255,0.04); }
+    blockquote { border-left: 3px solid #58a6ff; padding: 12px 16px; margin: 16px 0; background: rgba(88,166,255,0.06); border-radius: 0 8px 8px 0; color: #8b949e; font-style: italic; }
+    blockquote strong { color: #e6edf3; }
+    .filter-btn { padding: 6px 16px; border-radius: 20px; border: 1px solid #30363d; background: transparent; color: #8b949e; cursor: pointer; font-size: 13px; transition: all 0.2s; font-family: inherit; }
+    .filter-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+    .filter-btn.active { background: rgba(88,166,255,0.15); border-color: #58a6ff; color: #58a6ff; }
+    .pillar-card { position: relative; overflow: hidden; }
+    .pillar-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .p1::before { background: linear-gradient(90deg, #58a6ff, #79c0ff); }
+    .p2::before { background: linear-gradient(90deg, #3fb950, #56d364); }
+    .p3::before { background: linear-gradient(90deg, #bc8cff, #d2a8ff); }
+    .p4::before { background: linear-gradient(90deg, #d29922, #e3b341); }
+    .p5::before { background: linear-gradient(90deg, #f85149, #ff7b72); }
+    .p6::before { background: linear-gradient(90deg, #f778ba, #ff9bce); }
+    .flow-diagram { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin: 32px 0; padding: 24px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; }
+    .flow-step { display: flex; flex-direction: column; align-items: center; padding: 16px 20px; border-radius: 8px; text-align: center; min-width: 110px; }
+    .flow-step .icon { font-size: 28px; margin-bottom: 8px; }
+    .flow-step .label { font-size: 12px; font-weight: 600; color: #e6edf3; }
+    .flow-step .desc { font-size: 11px; color: #8b949e; margin-top: 4px; }
+    .flow-arrow { color: #30363d; font-size: 24px; padding: 0 4px; }
+    .stat-card { text-align: center; padding: 24px; }
+    .stat-card .number { font-size: 36px; font-weight: 700; margin-bottom: 4px; }
+    .stat-card .stat-label { font-size: 14px; color: #8b949e; }
+    .scenario-card { display: block; }
+    .scenario-card.hidden { display: none; }
+    .step-num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; font-weight: 700; font-size: 14px; margin-right: 12px; flex-shrink: 0; background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); }
+    .callout { padding: 16px 20px; border-radius: 8px; margin: 16px 0; border: 1px solid; font-size: 14px; }
+    .callout-blue { background: rgba(88,166,255,0.06); border-color: rgba(88,166,255,0.3); }
+    .callout-green { background: rgba(63,185,80,0.06); border-color: rgba(63,185,80,0.3); }
+    .callout-orange { background: rgba(210,153,34,0.06); border-color: rgba(210,153,34,0.3); }
+    .code-header { background: #161b22; padding: 8px 16px; border-bottom: 1px solid #30363d; border-radius: 8px 8px 0 0; font-size: 13px; color: #8b949e; font-weight: 600; }
+    .code-header + pre { border-top: none; border-radius: 0 0 8px 8px; margin-top: 0; }
+    @media (max-width: 768px) {
+      .section-title { font-size: 24px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .flow-diagram { flex-direction: column; }
+      .flow-arrow { transform: rotate(90deg); }
+      .stat-card .number { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #30363d;padding:12px 24px;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <a href="index.html" style="color:#e6edf3;text-decoration:none;font-weight:600;font-size:18px;">&#x1f6e1;&#xfe0f; Safe Agentic Dev</a>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+      <a href="index.html" style="color:#8b949e;text-decoration:none;">Home</a>
+      <a href="safety-stack.html" style="color:#8b949e;text-decoration:none;">Safety Stack</a>
+      <a href="instructions.html" style="color:#8b949e;text-decoration:none;">Instructions</a>
+      <a href="hooks.html" style="color:#8b949e;text-decoration:none;">Hooks</a>
+      <a href="mcp.html" style="color:#8b949e;text-decoration:none;">MCP</a>
+      <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
+      <a href="planning.html" style="color:#8b949e;text-decoration:none;">Planning</a>
+      <a href="agentic-workflows.html" style="color:#3fb950;text-decoration:none;">Agentic Workflows</a>
+      <a href="videos.html" style="color:#8b949e;text-decoration:none;">Videos</a>
+      <a href="resources.html" style="color:#8b949e;text-decoration:none;">Resources</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="padding-top:120px;padding-bottom:64px;text-align:center;">
+  <div class="container">
+    <div style="margin-bottom:16px;">
+      <span class="badge badge-purple">Technical Preview</span>
+      <span class="badge badge-blue" style="margin-left:8px;">February 2026</span>
+    </div>
+    <h1 style="font-size:clamp(36px,5vw,56px);font-weight:800;margin-bottom:16px;background:linear-gradient(135deg,#bc8cff 0%,#58a6ff 50%,#3fb950 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">GitHub Agentic Workflows</h1>
+    <p style="font-size:20px;color:#8b949e;max-width:700px;margin:0 auto 24px;">AI-powered automations that understand context, make decisions, and take meaningful actions &mdash; all from natural language instructions written in Markdown.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:40px;">
+      <span class="badge badge-green">&#x1f916; Markdown-First</span>
+      <span class="badge badge-purple">&#x1f512; Sandboxed Execution</span>
+      <span class="badge badge-blue">&#x1f4cb; Continuous AI</span>
+      <span class="badge badge-orange">&#x1f527; Multi-Engine</span>
+    </div>
+    <div class="grid-3" style="max-width:600px;margin:0 auto;">
+      <div class="card stat-card"><div class="number" style="color:#bc8cff;">6</div><div class="stat-label">Pillars of Continuous AI</div></div>
+      <div class="card stat-card"><div class="number" style="color:#58a6ff;">40+</div><div class="stat-label">Workflow Recipes</div></div>
+      <div class="card stat-card"><div class="number" style="color:#3fb950;">MIT</div><div class="stat-label">Open Source License</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- THE STORY -->
+<section>
+  <div class="container">
+    <div class="section-label">THE STORY</div>
+    <h2 class="section-title">What Are GitHub Agentic Workflows?</h2>
+    <p class="section-subtitle">A new paradigm for repository automation &mdash; from YAML rules to natural language intent.</p>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:16px;">GitHub Agentic Workflows (<code>gh-aw</code>) are AI-powered automations that run coding agents &mdash; Copilot, Claude, or Codex &mdash; inside GitHub Actions to perform complex, multi-step repository tasks from natural language instructions written in Markdown.</p>
+        <p style="margin-bottom:16px;"><strong>Announced:</strong> February 13, 2026 (Technical Preview)<br><strong>Created by:</strong> <a href="https://github.com/dsyme">Don Syme</a> (GitHub Next) and <a href="https://github.com/peli">Peli de Halleux</a> (Microsoft Research)<br><strong>License:</strong> MIT (open source)<br><strong>Repository:</strong> <a href="https://github.com/github/gh-aw">github/gh-aw</a></p>
+        <p style="margin-bottom:16px;">Instead of complex GitHub Actions YAML with deterministic step logic, you write workflows in <strong>plain Markdown</strong>. YAML frontmatter defines triggers, permissions, and tools. The Markdown body contains natural language instructions for the AI agent. The <code>gh aw compile</code> command transforms this into a security-hardened GitHub Actions workflow.</p>
+      </div>
+      <div>
+        <h3 style="font-size:18px;margin-bottom:12px;color:#bc8cff;">The Vision: Continuous AI</h3>
+        <p style="margin-bottom:16px;">Continuous AI is the systematic, automated application of AI to software collaboration. Not a replacement for CI/CD, but an augmentation &mdash; extending automation to subjective, repetitive tasks that deterministic pipelines struggle to express.</p>
+        <blockquote>"Software engineering has always included work that's repetitive, necessary, and historically hard to automate... <strong>Continuous AI automates tasks requiring reasoning &mdash; work that cannot be expressed as rules or flowcharts.</strong>"<br>&mdash; GitHub Blog: Continuous AI in Practice</blockquote>
+        <div class="callout callout-blue" style="margin-top:16px;">
+          <strong>&#x1f4a1; The Paradigm Shift:</strong> CI/CD handles tasks expressible as <em>rules</em>. Continuous AI handles tasks expressible as <em>intent</em> &mdash; "ensure documentation matches code behavior," "triage this issue based on project context."
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;">
+      <blockquote>"Imagine visiting your repository in the morning and feeling calm because you see: Issues triaged and labelled, CI failures investigated with proposed fixes, documentation updated to reflect recent code changes, two new pull requests that improve testing await your review. All of it visible, inspectable, and operating within the boundaries you've defined."<br>&mdash; <strong>Don Syme &amp; Peli de Halleux</strong>, GitHub Blog</blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- SIX PILLARS -->
+<section>
+  <div class="container">
+    <div class="section-label">CONTINUOUS AI</div>
+    <h2 class="section-title">The Six Pillars of Continuous AI</h2>
+    <p class="section-subtitle">Every agentic workflow maps to one of these six foundational capabilities of an AI-augmented repository.</p>
+    <div class="grid-3">
+      <div class="card pillar-card p1">
+        <div style="font-size:32px;margin-bottom:12px;">&#x1f3af;</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">Continuous Triage</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">Automatically summarize, label, and route new issues. Detect duplicates, assess severity, and assign to the right team.</p>
+        <span class="badge badge-blue">100% label coverage on 196+ issues</span>
+      </div>
+      <div class="card pillar-card p2">
+        <div style="font-size:32px;margin-bottom:12px;">&#x1f4d6;</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">Continuous Documentation</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">Keep READMEs and docs aligned with code changes. Auto-update API docs, validate links, and generate changelogs.</p>
+        <span class="badge badge-green">Sync docs on every push to main</span>
+      </div>
+      <div class="card pillar-card p3">
+        <div style="font-size:32px;margin-bottom:12px;">&#x2728;</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">Continuous Code Simplification</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">Repeatedly identify improvements and open PRs. Detect high-complexity functions, deprecated patterns, and code smells.</p>
+        <span class="badge badge-purple">Weekly refactoring PRs</span>
+      </div>
+      <div class="card pillar-card p4">
+        <div style="font-size:32px;margin-bottom:12px;">&#x1f9ea;</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">Continuous Test Improvement</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">Assess coverage and add high-value tests. Identify uncovered code paths and generate focused unit tests.</p>
+        <span class="badge badge-orange">Auto-generate tests for uncovered functions</span>
+      </div>
+      <div class="card pillar-card p5">
+        <div style="font-size:32px;margin-bottom:12px;">&#x1f527;</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">Continuous Quality Hygiene</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">Investigate CI failures and propose targeted fixes. The CI Doctor achieves a 69% merge rate on proposed fix PRs.</p>
+        <span class="badge badge-red">69% merge rate on CI fix PRs</span>
+      </div>
+      <div class="card pillar-card p6">
+        <div style="font-size:32px;margin-bottom:12px;">&#x1f4ca;</div>
+        <h3 style="font-size:18px;margin-bottom:8px;">Continuous Reporting</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">Create regular reports on repository health and activity. Track progress, surface trends, and recommend next steps.</p>
+        <span class="badge badge-blue">Daily status reports with actionable insights</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section>
+  <div class="container">
+    <div class="section-label">ARCHITECTURE</div>
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">From Markdown intent to secure, sandboxed AI execution with controlled outputs.</p>
+    <div class="flow-diagram">
+      <div class="flow-step"><div class="icon">&#x1f4e8;</div><div class="label">Event</div><div class="desc">Issue, PR, push, schedule</div></div>
+      <div class="flow-arrow">&#x2192;</div>
+      <div class="flow-step"><div class="icon">&#x26a1;</div><div class="label">Trigger</div><div class="desc">Matches on: config</div></div>
+      <div class="flow-arrow">&#x2192;</div>
+      <div class="flow-step"><div class="icon">&#x2699;&#xfe0f;</div><div class="label">Compile</div><div class="desc">.md &rarr; .lock.yml</div></div>
+      <div class="flow-arrow">&#x2192;</div>
+      <div class="flow-step"><div class="icon">&#x1f916;</div><div class="label">Agent</div><div class="desc">Sandboxed, read-only</div></div>
+      <div class="flow-arrow">&#x2192;</div>
+      <div class="flow-step"><div class="icon">&#x1f6e1;&#xfe0f;</div><div class="label">Detection</div><div class="desc">Threat analysis gate</div></div>
+      <div class="flow-arrow">&#x2192;</div>
+      <div class="flow-step"><div class="icon">&#x2705;</div><div class="label">Safe Outputs</div><div class="desc">PR, comment, label</div></div>
+    </div>
+    <div class="grid-2" style="margin-top:32px;">
+      <div>
+        <h3 style="font-size:18px;margin-bottom:12px;">Markdown-First Authoring</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Workflows are authored as <code>.md</code> files in <code>.github/workflows/</code>. YAML frontmatter defines configuration; the Markdown body contains natural language instructions.</p>
+        <pre><code class="language-markdown">---
+on:
+  issues:
+    types: [opened]
+permissions: read-all
+safe-outputs:
+  add-comment:
+---
+
+# Issue Clarifier
+
+Analyze the current issue and ask for
+additional details if the issue is unclear.</code></pre>
+      </div>
+      <div>
+        <h3 style="font-size:18px;margin-bottom:12px;">The Compilation Pipeline</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">The <code>gh aw compile</code> command transforms <code>.md</code> into a security-hardened <code>.lock.yml</code> through five phases:</p>
+        <div class="card" style="padding:16px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;"><span class="step-num">1</span><div><strong>Parsing &amp; Validation</strong><br><span style="color:#8b949e;font-size:13px;">Extract frontmatter, validate JSON schema, resolve imports</span></div></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;"><span class="step-num">2</span><div><strong>Job Construction</strong><br><span style="color:#8b949e;font-size:13px;">Generate isolated jobs with distinct trust boundaries</span></div></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;"><span class="step-num">3</span><div><strong>Action SHA Pinning</strong><br><span style="color:#8b949e;font-size:13px;">Resolve every action to full commit SHA &mdash; defense against tag-hijacking</span></div></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;"><span class="step-num">4</span><div><strong>Security Scanners</strong><br><span style="color:#8b949e;font-size:13px;">actionlint, zizmor, poutine &mdash; linting and vulnerability detection</span></div></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;"><span class="step-num">5</span><div><strong>Strict Mode</strong><br><span style="color:#8b949e;font-size:13px;">No write permissions in agent, explicit network config, no wildcards</span></div></div>
+        </div>
+      </div>
+    </div>
+    <h3 style="font-size:18px;margin-top:40px;margin-bottom:16px;">Multi-Job Execution Pipeline</h3>
+    <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">The compiled <code>.lock.yml</code> executes as a strict sequence of isolated jobs:</p>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Job</th><th>Permissions</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>pre_activation</code></td><td>Minimal</td><td>Role checks, stop-after deadlines, skip-if-match conditions</td></tr>
+          <tr><td><code>activation</code></td><td><code>contents: read</code></td><td>Context preparation, content sanitization, lock file validation</td></tr>
+          <tr><td><code>agent</code></td><td><strong>Read-only</strong></td><td>Execute AI engine with tools and MCP servers</td></tr>
+          <tr><td><code>detection</code></td><td><code>contents: read</code></td><td>AI-powered threat analysis &mdash; the security gate</td></tr>
+          <tr><td><code>safe_outputs</code></td><td>Scoped write</td><td>Create issues, add comments, open PRs via GitHub API</td></tr>
+          <tr><td><code>conclusion</code></td><td>Write</td><td>Aggregate results, generate summary, handle failures</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-green" style="margin-top:16px;">
+      <strong>&#x1f512; Why Separate Jobs?</strong> Trust boundaries &mdash; agent has read-only; safe outputs have write. Immutable job permissions prevent combining. Data flows via GitHub Actions artifacts, preventing output tampering on shared filesystems.
+    </div>
+
+    <h3 style="font-size:18px;margin-top:40px;margin-bottom:16px;">Key Architectural Reasons for Separation</h3>
+    <div class="grid-3">
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;">&#x1f512; Trust Boundaries</h4>
+        <p style="color:#8b949e;font-size:13px;">Agent has read-only; safe outputs have write. Can't combine without violating least-privilege principle.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#3fb950;margin-bottom:8px;">&#x1f6e1;&#xfe0f; Immutable Permissions</h4>
+        <p style="color:#8b949e;font-size:13px;">GitHub Actions permissions are per-job and cannot change mid-execution. Structural enforcement.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#d29922;margin-bottom:8px;">&#x26d4; Hard Gating</h4>
+        <p style="color:#8b949e;font-size:13px;">Safe outputs only run if detection passes. Ensures runner never starts on failure.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#bc8cff;margin-bottom:8px;">&#x267b;&#xfe0f; Always() Semantics</h4>
+        <p style="color:#8b949e;font-size:13px;">Conclusion job handles upstream failures. Merging would block writes on safe output failure.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#f85149;margin-bottom:8px;">&#x1f4e6; Artifact Handoff</h4>
+        <p style="color:#8b949e;font-size:13px;">Data flows via GitHub Actions artifacts, preventing output tampering possible with shared filesystem.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#8b949e;margin-bottom:8px;">&#x1f3ce;&#xfe0f; Different Runners</h4>
+        <p style="color:#8b949e;font-size:13px;">Detection requires <code>ubuntu-latest</code>; safe output jobs can use lightweight <code>ubuntu-slim</code>.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:18px;margin-top:40px;margin-bottom:16px;">The Never-Sleeping Teammate</h3>
+    <div class="grid-2">
+      <div>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">Agentic workflows function as persistent team members that continuously monitor your repository and respond to events:</p>
+        <ul style="list-style:none;font-size:14px;color:#8b949e;">
+          <li style="margin-bottom:8px;"><strong style="color:#e6edf3;">Event-driven:</strong> Triggered by repository events (PRs, issues, pushes, schedules, comments)</li>
+          <li style="margin-bottom:8px;"><strong style="color:#e6edf3;">Asynchronous:</strong> Works in the background without blocking developers</li>
+          <li style="margin-bottom:8px;"><strong style="color:#e6edf3;">Context-aware:</strong> Understands the entire codebase, diffs, configurations, and documentation</li>
+          <li style="margin-bottom:8px;"><strong style="color:#e6edf3;">Intent-based:</strong> Defined in plain language Markdown, not YAML rules</li>
+          <li><strong style="color:#e6edf3;">Iterative:</strong> Agents iterate through plan &rarr; implement &rarr; validate &rarr; output cycles</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card" style="background:rgba(188,140,255,0.06);border-color:rgba(188,140,255,0.2);">
+          <h4 style="font-size:14px;color:#bc8cff;margin-bottom:12px;">&#x1f31f; What Your Morning Looks Like</h4>
+          <ul style="list-style:none;font-size:13px;color:#8b949e;">
+            <li style="margin-bottom:6px;">&#x2705; Issues triaged and labelled overnight</li>
+            <li style="margin-bottom:6px;">&#x2705; CI failures investigated with proposed fixes</li>
+            <li style="margin-bottom:6px;">&#x2705; Documentation updated for recent code changes</li>
+            <li style="margin-bottom:6px;">&#x2705; Two new PRs improving test coverage await review</li>
+            <li style="margin-bottom:6px;">&#x2705; Daily status report with project health summary</li>
+            <li>&#x2705; Security scan results with zero new vulnerabilities</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FRONTMATTER -->
+<section>
+  <div class="container">
+    <div class="section-label">CONFIGURATION</div>
+    <h2 class="section-title">Frontmatter Reference</h2>
+    <p class="section-subtitle">The YAML frontmatter in your workflow <code>.md</code> file defines everything about how the workflow runs.</p>
+    <div class="grid-2">
+      <div>
+        <div class="code-header">.github/workflows/my-workflow.md</div>
+        <pre><code class="language-yaml">---
+name: "My Workflow"
+description: |
+  Human-readable description
+
+on:
+  issues:
+    types: [opened, reopened]
+  schedule: daily
+  slash_command:
+    name: my-command
+  workflow_dispatch:
+
+permissions: read-all
+network: defaults
+
+tools:
+  github:
+    toolsets: [repos, issues, pull_requests]
+  web-fetch:
+  bash: true
+  cache-memory: true
+
+safe-outputs:
+  create-pull-request:
+    draft: true
+    labels: [automation]
+  create-issue:
+    title-prefix: "[bot] "
+    labels: [report]
+  add-comment:
+  add-labels:
+    max: 5
+
+engine:
+  id: copilot
+
+timeout-minutes: 15
+---
+
+# Workflow Instructions
+
+Natural language instructions for the AI agent...
+</code></pre>
+      </div>
+      <div>
+        <h3 style="font-size:16px;margin-bottom:16px;">Property Reference</h3>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Property</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>name</code></td><td>Display name in GitHub Actions UI</td></tr>
+              <tr><td><code>description</code></td><td>Human-readable description</td></tr>
+              <tr><td><code>on</code></td><td>Trigger events (issues, PR, push, schedule, slash_command, workflow_dispatch)</td></tr>
+              <tr><td><code>permissions</code></td><td>GitHub token scopes. <code>read-all</code> for read-only</td></tr>
+              <tr><td><code>network</code></td><td>Network access. <code>defaults</code> includes GitHub, npm, PyPI</td></tr>
+              <tr><td><code>tools</code></td><td>Agent access: github toolsets, bash, web-fetch, cache-memory</td></tr>
+              <tr><td><code>safe-outputs</code></td><td>Controlled write actions (PRs, issues, comments, labels)</td></tr>
+              <tr><td><code>engine</code></td><td>AI engine: <code>copilot</code>, <code>claude</code>, <code>codex</code>, <code>gemini</code></td></tr>
+              <tr><td><code>mcp-servers</code></td><td>Custom MCP server configurations</td></tr>
+              <tr><td><code>timeout-minutes</code></td><td>Workflow timeout (default: 20)</td></tr>
+              <tr><td><code>if</code></td><td>Conditional expression</td></tr>
+              <tr><td><code>strict</code></td><td>Enhanced security (default: true)</td></tr>
+              <tr><td><code>stop-after</code></td><td>Disable after deadline for cost control</td></tr>
+              <tr><td><code>roles</code></td><td>Restrict to actor roles (admin, maintainer)</td></tr>
+              <tr><td><code>forks</code></td><td>Allow/block fork PRs (default: false)</td></tr>
+              <tr><td><code>imports</code></td><td>Shared workflow components</td></tr>
+              <tr><td><code>runs-on</code></td><td>Runner type (default: ubuntu-latest)</td></tr>
+              <tr><td><code>threat-detection</code></td><td>Custom detection prompt and steps</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKFLOW EXAMPLES -->
+<section>
+  <div class="container">
+    <div class="section-label">EXAMPLES</div>
+    <h2 class="section-title">Real Workflow Examples</h2>
+    <p class="section-subtitle">Complete, production-ready workflow files from the <a href="https://github.com/githubnext/agentics">githubnext/agentics</a> sample pack.</p>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1f3af;</span>
+        <div>
+          <h3 style="font-size:18px;">Issue Triage Agent</h3>
+          <span class="badge badge-blue" style="font-size:11px;">Trigger: issues.opened</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: |
+  Intelligent issue triage assistant that processes new and reopened issues.
+  Analyzes content, selects labels, detects spam, gathers context.
+
+on:
+  issues:
+    types: [opened, reopened]
+  reaction: eyes
+
+permissions: read-all
+network: defaults
+
+safe-outputs:
+  add-labels:
+    max: 5
+  add-comment:
+
+tools:
+  web-fetch:
+  github:
+    toolsets: [issues]
+    min-integrity: none
+
+timeout-minutes: 10
+---
+
+# Agentic Triage
+
+You're a triage assistant for GitHub issues. Your task is to analyze issue
+#${{ github.event.issue.number }} and perform initial triage tasks.
+
+1. Select appropriate labels for the issue from the provided list.
+
+2. Retrieve the issue content using the `get_issue` tool. If the issue is
+   obviously spam, add a comment and exit the workflow.
+
+3. Gather additional context:
+   - Fetch the list of labels available in this repository
+   - Fetch any comments using the `get_issue_comments` tool
+   - Find similar issues using the `search_issues` tool
+
+4. Analyze the issue considering type, severity, and user impact.
+
+5. Write notes, debugging strategies, and reproduction steps.
+
+6. Apply labels using the `update_issue` tool.
+
+7. Add an issue comment with your analysis starting with
+   "Agentic Issue Triage".</code></pre>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1f624;</span>
+        <div>
+          <h3 style="font-size:18px;">Grumpy Code Reviewer</h3>
+          <span class="badge badge-purple" style="font-size:11px;">Trigger: /grumpy slash command</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: Performs critical code review with a focus on edge cases and bugs
+
+on:
+  slash_command:
+    name: grumpy
+    events: [pull_request_comment, pull_request_review_comment]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+tools:
+  cache-memory: true
+  github:
+    lockdown: true
+    toolsets: [pull_requests, repos]
+
+safe-outputs:
+  create-pull-request-review-comment:
+    max: 5
+    side: "RIGHT"
+  submit-pull-request-review:
+    max: 1
+  messages:
+    footer: "&gt; Reluctantly reviewed by [{workflow_name}]({run_url})"
+
+timeout-minutes: 10
+---
+
+# Grumpy Code Reviewer
+
+You are a grumpy senior developer with 40+ years of experience who has
+been reluctantly asked to review code.
+
+## Your Personality
+- **Sarcastic and grumpy** - Not mean, but definitely not cheerful
+- **Experienced** - You've seen it all and have strong opinions
+- **Thorough** - You point out every issue, no matter how small
+- **Concise** - Say the minimum words needed to make your point
+
+## Your Mission
+
+### Step 1: Deduplication Check
+Use cache memory to check if you've reviewed this PR before.
+
+### Step 2: Fetch Pull Request Details
+Get the PR details, files changed, and diff for each changed file.
+
+### Step 3: Analyze the Code
+Look for code smells, performance issues, security concerns,
+best practices violations, poor naming, duplicated code.
+
+### Step 4: Write Review Comments
+Be specific about file, line number, and what's wrong.
+
+### Step 5: Submit the Review
+- APPROVE when no issues need fixing
+- REQUEST_CHANGES when issues must be fixed
+- COMMENT for non-blocking observations</code></pre>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1f4ca;</span>
+        <div>
+          <h3 style="font-size:18px;">Daily Repo Status Report</h3>
+          <span class="badge badge-green" style="font-size:11px;">Trigger: schedule daily</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: |
+  Creates daily repo status reports. Gathers recent activity
+  and generates engaging GitHub issues with productivity insights.
+
+on:
+  schedule: daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+network: defaults
+
+tools:
+  github:
+    lockdown: false
+    min-integrity: none
+
+safe-outputs:
+  mentions: false
+  allowed-github-references: []
+  create-issue:
+    title-prefix: "[repo-status] "
+    labels: [report, daily-status]
+    close-older-issues: true
+---
+
+# Daily Repo Status
+
+Create an upbeat daily status report as a GitHub issue.
+
+## What to include
+- Recent repository activity (issues, PRs, discussions, releases)
+- Progress tracking, goal reminders and highlights
+- Project status and recommendations
+- Actionable next steps for maintainers
+
+## Style
+- Be positive, encouraging, and helpful
+- Use emojis moderately for engagement
+- Keep it concise - adjust length based on actual activity
+
+## Process
+1. Gather recent activity from the repository
+2. Study the repository, its issues and its pull requests
+3. Create a new GitHub issue with your findings</code></pre>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1f4d6;</span>
+        <div>
+          <h3 style="font-size:18px;">Documentation Updater</h3>
+          <span class="badge badge-green" style="font-size:11px;">Trigger: push to main</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: |
+  Keeps docs synchronized with code changes. Creates draft PRs.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: read-all
+network: defaults
+
+safe-outputs:
+  create-pull-request:
+    draft: true
+    protected-files: fallback-to-issue
+    labels: [automation, documentation]
+
+tools:
+  github:
+    toolsets: [all]
+  web-fetch:
+  bash: true
+
+timeout-minutes: 15
+---
+
+# Update Docs
+
+You are an Autonomous Technical Writer for ${{ github.repository }}.
+
+### Mission
+Ensure every code-level change is mirrored by clear, accurate documentation.
+
+### Voice and Tone
+- Precise, concise, developer-friendly
+- Active voice, plain English, progressive disclosure
+
+### Workflow
+1. **Analyze Repository Changes** - Examine the diff for changed entities
+2. **Documentation Assessment** - Review against Diataxis framework
+3. **Create or Update Documentation** - Use Markdown format
+4. **Create Draft Pull Requests** - Focused, reviewable PRs
+
+&gt; NOTE: Never make direct pushes to the default branch.
+&gt; NOTE: Treat documentation gaps like failing tests.</code></pre>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1fa7a;</span>
+        <div>
+          <h3 style="font-size:18px;">CI Doctor (Failure Analysis)</h3>
+          <span class="badge badge-red" style="font-size:11px;">Trigger: workflow_run.completed</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: |
+  Automated CI failure investigator. Deep analysis of Actions failures.
+
+on:
+  workflow_run:
+    workflows: ["CI Test Suite", "Build Pipeline"]
+    types: [completed]
+    branches: [main]
+
+if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+permissions: read-all
+network: defaults
+
+safe-outputs:
+  create-issue:
+    title-prefix: "[CI Doctor] "
+    labels: [automation, ci-failure]
+  add-comment:
+
+tools:
+  cache-memory: true
+  web-fetch:
+
+timeout-minutes: 10
+---
+
+# CI Failure Doctor
+
+You are the CI Failure Doctor. Analyze failed GitHub Actions workflows.
+
+## Context
+- **Workflow Run**: ${{ github.event.workflow_run.id }}
+- **Conclusion**: ${{ github.event.workflow_run.conclusion }}
+
+## Investigation Protocol
+
+### Phase 1: Initial Triage
+1. Verify the workflow conclusion is 'failure'
+2. Check deduplication cache
+3. Get workflow details via `get_workflow_run`
+4. List jobs via `list_workflow_jobs`
+
+### Phase 2: Deep Log Analysis
+1. Retrieve logs with `get_job_logs` (failed_only=true)
+2. Analyze for: error messages, stack traces, dependency failures
+
+### Phase 3: Historical Context
+1. Search investigation history in cache memory
+2. Search existing issues for related problems
+
+### Phase 4: Root Cause Investigation
+Categorize: Code Issues | Infrastructure | Dependencies | Flaky Tests
+
+### Phase 5: Reporting
+Create issue with Executive Summary, Root Cause Analysis,
+Reproduction Steps, and Recommended Actions.</code></pre>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1f527;</span>
+        <div>
+          <h3 style="font-size:18px;">PR Fix (Slash Command)</h3>
+          <span class="badge badge-orange" style="font-size:11px;">Trigger: /pr-fix</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: |
+  Fixes pull requests on-demand via the '/pr-fix' slash command.
+
+on:
+  slash_command:
+    name: pr-fix
+  reaction: "eyes"
+
+permissions: read-all
+network: defaults
+
+tools:
+  web-fetch:
+  bash: true
+  github:
+    min-integrity: none
+
+safe-outputs:
+  push-to-pull-request-branch:
+  create-issue:
+    title-prefix: "[PR Fix] "
+    labels: [automation, pr-fix]
+  add-comment:
+
+timeout-minutes: 20
+---
+
+# PR Fix
+
+You are an AI assistant specialized in fixing pull requests with
+failing CI checks for PR #${{ github.event.issue.number }}.
+
+1. Read the pull request and comments
+2. Take heed of instructions from the triggering comment
+3. Check out the branch and set up the development environment
+4. Formulate a plan to fix the issue
+5. Implement the changes
+6. Run tests to verify the fix
+7. Run code formatters/linters
+8. Push changes to the PR branch
+9. Add a comment summarizing the changes</code></pre>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1f512;</span>
+        <div>
+          <h3 style="font-size:18px;">Daily Malicious Code Scan</h3>
+          <span class="badge badge-red" style="font-size:11px;">Trigger: schedule daily</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: Daily security scan for suspicious code patterns
+
+on:
+  schedule: daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  security-events: read
+
+tracker-id: malicious-code-scan
+
+tools:
+  github:
+    toolsets: [repos, code_security]
+  bash: true
+
+safe-outputs:
+  create-code-scanning-alert:
+    driver: "Malicious Code Scanner"
+  threat-detection: false
+---
+
+# Daily Malicious Code Scanner
+
+Review all code changes from the last three days and identify:
+- Attempts to exfiltrate secrets or sensitive data
+- Code that doesn't fit the project's normal context
+- Unusual network activity or data transfers
+- Suspicious system commands or file operations
+- Hidden backdoors or obfuscated code
+
+When suspicious patterns are detected, generate code-scanning alerts
+for visibility in the GitHub Security tab.
+
+## Threat Scoring (0-10)
+- Critical (9-10): Active backdoors, exfiltration
+- High (7-8): Suspicious with high confidence
+- Medium (5-6): Warrants investigation
+- Low (3-4): Minor anomalies</code></pre>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <span style="font-size:24px;">&#x1f5d1;&#xfe0f;</span>
+        <div>
+          <h3 style="font-size:18px;">Stale Issue Cleaner</h3>
+          <span class="badge badge-orange" style="font-size:11px;">Trigger: schedule weekly</span>
+        </div>
+      </div>
+      <pre><code class="language-markdown">---
+description: Identifies and manages stale issues that need attention.
+
+on:
+  schedule: weekly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+tools:
+  github:
+    toolsets: [issues]
+
+safe-outputs:
+  add-comment:
+  add-labels:
+    allowed: [stale, needs-attention]
+  close-issue:
+
+timeout-minutes: 10
+---
+
+# Stale Issue Cleaner
+
+Review all open issues and identify those that are stale.
+
+## Process
+1. List all open issues, sorted by last updated
+2. For issues with no activity in 60+ days:
+   - If the issue has a linked PR, skip it
+   - If filed by a maintainer, add "needs-attention" label
+   - Otherwise, add a polite comment asking if still relevant
+   - Add the "stale" label
+3. For issues marked "stale" with no response in 14+ days:
+   - Add a final comment and close the issue
+4. Generate a summary of actions taken</code></pre>
+    </div>
+
+  </div>
+</section>
+
+<!-- SCENARIOS GALLERY -->
+<section>
+  <div class="container">
+    <div class="section-label">SCENARIOS</div>
+    <h2 class="section-title">Scenarios Gallery</h2>
+    <p class="section-subtitle">18 real-world scenarios organized by category. Filter to find the right workflow pattern.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;">
+      <button class="filter-btn active" onclick="filterScenarios('all')">All</button>
+      <button class="filter-btn" onclick="filterScenarios('triage')">&#x1f3af; Triage</button>
+      <button class="filter-btn" onclick="filterScenarios('documentation')">&#x1f4d6; Documentation</button>
+      <button class="filter-btn" onclick="filterScenarios('quality')">&#x1f527; Quality</button>
+      <button class="filter-btn" onclick="filterScenarios('testing')">&#x1f9ea; Testing</button>
+      <button class="filter-btn" onclick="filterScenarios('security')">&#x1f512; Security</button>
+      <button class="filter-btn" onclick="filterScenarios('reporting')">&#x1f4ca; Reporting</button>
+      <button class="filter-btn" onclick="filterScenarios('devops')">&#x1f3d7;&#xfe0f; DevOps</button>
+    </div>
+    <div class="grid-3">
+
+      <div class="card scenario-card" data-category="triage">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f3af;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Issue Triage & Labeling</h4>
+            <span class="badge badge-blue" style="font-size:10px;">Triage</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Auto-analyze and categorize new issues with severity assessment and duplicate detection.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>issues.opened</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="quality">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f527;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">CI Failure Auto-Fix</h4>
+            <span class="badge badge-orange" style="font-size:10px;">Quality</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Investigate failing builds, analyze logs, and propose targeted fix PRs.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>workflow_run.completed</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="documentation">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f4d6;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Documentation Sync</h4>
+            <span class="badge badge-green" style="font-size:10px;">Documentation</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Keep docs aligned with code changes on every push to main.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>push to main</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="reporting">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f4ca;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Daily Status Report</h4>
+            <span class="badge badge-blue" style="font-size:10px;">Reporting</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Generate daily project health summaries with actionable insights.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>schedule daily</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="testing">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f9ea;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Coverage Monitor</h4>
+            <span class="badge badge-purple" style="font-size:10px;">Testing</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Detect coverage drops on PRs and generate missing tests automatically.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>pull_request</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="security">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f512;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Security Vulnerability Scan</h4>
+            <span class="badge badge-red" style="font-size:10px;">Security</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Scan for malicious code patterns, exfiltration attempts, and backdoors.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>schedule daily</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="quality">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f624;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Grumpy Code Reviewer</h4>
+            <span class="badge badge-orange" style="font-size:10px;">Quality</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">On-demand sarcastic but thorough code review via slash command.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>/grumpy command</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="devops">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f4e6;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Super Dependabot</h4>
+            <span class="badge badge-orange" style="font-size:10px;">Devops</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">AI-powered dependency upgrades with breaking change migration.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>schedule weekly</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="documentation">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f3d7;&#xfe0f;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">PR Description Generator</h4>
+            <span class="badge badge-green" style="font-size:10px;">Documentation</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Auto-generate comprehensive PR descriptions from diffs.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>pull_request.opened</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="triage">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f5d1;&#xfe0f;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Stale Issue Cleaner</h4>
+            <span class="badge badge-blue" style="font-size:10px;">Triage</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Find and manage stale issues with polite follow-ups.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>schedule weekly</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="quality">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x26a1;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Performance Regression Detector</h4>
+            <span class="badge badge-orange" style="font-size:10px;">Quality</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Flag performance regressions in PRs touching hot paths.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>pull_request</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="reporting">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f4cb;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Sprint Report Generator</h4>
+            <span class="badge badge-blue" style="font-size:10px;">Reporting</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Weekly sprint summaries with velocity metrics and blockers.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>schedule weekly</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="security">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f511;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">License Compliance Checker</h4>
+            <span class="badge badge-red" style="font-size:10px;">Security</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Verify new dependencies meet organizational license policies.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>pull_request</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="devops">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f3e5;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Terraform Provider Upgrade</h4>
+            <span class="badge badge-orange" style="font-size:10px;">Devops</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Automated infrastructure provider migrations with validation.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>schedule monthly</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="triage">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f44b;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Contributor Welcome Bot</h4>
+            <span class="badge badge-blue" style="font-size:10px;">Triage</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Welcome first-time contributors with guidance and resources.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>issues.opened</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="documentation">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f4dd;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">API Doc Generator</h4>
+            <span class="badge badge-green" style="font-size:10px;">Documentation</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Generate OpenAPI specs from code changes automatically.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>push to main</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="testing">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f41b;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Bug Reproduction Bot</h4>
+            <span class="badge badge-purple" style="font-size:10px;">Testing</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Attempt to reproduce bug reports in sandboxed environments.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>issues.opened + label:bug</code></div>
+      </div>
+
+      <div class="card scenario-card" data-category="reporting">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <span style="font-size:24px;">&#x1f504;</span>
+          <div>
+            <h4 style="font-size:15px;margin-bottom:4px;">Release Notes Generator</h4>
+            <span class="badge badge-blue" style="font-size:10px;">Reporting</span>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;">Auto-generate changelogs categorized by type on release.</p>
+        <div style="font-size:12px;color:#8b949e;"><strong>Trigger:</strong> <code>release.published</code></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TRIGGERS -->
+<section>
+  <div class="container">
+    <div class="section-label">TRIGGERS</div>
+    <h2 class="section-title">Triggers &amp; Events Reference</h2>
+    <p class="section-subtitle">All the ways to trigger an agentic workflow &mdash; from repository events to slash commands.</p>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Trigger</th><th>Configuration</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Issues</strong></td><td><code>on: issues: types: [opened, reopened]</code></td><td>Issue triage, labeling, assignment</td></tr>
+          <tr><td><strong>Pull Request</strong></td><td><code>on: pull_request: types: [opened, synchronize]</code></td><td>Code review, coverage checks</td></tr>
+          <tr><td><strong>Push</strong></td><td><code>on: push: branches: [main]</code></td><td>Documentation sync, changelog</td></tr>
+          <tr><td><strong>Schedule</strong></td><td><code>on: schedule: daily</code></td><td>Reports, scans, cleanup</td></tr>
+          <tr><td><strong>Slash Command</strong></td><td><code>on: slash_command: name: review</code></td><td>On-demand tasks via comments</td></tr>
+          <tr><td><strong>Workflow Run</strong></td><td><code>on: workflow_run: workflows: [CI]</code></td><td>React to CI failures</td></tr>
+          <tr><td><strong>Reaction</strong></td><td><code>on: reaction: eyes</code></td><td>Manual trigger via emoji</td></tr>
+          <tr><td><strong>Workflow Dispatch</strong></td><td><code>on: workflow_dispatch:</code></td><td>Manual testing, one-off runs</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3 style="font-size:16px;margin-top:24px;margin-bottom:12px;">Schedule Shorthand</h3>
+    <pre><code class="language-yaml">on:
+  schedule: daily          # Once per day
+  schedule: hourly         # Once per hour
+  schedule: weekly         # Once per week
+  schedule:
+    - cron: '0 9 * * 1-5'  # Weekdays at 9 AM UTC</code></pre>
+  </div>
+</section>
+
+<!-- SAFE OUTPUTS -->
+<section>
+  <div class="container">
+    <div class="section-label">SECURITY</div>
+    <h2 class="section-title">Safe Outputs &amp; Permissions</h2>
+    <p class="section-subtitle">The controlled autonomy system &mdash; how agents write to your repository safely.</p>
+    <div class="callout callout-orange" style="margin-bottom:24px;">
+      <strong>Core Principle:</strong> Agent reasons freely in a read-only sandbox. Every write passes through constraints, sanitization, and AI-powered threat detection before being applied.
+    </div>
+    <div class="flow-diagram">
+      <div class="flow-step" style="background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.3);border-radius:8px;">
+        <div class="icon">&#x1f916;</div><div class="label">Agent Job</div><div class="desc">Read-only execution</div>
+      </div>
+      <div class="flow-arrow">&#x2192;</div>
+      <div class="flow-step" style="background:rgba(210,153,34,0.1);border:1px solid rgba(210,153,34,0.3);border-radius:8px;">
+        <div class="icon">&#x1f6e1;&#xfe0f;</div><div class="label">Detection Job</div><div class="desc">Threat analysis gate</div>
+      </div>
+      <div class="flow-arrow">&#x2192;</div>
+      <div class="flow-step" style="background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.3);border-radius:8px;">
+        <div class="icon">&#x2705;</div><div class="label">Safe Output Jobs</div><div class="desc">Scoped write permissions</div>
+      </div>
+    </div>
+    <h3 style="font-size:18px;margin-top:32px;margin-bottom:16px;">Available Safe Output Types</h3>
+    <div class="grid-3">
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#3fb950;margin-bottom:8px;">Issues &amp; Discussions</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;"><code>create-issue</code> &mdash; title-prefix, labels, close-older-issues</li>
+          <li style="margin-bottom:4px;"><code>add-comment</code> &mdash; add comments to issues/PRs</li>
+          <li style="margin-bottom:4px;"><code>close-issue</code> &mdash; close issues</li>
+          <li style="margin-bottom:4px;"><code>add-labels</code> &mdash; max, allowed, blocked lists</li>
+          <li><code>create-discussion</code> &mdash; create discussions</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;">Pull Requests</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;"><code>create-pull-request</code> &mdash; draft, labels, protected-files</li>
+          <li style="margin-bottom:4px;"><code>push-to-pull-request-branch</code> &mdash; push commits</li>
+          <li style="margin-bottom:4px;"><code>create-pull-request-review-comment</code> &mdash; max, side</li>
+          <li><code>submit-pull-request-review</code> &mdash; approve/request changes</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#bc8cff;margin-bottom:8px;">Code &amp; Assets</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;"><code>create-code-scanning-alert</code> &mdash; driver name</li>
+          <li><code>upload-asset</code> &mdash; release assets</li>
+        </ul>
+        <h4 style="font-size:14px;color:#d29922;margin-top:12px;margin-bottom:8px;">Detection Job Checks</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;">Prompt injection detection</li>
+          <li style="margin-bottom:4px;">Secret leak detection</li>
+          <li style="margin-bottom:4px;">Malicious patch detection</li>
+          <li>Policy violation analysis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODING AGENT VS AGENTIC WORKFLOWS -->
+<section>
+  <div class="container">
+    <div class="section-label">COMPARISON</div>
+    <h2 class="section-title">Coding Agent vs. Agentic Workflows</h2>
+    <p class="section-subtitle">Two complementary systems &mdash; understanding when to use each.</p>
+
+    <div class="grid-2" style="margin-bottom:32px;">
+      <div class="card" style="border-top:3px solid #3fb950;">
+        <h3 style="font-size:18px;margin-bottom:12px;color:#3fb950;">&#x1f916; Copilot Coding Agent</h3>
+        <table style="margin:0;">
+          <tbody>
+            <tr><td style="color:#8b949e;width:120px;">Trigger</td><td>Assign issue to <code>@copilot</code></td></tr>
+            <tr><td style="color:#8b949e;">Config file</td><td><code>copilot-setup-steps.yml</code></td></tr>
+            <tr><td style="color:#8b949e;">AI Provider</td><td>GitHub Copilot only</td></tr>
+            <tr><td style="color:#8b949e;">Output</td><td>Creates a PR with code changes</td></tr>
+            <tr><td style="color:#8b949e;">Tools</td><td>Full coding environment (read/write)</td></tr>
+            <tr><td style="color:#8b949e;">Safety</td><td>PR review required by human</td></tr>
+            <tr><td style="color:#8b949e;">Best for</td><td>Bug fixes, features, refactoring, tests</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card" style="border-top:3px solid #bc8cff;">
+        <h3 style="font-size:18px;margin-bottom:12px;color:#bc8cff;">&#x2699;&#xfe0f; Agentic Workflows</h3>
+        <table style="margin:0;">
+          <tbody>
+            <tr><td style="color:#8b949e;width:120px;">Trigger</td><td>Any GitHub event (issues, PRs, schedule)</td></tr>
+            <tr><td style="color:#8b949e;">Config file</td><td><code>.github/workflows/*.md</code></td></tr>
+            <tr><td style="color:#8b949e;">AI Provider</td><td>Copilot, Claude, or Codex</td></tr>
+            <tr><td style="color:#8b949e;">Output</td><td>Safe-outputs (issues, comments, PRs)</td></tr>
+            <tr><td style="color:#8b949e;">Tools</td><td>Controlled tools via MCP</td></tr>
+            <tr><td style="color:#8b949e;">Safety</td><td>Read-only + explicit safe-outputs</td></tr>
+            <tr><td style="color:#8b949e;">Best for</td><td>Triage, docs, reports, CI monitoring</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;margin-bottom:16px;">When to Use Each</h3>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Scenario</th><th style="text-align:center;">Coding Agent</th><th style="text-align:center;">Agentic Workflow</th></tr></thead>
+        <tbody>
+          <tr><td>Implement a feature from an issue</td><td style="text-align:center;color:#3fb950;">&#x2705;</td><td style="text-align:center;"></td></tr>
+          <tr><td>Auto-triage new issues</td><td style="text-align:center;"></td><td style="text-align:center;color:#bc8cff;">&#x2705;</td></tr>
+          <tr><td>Fix a specific bug</td><td style="text-align:center;color:#3fb950;">&#x2705;</td><td style="text-align:center;"></td></tr>
+          <tr><td>Monitor test coverage on every PR</td><td style="text-align:center;"></td><td style="text-align:center;color:#bc8cff;">&#x2705;</td></tr>
+          <tr><td>Refactor a module</td><td style="text-align:center;color:#3fb950;">&#x2705;</td><td style="text-align:center;"></td></tr>
+          <tr><td>Generate daily status reports</td><td style="text-align:center;"></td><td style="text-align:center;color:#bc8cff;">&#x2705;</td></tr>
+          <tr><td>Write tests for uncovered code</td><td style="text-align:center;color:#3fb950;">&#x2705;</td><td style="text-align:center;"></td></tr>
+          <tr><td>Auto-update docs when API changes</td><td style="text-align:center;"></td><td style="text-align:center;color:#bc8cff;">&#x2705;</td></tr>
+          <tr><td>Fix security vulnerabilities</td><td style="text-align:center;color:#3fb950;">&#x2705;</td><td style="text-align:center;"></td></tr>
+          <tr><td>Enforce coding standards on PRs</td><td style="text-align:center;"></td><td style="text-align:center;color:#bc8cff;">&#x2705;</td></tr>
+          <tr><td>Fix failing CI builds</td><td style="text-align:center;"></td><td style="text-align:center;color:#bc8cff;">&#x2705;</td></tr>
+          <tr><td>Dependency upgrade with migration</td><td style="text-align:center;color:#3fb950;">&#x2705;</td><td style="text-align:center;"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS & MCP -->
+<section>
+  <div class="container">
+    <div class="section-label">TOOLS</div>
+    <h2 class="section-title">Tools &amp; MCP Integration</h2>
+    <p class="section-subtitle">What the agent can access &mdash; from GitHub API toolsets to custom MCP servers.</p>
+    <div class="grid-2">
+      <div>
+        <h3 style="font-size:16px;margin-bottom:16px;">GitHub Toolsets</h3>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Toolset</th><th>Capabilities</th></tr></thead>
+            <tbody>
+              <tr><td><code>context</code></td><td>User and team information</td></tr>
+              <tr><td><code>repos</code></td><td>Repository ops, code search, commits</td></tr>
+              <tr><td><code>issues</code></td><td>Issue management, comments, reactions</td></tr>
+              <tr><td><code>pull_requests</code></td><td>PR operations, diffs, reviews</td></tr>
+              <tr><td><code>users</code></td><td>User information</td></tr>
+              <tr><td><code>actions</code></td><td>Workflows, runs, artifacts</td></tr>
+              <tr><td><code>code_security</code></td><td>Scanning alerts</td></tr>
+              <tr><td><code>discussions</code></td><td>Discussion management</td></tr>
+              <tr><td><code>labels</code></td><td>Label operations</td></tr>
+              <tr><td><code>dependabot</code></td><td>Dependabot alerts</td></tr>
+              <tr><td><code>secret_protection</code></td><td>Secret scanning</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="color:#8b949e;font-size:13px;margin-top:8px;"><strong>Default toolsets</strong> (when not specified): context, repos, issues, pull_requests, users</p>
+      </div>
+      <div>
+        <h3 style="font-size:16px;margin-bottom:16px;">Built-in Tools</h3>
+        <pre><code class="language-yaml">tools:
+  web-fetch:            # Fetch content from URLs
+  bash: true            # Shell command access
+  cache-memory: true    # Persistent cache between runs
+  edit:                 # File editing capability
+  view:                 # File viewing capability
+  search:               # Search capability
+  github:
+    mode: remote        # Hosted MCP server
+    lockdown: true      # Restrict to repo content
+    min-integrity: none # Read all content</code></pre>
+        <h3 style="font-size:16px;margin-top:24px;margin-bottom:16px;">Custom MCP Server</h3>
+        <pre><code class="language-yaml">mcp-servers:
+  my-custom-server:
+    type: "docker"
+    image: "my-org/my-mcp-server:latest"
+    environment:
+      API_KEY: ${{ secrets.CUSTOM_API_KEY }}
+      DEBUG: "true"
+    tools:
+      - create_item
+      - search_items</code></pre>
+        <div class="callout callout-blue" style="margin-top:16px;">
+          <strong>MCP Gateway:</strong> Trusted container that spawns isolated MCP server containers, filters tool invocations against allowlists, and logs every request. Agent never sees MCP credentials.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLI -->
+<section>
+  <div class="container">
+    <div class="section-label">CLI</div>
+    <h2 class="section-title">The <code>gh-aw</code> CLI</h2>
+    <p class="section-subtitle">Install, compile, test, and manage agentic workflows from your terminal.</p>
+    <div class="grid-2" style="margin-bottom:24px;">
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;color:#3fb950;">Installation</h3>
+        <pre><code class="language-bash"># Via GitHub CLI (recommended)
+gh extension install github/gh-aw
+gh aw version
+
+# Pin to specific version
+gh extension install github/gh-aw@v0.57.0
+
+# Standalone installer
+curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash</code></pre>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;color:#58a6ff;">Setup in GitHub Actions</h3>
+        <pre><code class="language-yaml">- uses: github/gh-aw/actions/setup-cli@main
+  with:
+    version: v0.37.18</code></pre>
+        <p style="color:#8b949e;font-size:13px;margin-top:12px;"><strong>Supports:</strong> Linux, macOS, FreeBSD, Windows (WSL), Android (Termux)</p>
+      </div>
+    </div>
+    <h3 style="font-size:18px;margin-bottom:16px;">Core Commands</h3>
+    <div class="grid-3">
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw init</code></h4>
+        <p style="color:#8b949e;font-size:13px;">Initialize repository &mdash; configures .gitattributes, creates dispatcher agent, selects engine, configures secrets.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw compile</code></h4>
+        <p style="color:#8b949e;font-size:13px;">Compile .md to .lock.yml &mdash; schema validation, SHA pinning, security scanning.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw add-wizard</code></h4>
+        <p style="color:#8b949e;font-size:13px;">Add pre-built workflow from githubnext/agentics. Handles engine selection and secrets.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw logs</code></h4>
+        <p style="color:#8b949e;font-size:13px;">View workflow execution logs. Supports <code>--follow</code> for real-time streaming.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw audit</code></h4>
+        <p style="color:#8b949e;font-size:13px;">Audit workflows &mdash; run counts, success rates, token usage. Supports <code>--json</code>.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw validate</code></h4>
+        <p style="color:#8b949e;font-size:13px;">Validate workflow syntax without compiling. Quick schema and expression checks.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw test</code></h4>
+        <p style="color:#8b949e;font-size:13px;">Test workflow locally (preview). Simulate triggers with custom prompts.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;"><code>gh aw upgrade</code></h4>
+        <p style="color:#8b949e;font-size:13px;">Update the CLI to the latest version via <code>gh extension upgrade gh-aw</code>.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#8b949e;margin-bottom:8px;">Global Flags</h4>
+        <p style="color:#8b949e;font-size:13px;"><code>-h</code> help &bull; <code>-v</code> verbose &bull; <code>--repo owner/repo</code> target &bull; <code>--json</code> machine output</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEVOPS EVOLUTION -->
+<section>
+  <div class="container">
+    <div class="section-label">EVOLUTION</div>
+    <h2 class="section-title">The DevOps Evolution</h2>
+    <p class="section-subtitle">From manual processes to autonomous AI teammates &mdash; where agentic workflows fit in the journey.</p>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #8b949e;">
+        <span class="step-num" style="background:rgba(139,148,158,0.15);color:#8b949e;border-color:rgba(139,148,158,0.3);">1</span>
+        <div><strong>Traditional DevOps</strong> <span style="color:#8b949e;font-size:13px;">(2000s)</span><br><span style="color:#8b949e;font-size:14px;">Cultural &amp; organizational philosophy. Manual processes, no AI required.</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #58a6ff;border-top:1px solid #21262d;">
+        <span class="step-num">2</span>
+        <div><strong>CI/CD Pipelines</strong> <span style="color:#8b949e;font-size:13px;">(2010s)</span><br><span style="color:#8b949e;font-size:14px;">Automated build, test, deploy. Deterministic rules &mdash; tests pass or fail.</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #d29922;border-top:1px solid #21262d;">
+        <span class="step-num" style="background:rgba(210,153,34,0.15);color:#d29922;border-color:rgba(210,153,34,0.3);">3</span>
+        <div><strong>AI-Assisted</strong> <span style="color:#8b949e;font-size:13px;">(2021-2024)</span><br><span style="color:#8b949e;font-size:14px;">Code completion (Copilot), suggestions, chat-based help. Individual developer productivity.</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #bc8cff;border-top:1px solid #21262d;">
+        <span class="step-num" style="background:rgba(188,140,255,0.15);color:#bc8cff;border-color:rgba(188,140,255,0.3);">4</span>
+        <div><strong style="color:#bc8cff;">Continuous AI</strong> <span style="color:#8b949e;font-size:13px;">(2025+)</span><br><span style="color:#8b949e;font-size:14px;">AI agents integrated into CI/CD loops. Judgment-based automation &mdash; triage, review, documentation, refactoring. <strong>This is where gh-aw lives.</strong></span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #3fb950;border-top:1px solid #21262d;">
+        <span class="step-num" style="background:rgba(63,185,80,0.15);color:#3fb950;border-color:rgba(63,185,80,0.3);">5</span>
+        <div><strong>Autonomous</strong> <span style="color:#8b949e;font-size:13px;">(Future)</span><br><span style="color:#8b949e;font-size:14px;">Fully autonomous agents that plan, implement, test, and deploy. Humans focus on strategy and architecture.</span></div>
+      </div>
+    </div>
+    <div class="callout callout-blue" style="margin-top:24px;">
+      <strong>Key Insight:</strong> Agentic DevOps puts AI <em>inside</em> your pipeline. DevOps for Agents wraps your pipeline <em>around</em> AI. GitHub Agentic Workflows is where all directions converge.
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDIES -->
+<section>
+  <div class="container">
+    <div class="section-label">IMPACT</div>
+    <h2 class="section-title">Case Studies &amp; Metrics</h2>
+    <p class="section-subtitle">Real numbers from GitHub and enterprise adopters of Continuous AI.</p>
+    <div class="grid-3" style="margin-bottom:32px;">
+      <div class="card stat-card"><div class="number" style="color:#58a6ff;">60M+</div><div class="stat-label">Copilot code reviews performed</div></div>
+      <div class="card stat-card"><div class="number" style="color:#3fb950;">~80%</div><div class="stat-label">Developer adoption in first week</div></div>
+      <div class="card stat-card"><div class="number" style="color:#bc8cff;">29%</div><div class="stat-label">Autofix alert coverage</div></div>
+      <div class="card stat-card"><div class="number" style="color:#d29922;">69%</div><div class="stat-label">CI Doctor fix merge rate</div></div>
+      <div class="card stat-card"><div class="number" style="color:#f85149;">100%</div><div class="stat-label">Label coverage (196+ issues)</div></div>
+      <div class="card stat-card"><div class="number" style="color:#3fb950;">50K+</div><div class="stat-label">Enterprises using Copilot</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;">&#x1f3e0; Home Assistant</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:8px;">10,000+ contributors. Uses agentic workflows to analyze thousands of open issues and surface trending problems.</p>
+        <blockquote style="margin:0;">"That's the kind of judgment amplification that actually helps maintainers."<br>&mdash; Franck Nijhof, Lead Maintainer</blockquote>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;">&#x2601;&#xfe0f; CNCF</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:8px;">Cloud Native Computing Foundation. Automated documentation and team reporting across the ecosystem.</p>
+        <blockquote style="margin:0;">"Part of a cultural shift that empowers our ecosystem to innovate faster with AI."</blockquote>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;">&#x1f697; Carvana</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:8px;">Applied agents to real engineering work at enterprise scale across multiple repositories.</p>
+        <blockquote style="margin:0;">"Flexibility and built-in controls give us confidence at enterprise scale."</blockquote>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;">&#x1f4bb; github/gh-aw</h3>
+        <p style="color:#8b949e;font-size:14px;">GitHub's own repository. <strong>100% label coverage</strong> on 196+ open issues using auto-triage. <strong>69% merge rate</strong> on CI Doctor proposed fix PRs. Continuous documentation sync and auto-generated tests.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GETTING STARTED -->
+<section>
+  <div class="container">
+    <div class="section-label">QUICKSTART</div>
+    <h2 class="section-title">Getting Started</h2>
+    <p class="section-subtitle">From zero to your first agentic workflow in five steps.</p>
+    <div style="max-width:800px;">
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;">
+        <span class="step-num">1</span>
+        <div style="flex:1;">
+          <h3 style="font-size:16px;margin-bottom:8px;">Install the CLI</h3>
+          <pre><code class="language-bash">gh extension install github/gh-aw
+gh aw version</code></pre>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;">
+        <span class="step-num">2</span>
+        <div style="flex:1;">
+          <h3 style="font-size:16px;margin-bottom:8px;">Initialize Your Repository</h3>
+          <pre><code class="language-bash">cd your-repo
+gh aw init</code></pre>
+          <p style="color:#8b949e;font-size:13px;">Configures .gitattributes, creates dispatcher agent, selects engine, sets up secrets.</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;">
+        <span class="step-num">3</span>
+        <div style="flex:1;">
+          <h3 style="font-size:16px;margin-bottom:8px;">Set Up Secrets</h3>
+          <table style="margin:8px 0;">
+            <thead><tr><th>Engine</th><th>Secret</th><th>Default</th></tr></thead>
+            <tbody>
+              <tr><td>GitHub Copilot</td><td><code>COPILOT_GITHUB_TOKEN</code></td><td>&#x2705; Yes</td></tr>
+              <tr><td>Claude (Anthropic)</td><td><code>ANTHROPIC_API_KEY</code></td><td>No</td></tr>
+              <tr><td>Codex (OpenAI)</td><td><code>OPENAI_API_KEY</code></td><td>No</td></tr>
+            </tbody>
+          </table>
+          <pre><code class="language-bash">gh secret set COPILOT_GITHUB_TOKEN</code></pre>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;">
+        <span class="step-num">4</span>
+        <div style="flex:1;">
+          <h3 style="font-size:16px;margin-bottom:8px;">Add Your First Workflow</h3>
+          <pre><code class="language-bash"># Option A: Use the add wizard (fastest)
+gh aw add-wizard githubnext/agentics/daily-repo-status
+
+# Option B: Create manually
+# Create .github/workflows/issue-triage.md with frontmatter + instructions</code></pre>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;">
+        <span class="step-num">5</span>
+        <div style="flex:1;">
+          <h3 style="font-size:16px;margin-bottom:8px;">Compile, Commit &amp; Push</h3>
+          <pre><code class="language-bash">gh aw compile .github/workflows/*.md
+git add .github/workflows/
+git commit -m "Add agentic workflows"
+git push</code></pre>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-green" style="max-width:800px;">
+      <strong>&#x1f4a1; Best Practices:</strong>
+      <ul style="margin-top:8px;padding-left:20px;color:#8b949e;">
+        <li>Start with read-only workflows (reporting, triage) before write workflows</li>
+        <li>Use <code>strict: true</code> (default) for enhanced security validation</li>
+        <li>Enable threat detection for all workflows with safe-outputs</li>
+        <li>Review agent outputs before expanding permissions</li>
+        <li>Use <code>stop-after</code> for cost control during evaluation</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY ARCHITECTURE DEEP DIVE -->
+<section>
+  <div class="container">
+    <div class="section-label">DEFENSE IN DEPTH</div>
+    <h2 class="section-title">Three-Layer Security Architecture</h2>
+    <p class="section-subtitle">How gh-aw ensures agents can't go rogue &mdash; structural security from hardware to plan execution.</p>
+
+    <div class="grid-3" style="margin-bottom:32px;">
+      <div class="card" style="border-top:3px solid #f85149;">
+        <h3 style="font-size:16px;margin-bottom:12px;color:#f85149;">Layer 1: Substrate Trust</h3>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;"><strong>Hardware, Kernel &amp; Container isolation</strong></p>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:6px;">&#x2022; Memory isolation &mdash; each container in its own namespace</li>
+          <li style="margin-bottom:6px;">&#x2022; CPU &amp; resource isolation via cgroups</li>
+          <li style="margin-bottom:6px;">&#x2022; Docker networking &amp; iptables boundaries</li>
+          <li style="margin-bottom:6px;">&#x2022; <strong>Zero-Secret Agent Design:</strong> Agent NEVER holds auth tokens</li>
+          <li style="margin-bottom:6px;">&#x2022; LLM tokens in isolated API proxy container</li>
+          <li>&#x2022; MCP credentials in separate MCP server containers</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid #d29922;">
+        <h3 style="font-size:16px;margin-bottom:12px;color:#d29922;">Layer 2: Configuration Trust</h3>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;"><strong>Declarative specification &amp; compilation</strong></p>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:6px;">&#x2022; Schema validation &mdash; frontmatter against JSON schema</li>
+          <li style="margin-bottom:6px;">&#x2022; Expression safety &mdash; only allowlisted Actions expressions</li>
+          <li style="margin-bottom:6px;">&#x2022; Action SHA pinning &mdash; every action locked to commit SHA</li>
+          <li style="margin-bottom:6px;">&#x2022; Security scanners &mdash; actionlint, zizmor, poutine</li>
+          <li style="margin-bottom:6px;">&#x2022; Strict mode &mdash; no write permissions, explicit network config</li>
+          <li>&#x2022; The <code>gh aw compile</code> command is the trusted compiler</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid #3fb950;">
+        <h3 style="font-size:16px;margin-bottom:12px;color:#3fb950;">Layer 3: Plan Trust</h3>
+        <p style="color:#8b949e;font-size:13px;margin-bottom:12px;"><strong>Staged execution &amp; output validation</strong></p>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:6px;">&#x2022; Safe Outputs MCP &mdash; agent proposes writes as structured artifacts</li>
+          <li style="margin-bottom:6px;">&#x2022; Call filtering &mdash; MCP Gateway validates tool invocations</li>
+          <li style="margin-bottom:6px;">&#x2022; Secret redaction &mdash; masking known secret values</li>
+          <li style="margin-bottom:6px;">&#x2022; Threat detection &mdash; AI-powered analysis of all outputs</li>
+          <li style="margin-bottom:6px;">&#x2022; Content moderation &mdash; policy violation checks</li>
+          <li>&#x2022; Each stage has defined permissions and artifact handoff</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:18px;margin-bottom:16px;">Agent Workflow Firewall (AWF)</h3>
+    <div class="grid-2">
+      <div>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">The AWF provides network-level isolation for the agent container:</p>
+        <div class="card" style="padding:16px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">1</span><span style="color:#8b949e;font-size:13px;">Creates private Docker network (172.30.0.0/16)</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">2</span><span style="color:#8b949e;font-size:13px;">Binds agent container to that network</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">3</span><span style="color:#8b949e;font-size:13px;">Routes all HTTP/HTTPS through Squid proxy</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">4</span><span style="color:#8b949e;font-size:13px;">Enforces domain allowlist from frontmatter</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">5</span><span style="color:#8b949e;font-size:13px;">Drops iptables capabilities before launch</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">6</span><span style="color:#8b949e;font-size:13px;">Optional chroot mode for full host access control</span></div>
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:15px;margin-bottom:12px;">Network Configuration</h4>
+        <pre><code class="language-yaml">network:
+  firewall: true
+  allowed:
+    - defaults  # GitHub, npm, PyPI, Go, Crates, Maven, Docker
+    - "api.example.com"
+    - "*.trusted-vendor.com"</code></pre>
+        <p style="color:#8b949e;font-size:13px;margin-top:12px;"><code>defaults</code> includes: api.github.com, github.com, python.org, pypi.org, npm registry, golang.org, crates.io, maven.org, docker.io, and common CDNs.</p>
+        <h4 style="font-size:15px;margin-top:20px;margin-bottom:12px;">API Proxy Architecture</h4>
+        <div class="card" style="padding:12px;text-align:center;font-size:13px;color:#8b949e;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;">
+            <span style="padding:8px 12px;background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.3);border-radius:6px;">Agent<br><em>(no token)</em></span>
+            <span>&#x2192; http &#x2192;</span>
+            <span style="padding:8px 12px;background:rgba(210,153,34,0.1);border:1px solid rgba(210,153,34,0.3);border-radius:6px;">API Proxy<br><em>(holds token)</em></span>
+            <span>&#x2192; https &#x2192;</span>
+            <span style="padding:8px 12px;background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.3);border-radius:6px;">LLM API<br><em>(OpenAI etc)</em></span>
+          </div>
+          <p style="margin-top:8px;font-size:12px;">Agent routes model traffic through proxy without ever seeing credentials.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-orange" style="margin-top:24px;">
+      <strong>&#x1f6a8; Threat Model Assumption:</strong> The system assumes the agent will attempt to: access or corrupt memory of other components, communicate over unintended channels, abuse legitimate channels for unintended actions, confuse control logic, and attempt prompt injection to leak data or execute unauthorized commands.
+    </div>
+  </div>
+</section>
+
+<!-- AUTONOMOUS REPAIR LOOP -->
+<section>
+  <div class="container">
+    <div class="section-label">PATTERNS</div>
+    <h2 class="section-title">The Autonomous Repair Loop</h2>
+    <p class="section-subtitle">The most powerful pattern: agentic workflows and coding agents working together in a self-healing cycle.</p>
+
+    <div class="flow-diagram" style="flex-direction:column;gap:16px;align-items:stretch;max-width:700px;margin:32px auto;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-num" style="background:rgba(248,81,73,0.15);color:#f85149;border-color:rgba(248,81,73,0.3);">1</span>
+        <div style="flex:1;padding:12px 16px;background:rgba(248,81,73,0.06);border:1px solid rgba(248,81,73,0.2);border-radius:8px;">
+          <strong>CI Build Fails</strong>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">An agentic workflow detects the failure via <code>workflow_run</code> trigger</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-num" style="background:rgba(88,166,255,0.15);color:#58a6ff;border-color:rgba(88,166,255,0.3);">2</span>
+        <div style="flex:1;padding:12px 16px;background:rgba(88,166,255,0.06);border:1px solid rgba(88,166,255,0.2);border-radius:8px;">
+          <strong>Agent Analyzes Logs</strong>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">The CI Doctor reads build logs, identifies root cause, and creates an issue with context</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-num" style="background:rgba(188,140,255,0.15);color:#bc8cff;border-color:rgba(188,140,255,0.3);">3</span>
+        <div style="flex:1;padding:12px 16px;background:rgba(188,140,255,0.06);border:1px solid rgba(188,140,255,0.2);border-radius:8px;">
+          <strong>Issue Assigned to Copilot</strong>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">The issue is assigned to the Copilot coding agent for automated remediation</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-num" style="background:rgba(63,185,80,0.15);color:#3fb950;border-color:rgba(63,185,80,0.3);">4</span>
+        <div style="flex:1;padding:12px 16px;background:rgba(63,185,80,0.06);border:1px solid rgba(63,185,80,0.2);border-radius:8px;">
+          <strong>Fix PR Created</strong>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">The coding agent creates a branch, writes the fix, runs tests, and opens a PR</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <span class="step-num" style="background:rgba(210,153,34,0.15);color:#d29922;border-color:rgba(210,153,34,0.3);">5</span>
+        <div style="flex:1;padding:12px 16px;background:rgba(210,153,34,0.06);border:1px solid rgba(210,153,34,0.2);border-radius:8px;">
+          <strong>Quality Validation</strong>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">Another agentic workflow validates the PR meets quality gates. <strong>Human reviews and merges.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <strong>&#x1f504; Key Insight:</strong> This creates a fully autonomous repair loop with human review at the PR merge step. The CI Doctor achieves a <strong>69% merge rate</strong> on proposed fix PRs in the github/gh-aw repository itself.
+    </div>
+
+    <h3 style="font-size:18px;margin-top:32px;margin-bottom:16px;">Design Patterns for Agentic Workflows</h3>
+    <div class="grid-3">
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;">&#x1f4ac; ChatOps</h4>
+        <p style="color:#8b949e;font-size:13px;">Slash commands in comments: <code>/triage</code>, <code>/analyze</code>, <code>/grumpy</code>. On-demand agent execution triggered by developers.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#3fb950;margin-bottom:8px;">&#x1f4c5; DailyOps</h4>
+        <p style="color:#8b949e;font-size:13px;">Scheduled daily maintenance: status reports, security scans, stale issue cleanup, coverage monitoring.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#bc8cff;margin-bottom:8px;">&#x1f4cb; IssueOps</h4>
+        <p style="color:#8b949e;font-size:13px;">Issue-driven automation: triage on creation, assignment routing, duplicate detection, priority assessment.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#d29922;margin-bottom:8px;">&#x1f3d7;&#xfe0f; ProjectOps</h4>
+        <p style="color:#8b949e;font-size:13px;">Project management automation: sprint reports, velocity tracking, changelog generation, release notes.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#f85149;margin-bottom:8px;">&#x1f310; MultiRepoOps</h4>
+        <p style="color:#8b949e;font-size:13px;">Cross-repository coordination: shared policies, fleet management, organization-wide standards.</p>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#8b949e;margin-bottom:8px;">&#x1f3bc; Orchestration</h4>
+        <p style="color:#8b949e;font-size:13px;">Coordinating multiple worker workflows toward shared goals with Agent HQ governance.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-blue" style="margin-top:24px;">
+      <strong>Mental Model:</strong> <em>If repetitive work in a repository can be described in words, it is a good candidate for an agentic workflow.</em>
+    </div>
+  </div>
+</section>
+
+<!-- AI MATURITY MODEL -->
+<section>
+  <div class="container">
+    <div class="section-label">MATURITY</div>
+    <h2 class="section-title">Continuous AI Maturity Model</h2>
+    <p class="section-subtitle">Five levels of AI integration maturity &mdash; assess where your organization stands today.</p>
+
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #8b949e;">
+        <span class="step-num" style="background:rgba(139,148,158,0.15);color:#8b949e;border-color:rgba(139,148,158,0.3);">1</span>
+        <div>
+          <strong>Level 1: Assisted</strong> &mdash; <em style="color:#8b949e;">AI as Autocomplete</em>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">Individual developers use Copilot for code completion. No organizational adoption. Ad hoc usage.</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #58a6ff;border-top:1px solid #21262d;">
+        <span class="step-num">2</span>
+        <div>
+          <strong>Level 2: Integrated</strong> &mdash; <em style="color:#8b949e;">AI in the IDE</em>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">Teams standardize on AI tools. Custom instructions via <code>.github/copilot-instructions.md</code>. AI-powered PR summaries.</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #d29922;border-top:1px solid #21262d;">
+        <span class="step-num" style="background:rgba(210,153,34,0.15);color:#d29922;border-color:rgba(210,153,34,0.3);">3</span>
+        <div>
+          <strong>Level 3: Automated</strong> &mdash; <em style="color:#8b949e;">AI in CI/CD</em>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">AI agents run in Actions workflows. Automated triage, testing, documentation. Human review required for all outputs.</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #bc8cff;border-top:1px solid #21262d;">
+        <span class="step-num" style="background:rgba(188,140,255,0.15);color:#bc8cff;border-color:rgba(188,140,255,0.3);">4</span>
+        <div>
+          <strong style="color:#bc8cff;">Level 4: Orchestrated</strong> &mdash; <em style="color:#8b949e;">Multi-Agent Coordination</em>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">Multiple specialized agents work together. Agent HQ for governance. Cross-repo automation. Metrics-driven optimization.</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:16px;padding:20px;border-left:3px solid #3fb950;border-top:1px solid #21262d;">
+        <span class="step-num" style="background:rgba(63,185,80,0.15);color:#3fb950;border-color:rgba(63,185,80,0.3);">5</span>
+        <div>
+          <strong>Level 5: Autonomous</strong> &mdash; <em style="color:#8b949e;">AI as Teammate</em>
+          <p style="color:#8b949e;font-size:13px;margin-top:4px;">Agents independently plan, implement, test, and propose changes. Humans focus on strategy, architecture, and review. Continuous improvement loops.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:18px;margin-top:32px;margin-bottom:16px;">Agent HQ &mdash; Multi-Agent Governance</h3>
+    <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Agent HQ is GitHub's "mission control" for managing fleets of AI agents. Announced at GitHub Universe 2025.</p>
+    <div class="grid-2">
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;">Core Capabilities</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;">&#x2022; <strong>Multi-provider:</strong> Copilot, Claude, Codex, Gemini, custom agents</li>
+          <li style="margin-bottom:4px;">&#x2022; <strong>Unified interface:</strong> Manage from GitHub.com, VS Code, CLI, mobile</li>
+          <li style="margin-bottom:4px;">&#x2022; <strong>Parallel execution:</strong> Multiple agents on different tasks simultaneously</li>
+          <li>&#x2022; <strong>Custom agents:</strong> Define via <code>.github/agents/</code> configuration files</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#3fb950;margin-bottom:8px;">Enterprise Governance</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;">&#x2022; <strong>Access control:</strong> Define which agents are allowed per org/repo</li>
+          <li style="margin-bottom:4px;">&#x2022; <strong>Model governance:</strong> Control which AI models teams can use</li>
+          <li style="margin-bottom:4px;">&#x2022; <strong>Audit logging:</strong> Complete trails of all agent activities</li>
+          <li>&#x2022; <strong>Usage metrics:</strong> Track adoption, impact, and costs across teams</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENT RUNTIME ENVIRONMENT -->
+<section>
+  <div class="container">
+    <div class="section-label">RUNTIME</div>
+    <h2 class="section-title">Agent Runtime Environment</h2>
+    <p class="section-subtitle">Every agent runs in an ephemeral, sandboxed environment with pre-installed tools and strict isolation.</p>
+
+    <div class="grid-2" style="margin-bottom:24px;">
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;">Infrastructure</h3>
+        <table style="margin:0;">
+          <tbody>
+            <tr><td style="color:#8b949e;width:140px;">Default Runner</td><td><code>ubuntu-latest</code> (Ubuntu 24.04 LTS)</td></tr>
+            <tr><td style="color:#8b949e;">Resources</td><td>4 vCPUs, 16 GB RAM, 14 GB SSD</td></tr>
+            <tr><td style="color:#8b949e;">Max Job Time</td><td>6 hours</td></tr>
+            <tr><td style="color:#8b949e;">Setup Phase</td><td>Max 59 minutes</td></tr>
+            <tr><td style="color:#8b949e;">Larger Runners</td><td>Up to 64 vCPUs, 128 GB RAM, 512 GB disk</td></tr>
+            <tr><td style="color:#8b949e;">Self-Hosted</td><td>Supported with ARC (Actions Runner Controller)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:12px;">Pre-Installed Tools</h3>
+        <div style="font-size:13px;color:#8b949e;">
+          <p style="margin-bottom:8px;"><strong style="color:#e6edf3;">Languages:</strong> Node.js, Python, Java, .NET, Go, Ruby, Rust, PHP</p>
+          <p style="margin-bottom:8px;"><strong style="color:#e6edf3;">Build Tools:</strong> npm, yarn, pnpm, pip, poetry, Maven, Gradle, CMake, Make, GCC, Clang</p>
+          <p style="margin-bottom:8px;"><strong style="color:#e6edf3;">Version Control:</strong> Git (credential helpers pre-configured)</p>
+          <p style="margin-bottom:8px;"><strong style="color:#e6edf3;">Utilities:</strong> curl, wget, jq, GitHub CLI (<code>gh</code>), zip/unzip, tar</p>
+          <p><strong style="color:#e6edf3;">Databases:</strong> SQLite pre-installed; others via <code>services</code> key</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;margin-bottom:12px;">Ephemeral by Design</h3>
+    <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">A fresh environment is created for each task and destroyed when complete. Key execution phases in the agent job:</p>
+    <div class="card" style="padding:16px;">
+      <div class="grid-3" style="gap:12px;">
+        <div style="font-size:13px;color:#8b949e;">
+          <strong style="color:#58a6ff;">1.</strong> Repository checkout<br>
+          <strong style="color:#58a6ff;">2.</strong> Runtime setup (Node.js, Python, etc.)<br>
+          <strong style="color:#58a6ff;">3.</strong> Cache restoration from previous runs
+        </div>
+        <div style="font-size:13px;color:#8b949e;">
+          <strong style="color:#58a6ff;">4.</strong> MCP server initialization<br>
+          <strong style="color:#58a6ff;">5.</strong> Prompt generation (markdown + context)<br>
+          <strong style="color:#58a6ff;">6.</strong> Engine execution (Copilot/Claude/Codex)
+        </div>
+        <div style="font-size:13px;color:#8b949e;">
+          <strong style="color:#58a6ff;">7.</strong> Secret redaction (mask known secrets)<br>
+          <strong style="color:#58a6ff;">8.</strong> Output upload to Actions artifacts<br>
+          <strong style="color:#58a6ff;">9.</strong> Cache persistence for next run
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENTIC AUTHORING -->
+<section>
+  <div class="container">
+    <div class="section-label">AUTHORING</div>
+    <h2 class="section-title">Agentic Authoring &mdash; AI Writing AI Workflows</h2>
+    <p class="section-subtitle">Use AI agents to create agentic workflows themselves. Meta-automation at its finest.</p>
+
+    <div class="grid-2">
+      <div>
+        <h3 style="font-size:16px;margin-bottom:12px;">Create Workflows with Copilot Agent Mode</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Open your repository in VS Code, start Agent Mode, and prompt:</p>
+        <pre><code class="language-markdown">Create a workflow for GitHub Agentic Workflows using
+https://raw.githubusercontent.com/github/gh-aw/main/create.md
+
+The purpose is to triage new issues: label them by type
+and priority, identify duplicates, ask clarifying questions
+when unclear, and assign them to the right team members.</code></pre>
+        <p style="color:#8b949e;font-size:13px;margin-top:12px;">The agent writes the Markdown file, validates the frontmatter, and sets up the workflow.</p>
+      </div>
+      <div>
+        <h3 style="font-size:16px;margin-bottom:12px;">Creating Workflows from GitHub.com</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Open Copilot Chat on github.com and reference the creation template URL in your prompt. The agent will:</p>
+        <div class="card" style="padding:16px;">
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">1</span><span style="color:#8b949e;font-size:13px;">Read the creation template with best practices</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">2</span><span style="color:#8b949e;font-size:13px;">Generate a <code>.md</code> workflow file with proper frontmatter</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">3</span><span style="color:#8b949e;font-size:13px;">Validate the schema and expression safety</span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">4</span><span style="color:#8b949e;font-size:13px;">Compile to <code>.lock.yml</code></span></div>
+          <div style="display:flex;align-items:flex-start;gap:12px;"><span class="step-num" style="width:24px;height:24px;font-size:11px;">5</span><span style="color:#8b949e;font-size:13px;">Commit and push to the repository</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;margin-top:32px;margin-bottom:12px;">The Six Core Primitives of Agentic Development</h3>
+    <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Agentic workflows exist within a larger ecosystem of primitives:</p>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Layer</th><th>Primitive</th><th>Purpose</th><th>Analogy</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Behaviour</strong></td><td>Custom Instructions</td><td>Always-on standards and conventions</td><td>Employee handbook</td></tr>
+          <tr><td><strong>Task Invocation</strong></td><td>Prompt Files</td><td>Named, on-demand repeatable tasks</td><td>Playbook page</td></tr>
+          <tr><td><strong>Persona &amp; Tools</strong></td><td>Custom Agents</td><td>Specialist role with scoped tool access</td><td>Dedicated team member</td></tr>
+          <tr><td><strong>Workflow Packaging</strong></td><td>Agent Skills</td><td>Reusable multi-step runbooks</td><td>Training manual</td></tr>
+          <tr><td><strong>External Connectivity</strong></td><td>MCP Servers</td><td>Live access to external systems</td><td>API gateway</td></tr>
+          <tr><td><strong>Policy Enforcement</strong></td><td>Hooks</td><td>Deterministic security gates</td><td>Security checkpoint</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:16px;margin-top:32px;margin-bottom:12px;">Repository Structure</h3>
+    <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">After setting up agentic workflows, your <code>.github/</code> directory looks like this:</p>
+    <pre><code class="language-bash">.github/
+├── workflows/
+│   ├── issue-triage.md          # Workflow definition (Markdown)
+│   ├── issue-triage.lock.yml    # Compiled workflow (generated)
+│   ├── daily-status.md          # Another workflow
+│   ├── daily-status.lock.yml    # Its compiled output
+│   └── copilot-setup-steps.yml  # Coding agent setup
+├── copilot-instructions.md      # Custom instructions
+├── agents/
+│   └── agentic-workflows.agent.md  # Dispatcher agent
+├── hooks/
+│   └── security.json            # Copilot hooks
+└── instructions/
+    └── typescript.instructions.md  # Path-specific instructions</code></pre>
+
+    <div class="callout callout-orange" style="margin-top:16px;">
+      <strong>&#x1f4b0; Billing:</strong> Each agentic workflow run consumes approximately <strong>2 Copilot premium requests</strong> (1 for the agentic execution + 1 for the guardrail/detection job). Use <code>stop-after</code> dates and <code>schedule</code> triggers wisely for cost control during evaluation.
+    </div>
+
+    <h3 style="font-size:16px;margin-top:24px;margin-bottom:12px;">Prerequisites Checklist</h3>
+    <div class="grid-3">
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#58a6ff;margin-bottom:8px;">&#x1f4bb; System</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;">&#x2022; OS: Linux, macOS, or Windows + WSL</li>
+          <li style="margin-bottom:4px;">&#x2022; GitHub CLI: v2.0.0 or later</li>
+          <li>&#x2022; Git: any recent version</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#3fb950;margin-bottom:8px;">&#x1f3e2; GitHub</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;">&#x2022; Repository with write access</li>
+          <li style="margin-bottom:4px;">&#x2022; GitHub Actions enabled</li>
+          <li>&#x2022; Copilot Pro, Pro+, Business, or Enterprise</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:16px;">
+        <h4 style="font-size:14px;color:#bc8cff;margin-bottom:8px;">&#x1f916; AI Engine</h4>
+        <ul style="list-style:none;font-size:13px;color:#8b949e;">
+          <li style="margin-bottom:4px;">&#x2022; Copilot: <code>COPILOT_GITHUB_TOKEN</code> (default)</li>
+          <li style="margin-bottom:4px;">&#x2022; Claude: <code>ANTHROPIC_API_KEY</code></li>
+          <li>&#x2022; Codex: <code>OPENAI_API_KEY</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section>
+  <div class="container">
+    <div class="section-label">RESOURCES</div>
+    <h2 class="section-title">Links &amp; Resources</h2>
+    <p class="section-subtitle">Official documentation, blog posts, repositories, and community resources.</p>
+    <div class="grid-3">
+      <a href="https://github.blog/ai-and-ml/generative-ai/continuous-ai-in-practice-what-developers-can-automate-today-with-agentic-ci/" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x1f4d6; Continuous AI in Practice</h4>
+        <p style="color:#8b949e;font-size:13px;">GitHub Blog &mdash; The foundational blog post on Continuous AI philosophy and the six pillars.</p>
+      </a>
+      <a href="https://github.blog/ai-and-ml/automate-repository-tasks-with-github-agentic-workflows/" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x1f680; Automate Repository Tasks</h4>
+        <p style="color:#8b949e;font-size:13px;">GitHub Blog &mdash; The announcement post introducing GitHub Agentic Workflows.</p>
+      </a>
+      <a href="https://github.blog/ai-and-ml/generative-ai/under-the-hood-security-architecture-of-github-agentic-workflows/" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x1f512; Security Architecture</h4>
+        <p style="color:#8b949e;font-size:13px;">GitHub Blog &mdash; Deep dive into the three-layer security model and threat detection.</p>
+      </a>
+      <a href="https://github.blog/ai-and-ml/github-copilot/60-million-copilot-code-reviews-and-counting/" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x1f4ca; 60M Code Reviews</h4>
+        <p style="color:#8b949e;font-size:13px;">GitHub Blog &mdash; Metrics and impact of Copilot's agentic code review architecture.</p>
+      </a>
+      <a href="https://githubnext.com/projects/agentic-workflows/" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x1f52d; GitHub Next Project Page</h4>
+        <p style="color:#8b949e;font-size:13px;">GitHub Next &mdash; The research project page with vision and demos.</p>
+      </a>
+      <a href="https://github.com/githubnext/agentics" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x1f4e6; githubnext/agentics</h4>
+        <p style="color:#8b949e;font-size:13px;">Official sample pack &mdash; 40+ production-ready workflow templates.</p>
+      </a>
+      <a href="https://github.com/github/gh-aw" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x2699;&#xfe0f; github/gh-aw</h4>
+        <p style="color:#8b949e;font-size:13px;">The CLI &mdash; Open source tool for compiling and managing agentic workflows.</p>
+      </a>
+      <a href="https://github.com/githubnext/awesome-continuous-ai" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x2b50; awesome-continuous-ai</h4>
+        <p style="color:#8b949e;font-size:13px;">Curated list &mdash; Community resources, guides, and examples.</p>
+      </a>
+      <a href="https://docs.github.com/en/copilot/concepts/coding-agent/coding-agent" class="card" style="text-decoration:none;color:inherit;">
+        <h4 style="font-size:14px;margin-bottom:8px;">&#x1f4da; GitHub Docs: Coding Agent</h4>
+        <p style="color:#8b949e;font-size:13px;">Official documentation on the Copilot Coding Agent.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="border-top:1px solid #30363d;padding:32px 24px;text-align:center;color:#8b949e;font-size:14px;margin-top:64px;">
+  <p>Built with &#x1f6e1;&#xfe0f; by <a href="https://htek.dev" style="color:#58a6ff;text-decoration:none;">htek.dev</a> | Powered by GitHub Pages</p>
+  <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
+</footer>
+
+<!-- Filter Script -->
+<script>
+function filterScenarios(category) {
+  document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  event.target.classList.add('active');
+  document.querySelectorAll('.scenario-card').forEach(function(card) {
+    if (category === 'all' || card.dataset.category === category) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+}
+</script>
+
+<!-- Highlight.js Init -->
+<script>
+document.querySelectorAll('pre code').forEach(function(el) {
+  if (!el.querySelector('span[style]')) { hljs.highlightElement(el); }
+});
+</script>
+
+</body>
+</html>

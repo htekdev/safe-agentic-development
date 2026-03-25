@@ -150,25 +150,10 @@
       gap: 20px;
     }
 
+    pre code.hljs { background: #161b22; padding: 16px; border-radius: 8px; }
+    .hljs { background: #161b22; }
+
     /* Code blocks */
-    .code-block {
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 20px;
-      overflow-x: auto;
-      font-size: 13px;
-      line-height: 1.7;
-      color: #e6edf3;
-      margin: 16px 0;
-    }
-    .code-block .comment { color: #8b949e; }
-    .code-block .keyword { color: #ff7b72; }
-    .code-block .string { color: #a5d6ff; }
-    .code-block .fn { color: #d2a8ff; }
-    .code-block .flag { color: #79c0ff; }
-    .code-block .prompt { color: #3fb950; }
-    .code-block .file { color: #d29922; }
 
     /* Inline code */
     .inline-code {
@@ -455,8 +440,8 @@
       nav div:last-child { font-size: 13px; gap: 12px; }
     }
   </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 </head>
 <body>
 
@@ -472,6 +457,7 @@
       <a href="mcp.html" style="color:#8b949e;text-decoration:none;">MCP</a>
       <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
       <a href="planning.html" style="color:#3fb950;text-decoration:none;">Planning</a>
+      <a href="agentic-workflows.html" style="color:#8b949e;text-decoration:none;">Agentic Workflows</a>
       <a href="videos.html" style="color:#8b949e;text-decoration:none;">Videos</a>
       <a href="resources.html" style="color:#8b949e;text-decoration:none;">Resources</a>
     </div>
@@ -630,13 +616,15 @@
           <li><strong>Iterate</strong> — <span>Refine through follow-up prompts until the plan is right</span></li>
           <li><strong>Execute</strong> — <span>Choose "Start Implementation" or "Open in Editor"</span></li>
         </ol>
-        <div class="code-block" style="margin-top:16px;">
-          <span class="comment">// In VS Code Chat (Plan agent selected)</span><br>
-          <span class="prompt">/plan</span> <span class="string">Implement user authentication with OAuth2 and JWT.</span><br>
-          <span class="string">Use our existing Express middleware in src/middleware/auth.ts.</span><br>
-          <span class="string">Follow the repository pattern in src/repositories/.</span><br>
-          <span class="string">Include integration tests with our Vitest setup.</span>
-        </div>
+        <pre style="margin-top:16px"><code class="language-plaintext">// In VS Code Chat (Plan agent selected)
+
+/plan Implement user authentication with OAuth2 and JWT.
+
+Use our existing Express middleware in src/middleware/auth.ts.
+
+Follow the repository pattern in src/repositories/.
+
+Include integration tests with our Vitest setup.</code></pre>
         <p style="margin-top:12px;font-size:13px;color:#8b949e;">
           <strong style="color:#e6edf3;">Settings:</strong>
           <span class="inline-code">chat.planAgent.defaultModel</span> — select planning model<br>
@@ -655,16 +643,21 @@
           <li><strong>Approve</strong> — <span>Confirm the plan and let the agent implement step-by-step</span></li>
           <li><strong>Verify</strong> — <span>Agent runs tests, lint, and build automatically</span></li>
         </ol>
-        <div class="code-block" style="margin-top:16px;">
-          <span class="comment"># One-off plan command</span><br>
-          <span class="prompt">$</span> <span class="keyword">copilot</span><br>
-          <span class="prompt">&gt;</span> <span class="flag">/plan</span> <span class="string">Add OAuth2 authentication with Google and GitHub providers</span><br><br>
-          <span class="comment"># Or toggle plan mode for the session</span><br>
-          <span class="prompt">&gt;</span> <span class="flag">Shift+Tab</span> <span class="comment"># Toggles plan mode on/off</span><br><br>
-          <span class="comment"># View and manage your plan</span><br>
-          <span class="prompt">&gt;</span> <span class="flag">/session plan</span> <span class="comment"># View current plan</span><br>
-          <span class="prompt">&gt;</span> <span class="flag">Ctrl+Y</span> <span class="comment">      # Edit in external editor</span>
-        </div>
+        <pre style="margin-top:16px"><code class="language-bash"># One-off plan command
+
+$ copilot
+
+&gt; /plan Add OAuth2 authentication with Google and GitHub providers
+
+# Or toggle plan mode for the session
+
+&gt; Shift+Tab # Toggles plan mode on/off
+
+# View and manage your plan
+
+&gt; /session plan # View current plan
+
+&gt; Ctrl+Y       # Edit in external editor</code></pre>
       </div>
     </div>
 
@@ -736,22 +729,20 @@
           <div class="sdd-file" style="color:#bc8cff;">/specify → spec.md</div>
           <h4>What &amp; Why</h4>
           <p>Define the problem, user stories, acceptance criteria, and scope — <strong style="color:#e6edf3;">without</strong> technical decisions. Focus on motivations, stakeholders, and success criteria.</p>
-          <div class="code-block" style="margin-top:12px;font-size:12px;">
-<span class="comment"># spec.md — User Profile Editing</span>
+          <pre style="margin-top:12px;font-size:12px"><code class="language-markdown"># spec.md — User Profile Editing
 
-<span class="keyword">## Problem Statement</span>
+## Problem Statement
 Users cannot update their profile information after account creation.
 
-<span class="keyword">## User Stories</span>
+## User Stories
 - As a user, I can update my display name and bio
 - As a user, I can upload a new avatar (max 2MB, JPEG/PNG)
 - As a user, I can change my email with verification
 
-<span class="keyword">## Acceptance Criteria</span>
+## Acceptance Criteria
 - [ ] Profile changes save within 2 seconds
 - [ ] Invalid uploads show clear error messages
-- [ ] Email changes require clicking a verification link
-          </div>
+- [ ] Email changes require clicking a verification link</code></pre>
         </div>
       </div>
 
@@ -765,23 +756,21 @@ Users cannot update their profile information after account creation.
           <div class="sdd-file" style="color:#58a6ff;">/plan → plan.md</div>
           <h4>How</h4>
           <p>Define the technical architecture — frameworks, libraries, data models, API contracts, and integration points. Grounded by the constitution.</p>
-          <div class="code-block" style="margin-top:12px;font-size:12px;">
-<span class="comment"># plan.md — User Profile Editing</span>
+          <pre style="margin-top:12px;font-size:12px"><code class="language-markdown"># plan.md — User Profile Editing
 
-<span class="keyword">## Architecture</span>
+## Architecture
 - Express.js REST API with existing JWT auth middleware
 - Multer for file uploads, Sharp for image processing
 - PostgreSQL with existing Knex.js migrations
 
-<span class="keyword">## API Design</span>
+## API Design
 - PATCH /api/users/:id — Update name, bio
 - POST /api/users/:id/avatar — Upload avatar
 - POST /api/users/:id/email — Request email change
 
-<span class="keyword">## Data Model Changes</span>
+## Data Model Changes
 - Add avatar_url (VARCHAR 512) to users table
-- Create email_verifications table
-          </div>
+- Create email_verifications table</code></pre>
         </div>
       </div>
 
@@ -795,26 +784,24 @@ Users cannot update their profile information after account creation.
           <div class="sdd-file" style="color:#3fb950;">/tasks → tasks.md</div>
           <h4>Executable Work</h4>
           <p>Break spec + plan into small, reviewable, dependency-ordered tasks. Each task is implementable and testable in isolation — like TDD for your AI agent.</p>
-          <div class="code-block" style="margin-top:12px;font-size:12px;">
-<span class="comment"># tasks.md — User Profile Editing</span>
+          <pre style="margin-top:12px;font-size:12px"><code class="language-markdown"># tasks.md — User Profile Editing
 
-<span class="keyword">## Phase 1: Data Layer</span>
+## Phase 1: Data Layer
 - [ ] Add avatar_url column migration
 - [ ] Create email_verifications table migration
 - [ ] Update UserRepository with profile update methods
 - [ ] Write unit tests for UserRepository changes
 
-<span class="keyword">## Phase 2: API Layer</span>
+## Phase 2: API Layer
 - [ ] Create PATCH /api/users/:id endpoint
 - [ ] Create POST /api/users/:id/avatar endpoint
 - [ ] Add Multer middleware for file uploads
 - [ ] Write integration tests for new endpoints
 
-<span class="keyword">## Phase 3: Email Verification</span>
+## Phase 3: Email Verification
 - [ ] Create email verification service
 - [ ] Add POST /api/users/:id/email endpoint
-- [ ] Write tests for email change flow
-          </div>
+- [ ] Write tests for email change flow</code></pre>
         </div>
       </div>
 
@@ -847,11 +834,11 @@ Users cannot update their profile information after account creation.
       <div>
         <div class="card" style="margin-bottom:20px;">
           <h3>Install Spec Kit</h3>
-          <div class="code-block" style="margin-top:12px;">
-            <span class="comment"># Install and initialize Spec Kit</span><br>
-            <span class="prompt">$</span> <span class="keyword">uvx</span> <span class="flag">--from</span> <span class="string">git+https://github.com/github/spec-kit.git</span> \<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;specify init <span class="file">my-project</span>
-          </div>
+          <pre style="margin-top:12px"><code class="language-bash"># Install and initialize Spec Kit
+
+$ uvx --from git+https://github.com/github/spec-kit.git \
+
+    specify init my-project</code></pre>
           <p style="margin-top:12px;">Creates the full SDD scaffolding with templates, prompt files, and helper scripts — ready to use in 30 seconds.</p>
         </div>
         <div class="card">
@@ -917,48 +904,46 @@ Users cannot update their profile information after account creation.
           <span style="color:#bc8cff;font-weight:600;font-size:14px;">📄 plan.md</span>
           <span style="color:#8b949e;font-size:12px;margin-left:8px;">— Generated by /plan</span>
         </div>
-        <div class="code-block" style="border:none;border-radius:0;margin:0;">
-<span class="keyword"># Implementation Plan: User Profile Editing</span>
+        <pre style="border:none;border-radius:0;margin:0"><code class="language-markdown"># Implementation Plan: User Profile Editing
 
-<span class="keyword">## Overview</span>
+## Overview
 Add profile editing capabilities to the Express.js
 API, including name/bio updates, avatar upload, and
 email change with verification.
 
-<span class="keyword">## Constraints</span>
+## Constraints
 - Use existing JWT auth middleware (src/middleware/auth.ts)
 - Follow repository pattern (src/repositories/)
 - Avatar max size: 2MB, JPEG/PNG only
 - All changes logged to activity audit table
 
-<span class="keyword">## Implementation Steps</span>
+## Implementation Steps
 
-<span class="keyword">### Phase 1: Data Layer</span>
+### Phase 1: Data Layer
 - [ ] Create migration: add avatar_url to users
 - [ ] Create migration: email_verifications table
 - [ ] Update UserRepository with CRUD methods
 - [ ] Write unit tests for repository changes
 
-<span class="keyword">### Phase 2: API Endpoints</span>
+### Phase 2: API Endpoints
 - [ ] PATCH /api/users/:id — update name, bio
 - [ ] POST /api/users/:id/avatar — upload avatar
 - [ ] POST /api/users/:id/email — request change
 - [ ] Add input validation middleware
 - [ ] Write integration tests
 
-<span class="keyword">### Phase 3: Email Verification</span>
+### Phase 3: Email Verification
 - [ ] Implement verification token generation
 - [ ] Create GET /api/verify-email/:token
 - [ ] Send verification emails via SendGrid
 - [ ] Write end-to-end tests
 
-<span class="keyword">## Verification</span>
+## Verification
 - [ ] All tests pass (npm test)
 - [ ] Lint passes (npm run lint)
 - [ ] Build succeeds (npm run build)
 - [ ] Manual test: update profile via API
-- [ ] Manual test: avatar upload flow
-        </div>
+- [ ] Manual test: avatar upload flow</code></pre>
       </div>
 
       <div>
@@ -1193,22 +1178,33 @@ email change with verification.
     <div class="card" style="margin-bottom:32px;">
       <h3>High-Quality Planning Prompt</h3>
       <p style="margin-top:8px;">Detailed first prompts produce better plans. Include context, constraints, and existing patterns.</p>
-      <div class="code-block" style="margin-top:16px;">
-        <span class="prompt">/plan</span> <span class="string">Implement user profile editing for our Express.js API.</span><br><br>
-        <span class="keyword">Requirements:</span><br>
-        <span class="string">- Authenticated users can update name, bio, and avatar</span><br>
-        <span class="string">- Avatar upload limited to 2MB, JPEG/PNG only</span><br>
-        <span class="string">- Email changes require verification</span><br>
-        <span class="string">- All changes audited in activity log</span><br><br>
-        <span class="keyword">Existing patterns:</span><br>
-        <span class="string">- Use existing JWT auth middleware in src/middleware/auth.ts</span><br>
-        <span class="string">- Follow the repository pattern in src/repositories/</span><br>
-        <span class="string">- Include integration tests using our Vitest setup</span><br><br>
-        <span class="keyword">Constraints:</span><br>
-        <span class="string">- PostgreSQL with Knex.js migrations</span><br>
-        <span class="string">- Must work with existing CI pipeline (lint + test + build)</span><br>
-        <span class="string">- Follow REST API conventions in existing endpoints</span>
-      </div>
+      <pre style="margin-top:16px"><code class="language-plaintext">/plan Implement user profile editing for our Express.js API.
+
+Requirements:
+
+- Authenticated users can update name, bio, and avatar
+
+- Avatar upload limited to 2MB, JPEG/PNG only
+
+- Email changes require verification
+
+- All changes audited in activity log
+
+Existing patterns:
+
+- Use existing JWT auth middleware in src/middleware/auth.ts
+
+- Follow the repository pattern in src/repositories/
+
+- Include integration tests using our Vitest setup
+
+Constraints:
+
+- PostgreSQL with Knex.js migrations
+
+- Must work with existing CI pipeline (lint + test + build)
+
+- Follow REST API conventions in existing endpoints</code></pre>
     </div>
 
     <!-- Best scenarios -->
@@ -1245,57 +1241,51 @@ email change with verification.
       <!-- VS Code -->
       <div class="card" style="border-color:rgba(188,140,255,0.3);">
         <h3 style="color:#bc8cff;">VS Code</h3>
-        <div class="code-block" style="margin-top:12px;font-size:12px;">
-<span class="comment"># 1. Open Copilot Chat</span>
-<span class="flag">Ctrl+Alt+I</span>
+        <pre style="margin-top:12px;font-size:12px"><code class="language-bash"># 1. Open Copilot Chat
+Ctrl+Alt+I
 
-<span class="comment"># 2. Select Plan agent from dropdown</span>
+# 2. Select Plan agent from dropdown
 
-<span class="comment"># 3. Describe your task</span>
-<span class="prompt">/plan</span> <span class="string">Add user registration
-with email verification</span>
+# 3. Describe your task
+/plan Add user registration
+with email verification
 
-<span class="comment"># 4. Review, refine, execute</span>
-        </div>
+# 4. Review, refine, execute</code></pre>
       </div>
 
       <!-- CLI -->
       <div class="card" style="border-color:rgba(63,185,80,0.3);">
         <h3 style="color:#3fb950;">Copilot CLI</h3>
-        <div class="code-block" style="margin-top:12px;font-size:12px;">
-<span class="comment"># 1. Open Copilot CLI</span>
-<span class="prompt">$</span> <span class="keyword">copilot</span>
+        <pre style="margin-top:12px;font-size:12px"><code class="language-bash"># 1. Open Copilot CLI
+$ copilot
 
-<span class="comment"># 2. Enter plan mode</span>
-<span class="prompt">&gt;</span> <span class="flag">/plan</span> <span class="string">Add user registration
-with email verification</span>
+# 2. Enter plan mode
+&gt; /plan Add user registration
+with email verification
 
-<span class="comment"># 3. Review the generated plan</span>
-<span class="prompt">&gt;</span> <span class="flag">/session plan</span>
+# 3. Review the generated plan
+&gt; /session plan
 
-<span class="comment"># 4. Edit in your editor</span>
-<span class="prompt">&gt;</span> <span class="flag">Ctrl+Y</span>
-        </div>
+# 4. Edit in your editor
+&gt; Ctrl+Y</code></pre>
       </div>
 
       <!-- Spec Kit -->
       <div class="card" style="border-color:rgba(210,153,34,0.3);">
         <h3 style="color:#d29922;">Spec Kit (Full SDD)</h3>
-        <div class="code-block" style="margin-top:12px;font-size:12px;">
-<span class="comment"># 1. Initialize Spec Kit</span>
-<span class="prompt">$</span> <span class="keyword">uvx</span> <span class="flag">--from</span> \
-  <span class="string">git+https://github.com/</span>
-  <span class="string">github/spec-kit.git</span> \
-  specify init <span class="file">my-app</span>
+        <pre style="margin-top:12px;font-size:12px"><code class="language-bash"># 1. Initialize Spec Kit
+$ uvx --from \
+  git+https://github.com/
+  github/spec-kit.git \
+  specify init my-app
 
-<span class="comment"># 2. Define your spec</span>
-<span class="prompt">&gt;</span> <span class="flag">/specify</span> <span class="string">User registration
-with email verification</span>
+# 2. Define your spec
+&gt; /specify User registration
+with email verification
 
-<span class="comment"># 3. Generate plan + tasks</span>
-<span class="prompt">&gt;</span> <span class="flag">/plan</span>
-<span class="prompt">&gt;</span> <span class="flag">/tasks</span>
-        </div>
+# 3. Generate plan + tasks
+&gt; /plan
+&gt; /tasks</code></pre>
       </div>
     </div>
 
@@ -1373,12 +1363,6 @@ with email verification</span>
   <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
 </footer>
 
-<script>
-document.querySelectorAll('pre code').forEach(function(el) {
-  if (!el.querySelector('span[style]')) {
-    hljs.highlightElement(el);
-  }
-});
-</script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>
