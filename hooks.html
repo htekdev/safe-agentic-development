@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Hooks &amp; Extensions — Safe Agentic Development</title>
-  <meta name="description" content="Three systems for governing AI agent behavior: Shell Hooks, CLI Extensions, and Hookflows. Programmatic guardrails for GitHub Copilot.">
+  <meta name="description" content="Four systems for governing AI agent behavior: Shell Hooks, CLI Extensions, Hookflows, and VS Code Hooks. Programmatic guardrails for GitHub Copilot.">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -284,21 +284,22 @@
       <div class="animate">
         <span style="font-size:64px;display:block;margin-bottom:16px;">🪝</span>
         <h1 class="hero-title" style="font-size:48px;font-weight:800;letter-spacing:-1px;margin-bottom:16px;background:linear-gradient(135deg,#e6edf3 0%,#3fb950 50%,#58a6ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Agent Hooks &amp; Extensions</h1>
-        <p style="font-size:20px;color:#8b949e;max-width:720px;margin:0 auto 24px;">From advisory guidance to deterministic enforcement — three systems for governing agent behavior with code.</p>
+        <p style="font-size:20px;color:#8b949e;max-width:720px;margin:0 auto 24px;">From advisory guidance to deterministic enforcement — four systems for governing agent behavior with code.</p>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
           <span class="badge badge-green">Shell Hooks</span>
           <span class="badge badge-blue">CLI Extensions</span>
           <span class="badge badge-purple">Hookflows</span>
+          <span class="badge badge-orange">VS Code Hooks</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Section 1: Three Systems Overview -->
+  <!-- Section 1: Four Systems Overview -->
   <section class="section">
     <div class="container">
-      <h2 class="section-title">Three Systems, Not One</h2>
-      <p class="section-subtitle">GitHub Copilot has three distinct but complementary mechanisms for extending and governing agent behavior.</p>
+      <h2 class="section-title">Four Systems, Not One</h2>
+      <p class="section-subtitle">GitHub Copilot has four distinct but complementary mechanisms for extending and governing agent behavior.</p>
 
       <div class="grid-3">
         <div class="card animate animate-delay-1">
@@ -361,6 +362,26 @@
             <span class="badge badge-purple" style="font-size:11px;">CLI ✓ (via gh-hookflow)</span>
           </div>
           <div class="highlight-box" style="margin-bottom:0;">Best for: Teams wanting Actions-style declarative governance.</div>
+        </div>
+
+        <div class="card animate animate-delay-3">
+          <span class="icon-large">🖥️</span>
+          <h3 style="font-size:20px;font-weight:700;margin-bottom:4px;">VS Code Hooks</h3>
+          <code style="color:#8b949e;font-size:13px;display:block;margin-bottom:12px;">.github/hooks/ + VS Code Extension API</code>
+          <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">VS Code extension API for Copilot — register custom tools, intercept agent actions, and build IDE-integrated guardrails.</p>
+          <div style="margin-bottom:12px;">
+            <span style="color:#e6edf3;font-size:13px;font-weight:600;">Format:</span>
+            <span style="color:#c9d1d9;font-size:13px;"> JSON config + TypeScript extensions</span>
+          </div>
+          <div style="margin-bottom:12px;">
+            <span style="color:#e6edf3;font-size:13px;font-weight:600;">Power:</span>
+            <span style="color:#c9d1d9;font-size:13px;"> Custom tools, chat participants, full IDE access</span>
+          </div>
+          <div style="margin-bottom:12px;">
+            <span style="color:#e6edf3;font-size:13px;font-weight:600;">Support:</span>
+            <span class="badge badge-orange" style="font-size:11px;">VS Code ✓</span>
+          </div>
+          <div class="highlight-box" style="margin-bottom:0;">Best for: IDE-integrated governance, custom tool UX, extension marketplace distribution.</div>
         </div>
       </div>
     </div>
@@ -1009,6 +1030,261 @@ steps:
     </div>
   </section>
 
+  <!-- Section 5b: VS Code Hooks -->
+  <section class="section" id="vscode-hooks" style="background:rgba(210,153,34,0.03);">
+    <div class="container">
+      <h2 class="section-title">🖥️ VS Code Hooks — <code style="font-size:20px;">IDE-Native Governance</code></h2>
+      <p class="section-subtitle">VS Code's extension API provides three surfaces for hooking into Copilot: Agent Hooks (shell commands at lifecycle points), the Language Model Tool API (custom tools for agent mode), and the Chat Participant API (domain-expert assistants).</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="font-size:18px;font-weight:600;margin-bottom:12px;">What Are VS Code Hooks?</h3>
+          <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">VS Code hooks are <strong style="color:#e6edf3;">shell commands</strong> that execute at key lifecycle points during agent sessions — the same concept as CLI shell hooks, but running inside VS Code's agent mode.</p>
+          <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">They use the <strong style="color:#e6edf3;">same hook format</strong> as Claude Code and Copilot CLI for compatibility. Configuration lives in <code>.github/hooks/</code> or is defined inline in <code>.agent.md</code> frontmatter.</p>
+          <div class="highlight-box" style="margin-bottom:0;">
+            <strong>Key distinction:</strong> VS Code hooks are <em>shell command hooks</em> — they spawn an external process and communicate via JSON on stdin/stdout. The VS Code Extension API (tools, participants) is a separate, more powerful surface.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:18px;font-weight:600;margin-bottom:12px;">Eight Lifecycle Events</h3>
+          <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">VS Code supports <strong style="color:#e6edf3;">eight hook events</strong> — a superset of the CLI's events, with extra stages for context compaction and subagent tracking.</p>
+          <div style="overflow-x:auto;">
+            <table style="font-size:13px;">
+              <thead><tr><th>Event</th><th>When It Fires</th></tr></thead>
+              <tbody>
+                <tr><td><code>SessionStart</code></td><td>First prompt of a new session</td></tr>
+                <tr><td><code>UserPromptSubmit</code></td><td>User submits a prompt</td></tr>
+                <tr><td><code style="color:#f85149;font-weight:600;">PreToolUse</code></td><td>Before agent invokes any tool</td></tr>
+                <tr><td><code>PostToolUse</code></td><td>After tool completes</td></tr>
+                <tr><td><code style="color:#d29922;">PreCompact</code></td><td>Before context is compacted <span class="badge badge-orange" style="font-size:10px;">VS Code only</span></td></tr>
+                <tr><td><code style="color:#d29922;">SubagentStart</code></td><td>Subagent is spawned <span class="badge badge-orange" style="font-size:10px;">VS Code only</span></td></tr>
+                <tr><td><code style="color:#d29922;">SubagentStop</code></td><td>Subagent completes <span class="badge badge-orange" style="font-size:10px;">VS Code only</span></td></tr>
+                <tr><td><code>Stop</code></td><td>Agent session ends</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:12px;">Hook Configuration</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Hooks are configured via JSON files in <code>.github/hooks/</code>. VS Code also supports UI-based configuration via <code>/hooks</code> chat command and AI-assisted hook generation via <code>/create-hook</code>.</p>
+        <div class="grid-2" style="gap:16px;">
+          <div>
+            <span style="color:#d29922;font-size:13px;font-weight:600;">📁 Hook file (<code>.github/hooks/security.json</code>):</span>
+            <pre><code>{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "node scripts/validate-tool.js",
+        "windows": "node scripts\\validate-tool.js",
+        "timeout": 15
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "npx prettier --write \"$TOOL_INPUT_FILE_PATH\""
+      }
+    ]
+  }
+}</code></pre>
+          </div>
+          <div>
+            <span style="color:#d29922;font-size:13px;font-weight:600;">⚙️ Settings (<code>settings.json</code>):</span>
+            <pre><code>// Control which hook files are loaded
+"chat.hookFilesLocations": {
+  ".github/hooks": true,
+  "custom/hooks": true
+},
+
+// Enable hooks in .agent.md frontmatter
+"chat.useCustomAgentHooks": true,
+
+// Auto-approve tool edit operations
+"chat.tools.edits.autoApprove": false</code></pre>
+            <div style="margin-top:12px;">
+              <span style="color:#d29922;font-size:13px;font-weight:600;">🤖 Agent-scoped hooks (<code>.agent.md</code>):</span>
+              <pre><code>---
+name: "Strict Formatter"
+hooks:
+  PostToolUse:
+    - type: command
+      command: "./scripts/format.sh"
+---
+You are a code editing agent.</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:12px;">Hook I/O Protocol — Stdin/Stdout JSON</h3>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Hooks receive JSON on stdin and return JSON on stdout. Exit codes control behavior: <code>0</code> = success, <code>2</code> = blocking error, other = warning.</p>
+        <div class="grid-2" style="gap:16px;">
+          <div>
+            <span style="color:#3fb950;font-size:13px;font-weight:600;">📥 PreToolUse Input (stdin):</span>
+            <pre><code>{
+  "hookEventName": "PreToolUse",
+  "tool_name": "editFiles",
+  "tool_input": { "files": ["src/main.ts"] },
+  "cwd": "/path/to/workspace",
+  "sessionId": "session-123"
+}</code></pre>
+          </div>
+          <div>
+            <span style="color:#f85149;font-size:13px;font-weight:600;">📤 PreToolUse Output (stdout) — Deny:</span>
+            <pre><code>{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "Blocked by policy",
+    "additionalContext": "Read-only access"
+  }
+}</code></pre>
+          </div>
+        </div>
+        <div class="highlight-box warning" style="margin-top:12px;margin-bottom:0;">
+          <strong>Permission priority (most restrictive wins):</strong> Exit code <code>2</code> &gt; <code>continue: false</code> &gt; <code>permissionDecision: "deny"</code> &gt; <code>"ask"</code> &gt; <code>"allow"</code>
+        </div>
+      </div>
+
+      <h3 style="font-size:22px;font-weight:700;margin:32px 0 24px;">VS Code Extension API — Beyond Shell Hooks</h3>
+
+      <!-- Language Model Tool API -->
+      <div class="card" style="margin-bottom:24px;border-left:3px solid #d29922;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <span style="font-size:28px;">🔧</span>
+          <div>
+            <h4 style="font-size:18px;font-weight:700;">Language Model Tool API</h4>
+            <p style="color:#8b949e;font-size:13px;">Register custom tools that agent mode can automatically invoke. The LLM decides when to call them based on the tool description.</p>
+          </div>
+        </div>
+        <p style="color:#8b949e;font-size:14px;margin-bottom:16px;">Define tools in <code>package.json</code>, register with <code>vscode.lm.registerTool()</code>, and implement the <code>LanguageModelTool&lt;T&gt;</code> interface. Tools include a confirmation flow for user approval.</p>
+        <pre><code><span style="color:#8b949e;">// Define in package.json → contributes.languageModelTools</span>
+<span style="color:#ff7b72;">import</span> <span style="color:#c9d1d9;">* </span><span style="color:#ff7b72;">as</span> <span style="color:#c9d1d9;">vscode </span><span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">'vscode'</span>;
+
+<span style="color:#ff7b72;">interface</span> <span style="color:#ffa657;">ISecurityScanParams</span> {
+  <span style="color:#c9d1d9;">filePath</span>: <span style="color:#79c0ff;">string</span>;
+}
+
+<span style="color:#ff7b72;">class</span> <span style="color:#ffa657;">SecurityScanTool</span> <span style="color:#ff7b72;">implements</span> <span style="color:#ffa657;">vscode.LanguageModelTool</span>&lt;<span style="color:#ffa657;">ISecurityScanParams</span>&gt; {
+
+  <span style="color:#ff7b72;">async</span> <span style="color:#d2a8ff;">prepareInvocation</span>(
+    <span style="color:#c9d1d9;">options</span>: <span style="color:#ffa657;">vscode.LanguageModelToolInvocationPrepareOptions</span>&lt;<span style="color:#ffa657;">ISecurityScanParams</span>&gt;,
+    <span style="color:#c9d1d9;">_token</span>: <span style="color:#ffa657;">vscode.CancellationToken</span>
+  ) {
+    <span style="color:#ff7b72;">return</span> {
+      <span style="color:#c9d1d9;">invocationMessage</span>: <span style="color:#a5d6ff;">`Scanning ${options.input.filePath} for vulnerabilities`</span>,
+      <span style="color:#c9d1d9;">confirmationMessages</span>: {
+        <span style="color:#c9d1d9;">title</span>: <span style="color:#a5d6ff;">'Run security scan'</span>,
+        <span style="color:#c9d1d9;">message</span>: <span style="color:#ff7b72;">new</span> <span style="color:#ffa657;">vscode.MarkdownString</span>(
+          <span style="color:#a5d6ff;">`Scan \`${options.input.filePath}\` for security issues?`</span>
+        ),
+      },
+    };
+  }
+
+  <span style="color:#ff7b72;">async</span> <span style="color:#d2a8ff;">invoke</span>(
+    <span style="color:#c9d1d9;">options</span>: <span style="color:#ffa657;">vscode.LanguageModelToolInvocationOptions</span>&lt;<span style="color:#ffa657;">ISecurityScanParams</span>&gt;,
+    <span style="color:#c9d1d9;">_token</span>: <span style="color:#ffa657;">vscode.CancellationToken</span>
+  ) {
+    <span style="color:#8b949e;">// Run actual security analysis here</span>
+    <span style="color:#ff7b72;">const</span> <span style="color:#c9d1d9;">results</span> = <span style="color:#ff7b72;">await</span> <span style="color:#d2a8ff;">scanFile</span>(<span style="color:#c9d1d9;">options.input.filePath</span>);
+    <span style="color:#ff7b72;">return new</span> <span style="color:#ffa657;">vscode.LanguageModelToolResult</span>([
+      <span style="color:#ff7b72;">new</span> <span style="color:#ffa657;">vscode.LanguageModelTextPart</span>(<span style="color:#c9d1d9;">results</span>)
+    ]);
+  }
+}
+
+<span style="color:#8b949e;">// Register in extension activate()</span>
+<span style="color:#c9d1d9;">context.subscriptions.</span><span style="color:#d2a8ff;">push</span>(
+  <span style="color:#c9d1d9;">vscode.lm.</span><span style="color:#d2a8ff;">registerTool</span>(<span style="color:#a5d6ff;">'security_scan'</span>, <span style="color:#ff7b72;">new</span> <span style="color:#ffa657;">SecurityScanTool</span>())
+);</code></pre>
+      </div>
+
+      <!-- Chat Participant API -->
+      <div class="card" style="margin-bottom:24px;border-left:3px solid #d29922;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <span style="font-size:28px;">💬</span>
+          <div>
+            <h4 style="font-size:18px;font-weight:700;">Chat Participant API</h4>
+            <p style="color:#8b949e;font-size:13px;">Create <code>@</code>-mentionable domain experts in VS Code Chat. Participants own the conversation and orchestrate tasks themselves.</p>
+          </div>
+        </div>
+        <pre><code><span style="color:#ff7b72;">import</span> <span style="color:#c9d1d9;">* </span><span style="color:#ff7b72;">as</span> <span style="color:#c9d1d9;">vscode </span><span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">'vscode'</span>;
+
+<span style="color:#ff7b72;">export function</span> <span style="color:#d2a8ff;">activate</span>(<span style="color:#c9d1d9;">context</span>: <span style="color:#ffa657;">vscode.ExtensionContext</span>) {
+  <span style="color:#ff7b72;">const</span> <span style="color:#c9d1d9;">reviewer</span> = <span style="color:#c9d1d9;">vscode.chat.</span><span style="color:#d2a8ff;">createChatParticipant</span>(
+    <span style="color:#a5d6ff;">'security.reviewer'</span>,
+    <span style="color:#c9d1d9;">handleRequest</span>
+  );
+  <span style="color:#c9d1d9;">reviewer.iconPath</span> = <span style="color:#c9d1d9;">vscode.Uri.</span><span style="color:#d2a8ff;">joinPath</span>(<span style="color:#c9d1d9;">context.extensionUri</span>, <span style="color:#a5d6ff;">'shield.png'</span>);
+}
+
+<span style="color:#ff7b72;">const</span> <span style="color:#c9d1d9;">handleRequest</span>: <span style="color:#ffa657;">vscode.ChatRequestHandler</span> = <span style="color:#ff7b72;">async</span> (
+  <span style="color:#c9d1d9;">request</span>, <span style="color:#c9d1d9;">context</span>, <span style="color:#c9d1d9;">stream</span>, <span style="color:#c9d1d9;">token</span>
+) =&gt; {
+  <span style="color:#8b949e;">// User typed: @security-reviewer check this file</span>
+  <span style="color:#c9d1d9;">stream.</span><span style="color:#d2a8ff;">markdown</span>(<span style="color:#a5d6ff;">'🔍 Scanning for security issues...\n\n'</span>);
+
+  <span style="color:#8b949e;">// Access VS Code APIs: open files, run diagnostics, etc.</span>
+  <span style="color:#ff7b72;">const</span> <span style="color:#c9d1d9;">editor</span> = <span style="color:#c9d1d9;">vscode.window.activeTextEditor</span>;
+  <span style="color:#ff7b72;">if</span> (<span style="color:#c9d1d9;">editor</span>) {
+    <span style="color:#ff7b72;">const</span> <span style="color:#c9d1d9;">doc</span> = <span style="color:#c9d1d9;">editor.document</span>;
+    <span style="color:#c9d1d9;">stream.</span><span style="color:#d2a8ff;">markdown</span>(<span style="color:#a5d6ff;">`Reviewing \`${doc.fileName}\`...\n`</span>);
+    <span style="color:#8b949e;">// Perform security analysis, stream results back</span>
+  }
+
+  <span style="color:#ff7b72;">return</span> { <span style="color:#c9d1d9;">metadata</span>: { <span style="color:#c9d1d9;">command</span>: <span style="color:#a5d6ff;">'review'</span> } };
+};</code></pre>
+        <div class="highlight-box" style="margin-top:12px;margin-bottom:0;">
+          <strong>Tools vs. Participants:</strong> Tools are <em>called by the LLM</em> automatically during agent mode. Participants <em>own the conversation</em> when a user types <code>@name</code>. Tools for automated governance; participants for interactive review.
+        </div>
+      </div>
+
+      <!-- Tool Approval -->
+      <div class="card" style="border-left:3px solid #d29922;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <span style="font-size:28px;">🔐</span>
+          <div>
+            <h4 style="font-size:18px;font-weight:700;">Tool Approval Flow</h4>
+            <p style="color:#8b949e;font-size:13px;">VS Code provides granular control over which tools run automatically and which require user confirmation.</p>
+          </div>
+        </div>
+        <div class="grid-3" style="gap:12px;">
+          <div style="background:rgba(63,185,80,0.08);border-radius:8px;padding:16px;">
+            <h5 style="color:#3fb950;font-size:14px;margin-bottom:8px;">✅ Auto-Approve</h5>
+            <pre style="font-size:12px;"><code>"chat.tools.autoApprove": {
+  "readFile": true,
+  "listFiles": true
+}</code></pre>
+            <p style="color:#8b949e;font-size:12px;margin-top:8px;">Safe, read-only tools run without prompting.</p>
+          </div>
+          <div style="background:rgba(210,153,34,0.08);border-radius:8px;padding:16px;">
+            <h5 style="color:#d29922;font-size:14px;margin-bottom:8px;">❓ Ask (Default)</h5>
+            <pre style="font-size:12px;"><code>"chat.tools.edits.autoApprove":
+  false</code></pre>
+            <p style="color:#8b949e;font-size:12px;margin-top:8px;">User sees a confirmation dialog before execution.</p>
+          </div>
+          <div style="background:rgba(248,81,73,0.08);border-radius:8px;padding:16px;">
+            <h5 style="color:#f85149;font-size:14px;margin-bottom:8px;">⛔ Deny via Hooks</h5>
+            <pre style="font-size:12px;"><code>exit 2
+<span style="color:#8b949e;"># or return:</span>
+"permissionDecision": "deny"</code></pre>
+            <p style="color:#8b949e;font-size:12px;margin-top:8px;">Hooks can block before the user is even asked.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box warning" style="margin-top:24px;">
+        <strong>⚠️ VS Code hooks vs. CLI hooks:</strong> VS Code shell hooks share the same JSON format as CLI hooks, but they're a <strong>separate system</strong>. CLI Extensions (<code>@github/copilot-sdk</code>) and Hookflows (<code>gh-hookflow</code>) do <strong>not</strong> run inside VS Code. For IDE-native governance, use VS Code hooks + the Extension API.
+      </div>
+    </div>
+  </section>
+
   <!-- Section 6: Permission Decisions -->
   <section class="section" style="background:rgba(88,166,255,0.03);">
     <div class="container">
@@ -1053,7 +1329,7 @@ import { approveAll } from "@github/copilot-sdk";
   <section class="section" id="comparison">
     <div class="container">
       <h2 class="section-title">Comparison Matrix</h2>
-      <p class="section-subtitle">A comprehensive comparison of all three governance systems.</p>
+      <p class="section-subtitle">A comprehensive comparison of all four governance systems.</p>
 
       <div class="card" style="overflow-x:auto;">
         <table>
@@ -1063,26 +1339,29 @@ import { approveAll } from "@github/copilot-sdk";
               <th style="color:#3fb950;">🐚 Shell Hooks</th>
               <th style="color:#58a6ff;">⚡ CLI Extensions</th>
               <th style="color:#bc8cff;">📋 Hookflows</th>
+              <th style="color:#d29922;">🖥️ VS Code Hooks</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td><strong>Setup</strong></td><td>JSON + scripts</td><td><code>extension.mjs</code> file</td><td><code>gh hookflow register</code></td></tr>
-            <tr><td><strong>Language</strong></td><td>Any (shell)</td><td>Node.js (ES modules)</td><td>YAML / Markdown</td></tr>
-            <tr><td><strong>Runtime</strong></td><td>Subprocess per hook</td><td>Persistent Node.js process</td><td><code>gh-hookflow</code> engine</td></tr>
-            <tr><td><strong>State</strong></td><td>Stateless</td><td style="color:#3fb950;">Persistent in-memory</td><td>Stateless per workflow</td></tr>
-            <tr><td><strong>Custom tools</strong></td><td>❌</td><td style="color:#3fb950;">✅ Unlimited</td><td>❌</td></tr>
-            <tr><td><strong>Pre-tool deny</strong></td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td></tr>
-            <tr><td><strong>Post-tool feedback</strong></td><td style="color:#f85149;">❌ Output ignored</td><td style="color:#3fb950;">✅ <code>additionalContext</code></td><td style="color:#3fb950;">✅ Skill injection</td></tr>
-            <tr><td><strong>Arg modification</strong></td><td>❌</td><td style="color:#3fb950;">✅ <code>modifiedArgs</code></td><td>❌</td></tr>
-            <tr><td><strong>Result modification</strong></td><td>❌</td><td style="color:#3fb950;">✅ <code>modifiedResult</code></td><td>❌</td></tr>
-            <tr><td><strong>Error recovery</strong></td><td>❌</td><td style="color:#3fb950;">✅ retry/skip/abort</td><td>❌</td></tr>
-            <tr><td><strong>Event streaming</strong></td><td>❌</td><td style="color:#3fb950;">✅ 10+ event types</td><td>❌</td></tr>
-            <tr><td><strong>Declarative rules</strong></td><td>❌</td><td>❌ (code-based)</td><td style="color:#3fb950;">✅ Hookify format</td></tr>
-            <tr><td><strong>Hot reload</strong></td><td>Restart needed</td><td><code>/clear</code> or <code>extensions_reload</code></td><td>Auto-detected</td></tr>
-            <tr><td><strong>Official support</strong></td><td><span class="badge badge-green" style="font-size:11px;">✅ Documented</span></td><td><span class="badge badge-orange" style="font-size:11px;">⚠️ SDK-based</span></td><td><span class="badge badge-purple" style="font-size:11px;">🔧 Community</span></td></tr>
-            <tr><td><strong>Coding Agent (cloud)</strong></td><td style="color:#3fb950;">✅</td><td style="color:#f85149;">❌ CLI only</td><td style="color:#f85149;">❌ CLI only</td></tr>
-            <tr><td><strong>CLI (local)</strong></td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td></tr>
-            <tr><td><strong>VS Code</strong></td><td style="color:#3fb950;">✅ (separate system)</td><td style="color:#f85149;">❌</td><td style="color:#f85149;">❌</td></tr>
+            <tr><td><strong>Setup</strong></td><td>JSON + scripts</td><td><code>extension.mjs</code> file</td><td><code>gh hookflow register</code></td><td>JSON + Extension API</td></tr>
+            <tr><td><strong>Language</strong></td><td>Any (shell)</td><td>Node.js (ES modules)</td><td>YAML / Markdown</td><td>TypeScript (VS Code API)</td></tr>
+            <tr><td><strong>Runtime</strong></td><td>Subprocess per hook</td><td>Persistent Node.js process</td><td><code>gh-hookflow</code> engine</td><td>Subprocess + VS Code extension host</td></tr>
+            <tr><td><strong>State</strong></td><td>Stateless</td><td style="color:#3fb950;">Persistent in-memory</td><td>Stateless per workflow</td><td style="color:#3fb950;">Extension activation state</td></tr>
+            <tr><td><strong>Custom tools</strong></td><td>❌</td><td style="color:#3fb950;">✅ Unlimited</td><td>❌</td><td style="color:#3fb950;">✅ <code>registerTool()</code></td></tr>
+            <tr><td><strong>Pre-tool deny</strong></td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅ hooks + tool approval</td></tr>
+            <tr><td><strong>Post-tool feedback</strong></td><td style="color:#f85149;">❌ Output ignored</td><td style="color:#3fb950;">✅ <code>additionalContext</code></td><td style="color:#3fb950;">✅ Skill injection</td><td style="color:#3fb950;">✅ <code>systemMessage</code></td></tr>
+            <tr><td><strong>Arg modification</strong></td><td>❌</td><td style="color:#3fb950;">✅ <code>modifiedArgs</code></td><td>❌</td><td style="color:#3fb950;">✅ <code>updatedInput</code></td></tr>
+            <tr><td><strong>Result modification</strong></td><td>❌</td><td style="color:#3fb950;">✅ <code>modifiedResult</code></td><td>❌</td><td>❌</td></tr>
+            <tr><td><strong>Error recovery</strong></td><td>❌</td><td style="color:#3fb950;">✅ retry/skip/abort</td><td>❌</td><td>❌ (exit codes only)</td></tr>
+            <tr><td><strong>Event streaming</strong></td><td>❌</td><td style="color:#3fb950;">✅ 10+ event types</td><td>❌</td><td style="color:#3fb950;">✅ 8 lifecycle events</td></tr>
+            <tr><td><strong>Declarative rules</strong></td><td>❌</td><td>❌ (code-based)</td><td style="color:#3fb950;">✅ Hookify format</td><td>❌ (code-based)</td></tr>
+            <tr><td><strong>Hot reload</strong></td><td>Restart needed</td><td><code>/clear</code> or <code>extensions_reload</code></td><td>Auto-detected</td><td>Extension reload</td></tr>
+            <tr><td><strong>IDE integration</strong></td><td>❌</td><td>❌</td><td>❌</td><td style="color:#3fb950;">✅ Full (native UI, commands, settings)</td></tr>
+            <tr><td><strong>Official support</strong></td><td><span class="badge badge-green" style="font-size:11px;">✅ Documented</span></td><td><span class="badge badge-orange" style="font-size:11px;">⚠️ SDK-based</span></td><td><span class="badge badge-purple" style="font-size:11px;">🔧 Community</span></td><td><span class="badge badge-orange" style="font-size:11px;">⚠️ Preview</span></td></tr>
+            <tr><td><strong>Coding Agent (cloud)</strong></td><td style="color:#3fb950;">✅</td><td style="color:#f85149;">❌ CLI only</td><td style="color:#f85149;">❌ CLI only</td><td style="color:#f85149;">❌ VS Code only</td></tr>
+            <tr><td><strong>CLI (local)</strong></td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td><td style="color:#3fb950;">✅</td><td style="color:#f85149;">❌</td></tr>
+            <tr><td><strong>VS Code</strong></td><td style="color:#3fb950;">✅ (separate system)</td><td style="color:#f85149;">❌</td><td style="color:#f85149;">❌</td><td style="color:#3fb950;">✅ Native</td></tr>
+            <tr><td><strong>Marketplace distribution</strong></td><td>❌</td><td>❌</td><td>❌</td><td style="color:#3fb950;">✅ Extension marketplace</td></tr>
           </tbody>
         </table>
       </div>
@@ -1126,14 +1405,28 @@ import { approveAll } from "@github/copilot-sdk";
             <li style="margin-bottom:8px;">You need git-push governance (pre/post push)</li>
           </ul>
         </div>
+        <div class="card">
+          <h3 style="font-size:16px;font-weight:700;color:#d29922;margin-bottom:12px;">🖥️ Use VS Code Hooks When…</h3>
+          <ul style="color:#c9d1d9;font-size:14px;padding-left:20px;list-style-type:disc;">
+            <li style="margin-bottom:8px;">You want IDE-integrated governance with native UI</li>
+            <li style="margin-bottom:8px;">You need custom tools with confirmation dialogs</li>
+            <li style="margin-bottom:8px;">You want to distribute governance via the marketplace</li>
+            <li style="margin-bottom:8px;">You need access to VS Code APIs (editors, diagnostics, terminals)</li>
+            <li style="margin-bottom:8px;">You want agent-scoped hooks in <code>.agent.md</code> files</li>
+          </ul>
+        </div>
       </div>
 
       <div class="card" style="margin-top:32px;">
         <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">The Governance Stack — Layers Build on Each Other</h3>
         <div style="display:flex;flex-direction:column;gap:0;">
           <div style="background:rgba(188,140,255,0.1);border:1px solid rgba(188,140,255,0.3);padding:14px 20px;border-radius:12px 12px 0 0;text-align:center;">
-            <span style="font-weight:700;color:#bc8cff;">Layer 4: Hookflows</span>
+            <span style="font-weight:700;color:#bc8cff;">Layer 5: Hookflows</span>
             <span style="color:#8b949e;font-size:13px;display:block;">Declarative YAML rules, post-lifecycle feedback</span>
+          </div>
+          <div style="background:rgba(210,153,34,0.1);border:1px solid rgba(210,153,34,0.3);border-top:none;padding:14px 20px;text-align:center;">
+            <span style="font-weight:700;color:#d29922;">Layer 4: VS Code Hooks</span>
+            <span style="color:#8b949e;font-size:13px;display:block;">IDE-native hooks, custom tools, chat participants</span>
           </div>
           <div style="background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.3);border-top:none;padding:14px 20px;text-align:center;">
             <span style="font-weight:700;color:#58a6ff;">Layer 3: CLI Extensions</span>
