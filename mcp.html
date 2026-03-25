@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Context Protocol (MCP) — Safe Agentic Development</title>
+  <meta name="description" content="MCP architecture, popular servers, security, and enterprise patterns for safe agentic development with GitHub Copilot.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    code, pre {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero {
+      padding: 140px 24px 80px;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, rgba(88,166,255,0.08) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid #30363d;
+      background: rgba(88,166,255,0.08);
+      color: #58a6ff;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #58a6ff, #bc8cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: clamp(16px, 2vw, 20px);
+      color: #8b949e;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Section */
+    .section { padding: 64px 24px; }
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-header h2 {
+      font-size: clamp(28px, 3vw, 36px);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section-header p {
+      color: #8b949e;
+      font-size: 17px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Cards */
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .card h3 { font-size: 20px; font-weight: 600; margin-bottom: 10px; }
+    .card p { color: #8b949e; font-size: 15px; }
+
+    /* Grid layouts */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+
+    /* Code blocks */
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .code-block code { color: #e6edf3; }
+    .code-label {
+      display: inline-block;
+      background: #30363d;
+      color: #8b949e;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 6px 6px 0 0;
+      margin-bottom: -1px;
+      position: relative;
+      top: 1px;
+    }
+
+    /* Comparison table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 12px 16px;
+      border: 1px solid #30363d;
+      text-align: left;
+    }
+    .comparison-table th {
+      background: #161b22;
+      font-weight: 600;
+      color: #e6edf3;
+    }
+    .comparison-table td { color: #8b949e; }
+    .comparison-table tr:hover td { background: rgba(88,166,255,0.04); }
+
+    /* Architecture diagram */
+    .arch-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      padding: 48px 24px;
+    }
+    .arch-box {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 24px 28px;
+      text-align: center;
+      min-width: 180px;
+      transition: border-color 0.2s;
+    }
+    .arch-box:hover { border-color: #58a6ff; }
+    .arch-box .arch-icon { font-size: 32px; margin-bottom: 8px; }
+    .arch-box .arch-label { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+    .arch-box .arch-sub { color: #8b949e; font-size: 13px; }
+    .arch-arrow {
+      font-size: 28px;
+      color: #58a6ff;
+      padding: 0 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .arch-server-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .arch-server-item {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    .arch-server-item:hover { border-color: #3fb950; }
+
+    /* Badge / tag */
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .tag-blue { background: rgba(88,166,255,0.12); color: #58a6ff; }
+    .tag-green { background: rgba(63,185,80,0.12); color: #3fb950; }
+    .tag-purple { background: rgba(188,140,255,0.12); color: #bc8cff; }
+    .tag-orange { background: rgba(210,153,34,0.12); color: #d29922; }
+
+    /* NxM visual */
+    .nm-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 32px;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .nm-side { text-align: center; }
+    .nm-side h4 { margin-bottom: 12px; font-size: 18px; }
+    .nm-lines {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 24px;
+      color: #8b949e;
+    }
+
+    /* Floating icon accent */
+    .icon-accent {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .icon-blue { background: rgba(88,166,255,0.12); }
+    .icon-green { background: rgba(63,185,80,0.12); }
+    .icon-purple { background: rgba(188,140,255,0.12); }
+    .icon-orange { background: rgba(210,153,34,0.12); }
+
+    /* Video embed */
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+    .video-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .video-card:hover { border-color: #58a6ff; transform: translateY(-2px); }
+    .video-card iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+    }
+    .video-card .video-info { padding: 16px; }
+    .video-card .video-info h4 { font-size: 15px; margin-bottom: 4px; }
+    .video-card .video-info p { color: #8b949e; font-size: 13px; }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid #21262d;
+      margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .arch-diagram { flex-direction: column; gap: 8px; }
+      .arch-arrow { transform: rotate(90deg); padding: 8px 0; }
+      .nm-grid { grid-template-columns: 1fr; gap: 16px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .section { padding: 48px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #30363d;padding:12px 24px;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <a href="index.html" style="color:#e6edf3;text-decoration:none;font-weight:600;font-size:18px;">🛡️ Safe Agentic Dev</a>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+      <a href="index.html" style="color:#8b949e;text-decoration:none;">Home</a>
+      <a href="safety-stack.html" style="color:#8b949e;text-decoration:none;">Safety Stack</a>
+      <a href="instructions.html" style="color:#8b949e;text-decoration:none;">Instructions</a>
+      <a href="hooks.html" style="color:#8b949e;text-decoration:none;">Hooks</a>
+      <a href="mcp.html" style="color:#3fb950;text-decoration:none;">MCP</a>
+      <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
+      <a href="planning.html" style="color:#8b949e;text-decoration:none;">Planning</a>
+      <a href="videos.html" style="color:#8b949e;text-decoration:none;">Videos</a>
+      <a href="resources.html" style="color:#8b949e;text-decoration:none;">Resources</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">🔌 Layer 5 — Extensibility</div>
+    <h1>Model Context Protocol</h1>
+    <p>The universal open standard for connecting AI agents to tools, data sources, and APIs — one protocol to rule them all.</p>
+  </div>
+</section>
+
+<!-- ===================== WHAT IS MCP? ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>The N×M Problem, Solved</h2>
+      <p>MCP is an open-source standard introduced by Anthropic that provides a universal interface for AI models to connect with external systems — like USB-C for AI.</p>
+    </div>
+
+    <!-- Before / After visual -->
+    <div class="nm-grid" style="margin-bottom:48px;">
+      <div class="nm-side">
+        <div class="card" style="border-color:#f85149;">
+          <h4 style="color:#f85149;margin-bottom:12px;">❌ Before MCP</h4>
+          <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">M AI apps × N data sources =<br><strong style="color:#f85149;font-size:22px;">M × N</strong> custom integrations</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;">
+            <div style="background:#0d1117;padding:6px;border-radius:4px;text-align:center;">Copilot→DB</div>
+            <div style="background:#0d1117;padding:6px;border-radius:4px;text-align:center;">Copilot→Slack</div>
+            <div style="background:#0d1117;padding:6px;border-radius:4px;text-align:center;">Claude→DB</div>
+            <div style="background:#0d1117;padding:6px;border-radius:4px;text-align:center;">Claude→Slack</div>
+            <div style="background:#0d1117;padding:6px;border-radius:4px;text-align:center;">ChatGPT→DB</div>
+            <div style="background:#0d1117;padding:6px;border-radius:4px;text-align:center;">ChatGPT→Slack</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nm-lines">
+        <span style="font-size:36px;">→</span>
+      </div>
+
+      <div class="nm-side">
+        <div class="card" style="border-color:#3fb950;">
+          <h4 style="color:#3fb950;margin-bottom:12px;">✅ With MCP</h4>
+          <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">M clients + N servers =<br><strong style="color:#3fb950;font-size:22px;">M + N</strong> standard connections</p>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
+            <div style="background:rgba(63,185,80,0.08);padding:6px;border-radius:4px;text-align:center;border:1px solid rgba(63,185,80,0.2);">Copilot ↔ MCP ↔ Any Server</div>
+            <div style="background:rgba(63,185,80,0.08);padding:6px;border-radius:4px;text-align:center;border:1px solid rgba(63,185,80,0.2);">Claude ↔ MCP ↔ Any Server</div>
+            <div style="background:rgba(63,185,80,0.08);padding:6px;border-radius:4px;text-align:center;border:1px solid rgba(63,185,80,0.2);">ChatGPT ↔ MCP ↔ Any Server</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USB-C Quote -->
+    <div class="card" style="max-width:800px;margin:0 auto 48px;border-left:3px solid #58a6ff;background:rgba(88,166,255,0.04);">
+      <p style="font-style:italic;color:#e6edf3;font-size:16px;margin-bottom:8px;">"Think of MCP like a USB-C port for AI applications. Just as USB-C provides a standardized way to connect electronic devices, MCP provides a standardized way to connect AI applications to external systems."</p>
+      <p style="color:#8b949e;font-size:13px;">— <a href="https://modelcontextprotocol.io/docs/getting-started/intro" target="_blank">modelcontextprotocol.io</a></p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== ARCHITECTURE DIAGRAM ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Architecture</h2>
+      <p>MCP uses a client-server architecture with four core components communicating via JSON-RPC 2.0.</p>
+    </div>
+
+    <div class="arch-diagram">
+      <!-- Host Application -->
+      <div class="arch-box" style="border-color:#58a6ff;">
+        <div class="arch-icon">🖥️</div>
+        <div class="arch-label" style="color:#58a6ff;">Host Application</div>
+        <div class="arch-sub">VS Code, Copilot CLI,<br>Claude Desktop</div>
+      </div>
+
+      <div class="arch-arrow">⟷</div>
+
+      <!-- MCP Client -->
+      <div class="arch-box" style="border-color:#bc8cff;">
+        <div class="arch-icon">🔗</div>
+        <div class="arch-label" style="color:#bc8cff;">MCP Client</div>
+        <div class="arch-sub">Built into host app.<br>Manages connections.</div>
+      </div>
+
+      <div class="arch-arrow">⟷</div>
+
+      <!-- MCP Protocol -->
+      <div class="arch-box" style="border-color:#3fb950;background:rgba(63,185,80,0.04);">
+        <div class="arch-icon">📡</div>
+        <div class="arch-label" style="color:#3fb950;">MCP Protocol</div>
+        <div class="arch-sub">JSON-RPC 2.0<br>STDIO / HTTP</div>
+      </div>
+
+      <div class="arch-arrow">⟷</div>
+
+      <!-- MCP Servers -->
+      <div class="arch-server-group">
+        <div class="arch-server-item" style="border-color:#d29922;">
+          <span style="margin-right:6px;">🐙</span> <strong>GitHub</strong>
+          <div style="color:#8b949e;font-size:12px;">Repos, Issues, PRs</div>
+        </div>
+        <div class="arch-server-item" style="border-color:#d29922;">
+          <span style="margin-right:6px;">🗄️</span> <strong>PostgreSQL</strong>
+          <div style="color:#8b949e;font-size:12px;">Database queries</div>
+        </div>
+        <div class="arch-server-item" style="border-color:#d29922;">
+          <span style="margin-right:6px;">🌐</span> <strong>Playwright</strong>
+          <div style="color:#8b949e;font-size:12px;">Browser automation</div>
+        </div>
+        <div class="arch-server-item" style="border-color:#d29922;">
+          <span style="margin-right:6px;">📁</span> <strong>Filesystem</strong>
+          <div style="color:#8b949e;font-size:12px;">File operations</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flow description -->
+    <div class="card" style="max-width:800px;margin:24px auto 0;">
+      <h4 style="margin-bottom:12px;">How It Works</h4>
+      <ol style="color:#8b949e;font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:6px;">
+        <li>Client connects to configured MCP servers at startup</li>
+        <li>Client performs <strong style="color:#e6edf3;">capability discovery</strong> — asking what tools and resources each server offers</li>
+        <li>Discovered capabilities are registered for the AI to use during conversations</li>
+        <li>When the AI needs data or action, it requests it from the appropriate server</li>
+        <li>Server retrieves data or executes actions and returns results via the standardized interface</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== THREE PRIMITIVES ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Three Core Primitives</h2>
+      <p>MCP servers expose three types of capabilities to AI clients.</p>
+    </div>
+
+    <div class="grid-3">
+      <!-- Tools -->
+      <div class="card">
+        <div class="icon-accent icon-blue">⚡</div>
+        <h3 style="color:#58a6ff;">Tools</h3>
+        <p style="margin-bottom:12px;">Functions the AI can <strong style="color:#e6edf3;">invoke to perform actions</strong>. The AI decides when and how to call them based on context.</p>
+        <div style="margin-top:12px;">
+          <span class="tag tag-blue">create_issue</span>
+          <span class="tag tag-blue">run_query</span>
+          <span class="tag tag-blue">search_code</span>
+          <span class="tag tag-blue">take_screenshot</span>
+        </div>
+      </div>
+
+      <!-- Resources -->
+      <div class="card">
+        <div class="icon-accent icon-green">📄</div>
+        <h3 style="color:#3fb950;">Resources</h3>
+        <p style="margin-bottom:12px;"><strong style="color:#e6edf3;">Data sources</strong> the AI can read from. Application-controlled — the host decides when to include them.</p>
+        <div style="margin-top:12px;">
+          <span class="tag tag-green">File contents</span>
+          <span class="tag tag-green">DB records</span>
+          <span class="tag tag-green">API responses</span>
+          <span class="tag tag-green">Live data</span>
+        </div>
+      </div>
+
+      <!-- Prompts -->
+      <div class="card">
+        <div class="icon-accent icon-purple">💬</div>
+        <h3 style="color:#bc8cff;">Prompts</h3>
+        <p style="margin-bottom:12px;"><strong style="color:#e6edf3;">Pre-defined templates</strong> for common workflows. User-controlled — invoked explicitly by the user.</p>
+        <div style="margin-top:12px;">
+          <span class="tag tag-purple">Code review</span>
+          <span class="tag tag-purple">Analysis</span>
+          <span class="tag tag-purple">Summarization</span>
+          <span class="tag tag-purple">Triage</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:700px;margin:24px auto 0;text-align:center;border-color:#d29922;background:rgba(210,153,34,0.04);">
+      <p style="color:#d29922;font-size:14px;">⚠️ <strong>Note:</strong> The Copilot coding agent currently only supports <strong>Tools</strong> from MCP servers — not Resources or Prompts.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== TRANSPORT TYPES ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Transport Types</h2>
+      <p>MCP supports two active transport mechanisms for client-server communication.</p>
+    </div>
+
+    <div class="grid-2">
+      <!-- STDIO -->
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div class="icon-accent icon-green">💻</div>
+          <div>
+            <h3 style="color:#3fb950;">STDIO</h3>
+            <span class="tag tag-green">Local</span>
+            <span class="tag tag-green">Recommended</span>
+          </div>
+        </div>
+        <p style="margin-bottom:16px;">Server runs as a <strong style="color:#e6edf3;">child process</strong> using standard input/output streams.</p>
+
+        <!-- Mini diagram -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#0d1117;border-radius:8px;padding:16px;margin-bottom:16px;font-size:13px;">
+          <div style="background:#161b22;border:1px solid #3fb950;border-radius:6px;padding:8px 12px;">Host App</div>
+          <span style="color:#3fb950;">→ stdin/stdout →</span>
+          <div style="background:#161b22;border:1px solid #3fb950;border-radius:6px;padding:8px 12px;">MCP Server</div>
+        </div>
+
+        <div style="font-size:14px;color:#8b949e;">
+          <div style="margin-bottom:6px;">✅ Simple setup, no network config</div>
+          <div style="margin-bottom:6px;">✅ Very low latency</div>
+          <div style="margin-bottom:6px;">✅ Inherits local user permissions</div>
+          <div style="margin-bottom:6px;">📌 Best for: dev tools, CLI, IDE integrations</div>
+          <div>⚠️ Limited to local machine, single user</div>
+        </div>
+      </div>
+
+      <!-- Streamable HTTP -->
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div class="icon-accent icon-blue">🌐</div>
+          <div>
+            <h3 style="color:#58a6ff;">Streamable HTTP</h3>
+            <span class="tag tag-blue">Remote</span>
+            <span class="tag tag-blue">Scalable</span>
+          </div>
+        </div>
+        <p style="margin-bottom:16px;">Server runs as an <strong style="color:#e6edf3;">HTTP endpoint</strong> with optional SSE for streaming responses.</p>
+
+        <!-- Mini diagram -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#0d1117;border-radius:8px;padding:16px;margin-bottom:16px;font-size:13px;">
+          <div style="background:#161b22;border:1px solid #58a6ff;border-radius:6px;padding:8px 12px;">Client</div>
+          <span style="color:#58a6ff;">→ HTTP + SSE →</span>
+          <div style="background:#161b22;border:1px solid #58a6ff;border-radius:6px;padding:8px 12px;">Remote Server</div>
+        </div>
+
+        <div style="font-size:14px;color:#8b949e;">
+          <div style="margin-bottom:6px;">✅ Network-accessible, multi-user</div>
+          <div style="margin-bottom:6px;">✅ Supports OAuth 2.1 authentication</div>
+          <div style="margin-bottom:6px;">✅ Scalable, centrally managed</div>
+          <div style="margin-bottom:6px;">📌 Best for: shared tools, cloud, production</div>
+          <div>⚠️ More complex setup, requires TLS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison table -->
+    <div style="overflow-x:auto;margin-top:32px;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th style="color:#3fb950;">Local (STDIO)</th>
+            <th style="color:#58a6ff;">Remote (HTTP)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="color:#e6edf3;">Deployment</td><td>Runs on developer's machine</td><td>Hosted on server / cloud</td></tr>
+          <tr><td style="color:#e6edf3;">Authentication</td><td>Env vars, local tokens</td><td>OAuth 2.1, API keys, mTLS</td></tr>
+          <tr><td style="color:#e6edf3;">Performance</td><td>Very low latency</td><td>Network latency, but scalable</td></tr>
+          <tr><td style="color:#e6edf3;">Sharing</td><td>Single user</td><td>Multi-user, team-wide</td></tr>
+          <tr><td style="color:#e6edf3;">Maintenance</td><td>Developer manages</td><td>Centrally managed</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== MCP IN GITHUB COPILOT ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>MCP in GitHub Copilot</h2>
+      <p>Configure MCP servers across VS Code, Copilot CLI, and the Coding Agent.</p>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:32px;">
+      <!-- VS Code -->
+      <div class="card">
+        <div class="icon-accent icon-blue">🔧</div>
+        <h3>VS Code</h3>
+        <p style="margin-bottom:8px;">Configure in <code style="color:#58a6ff;font-size:13px;">.vscode/mcp.json</code> or workspace settings.</p>
+        <div style="font-size:13px;color:#8b949e;">
+          <div>1. Open Copilot Chat → Agent Mode</div>
+          <div>2. Click 🔧 tools icon</div>
+          <div>3. Add MCP Server</div>
+        </div>
+      </div>
+
+      <!-- Copilot CLI -->
+      <div class="card">
+        <div class="icon-accent icon-green">⌨️</div>
+        <h3>Copilot CLI</h3>
+        <p style="margin-bottom:8px;">Configure in <code style="color:#3fb950;font-size:13px;">~/.copilot/mcp-config.json</code> or use the <code style="color:#3fb950;">/mcp</code> command.</p>
+        <div style="font-size:13px;color:#8b949e;">
+          <div>1. Run <code>/mcp</code> in CLI</div>
+          <div>2. Or edit config file directly</div>
+          <div>3. Use <code>mcp_reload</code> to apply</div>
+        </div>
+      </div>
+
+      <!-- Coding Agent -->
+      <div class="card">
+        <div class="icon-accent icon-purple">🤖</div>
+        <h3>Coding Agent</h3>
+        <p style="margin-bottom:8px;">Configure in repo <strong style="color:#e6edf3;">Settings → Copilot → Coding agent</strong>.</p>
+        <div style="font-size:13px;color:#8b949e;">
+          <div>Secrets: prefix with <code style="color:#bc8cff;">COPILOT_MCP_</code></div>
+          <div>Default: GitHub + Playwright</div>
+          <div>Only supports Tools primitive</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VS Code Config Example -->
+    <div style="max-width:800px;margin:0 auto 24px;">
+      <div class="code-label">📄 .vscode/mcp.json</div>
+      <div class="code-block">
+<code><span style="color:#8b949e;">{</span>
+  <span style="color:#7ee787;">"servers"</span>: {
+    <span style="color:#7ee787;">"github"</span>: {
+      <span style="color:#7ee787;">"type"</span>: <span style="color:#a5d6ff;">"http"</span>,
+      <span style="color:#7ee787;">"url"</span>: <span style="color:#a5d6ff;">"https://api.githubcopilot.com/mcp/"</span>
+    },
+    <span style="color:#7ee787;">"playwright"</span>: {
+      <span style="color:#7ee787;">"command"</span>: <span style="color:#a5d6ff;">"npx"</span>,
+      <span style="color:#7ee787;">"args"</span>: [<span style="color:#a5d6ff;">"@anthropic-ai/mcp-server-playwright"</span>]
+    },
+    <span style="color:#7ee787;">"postgres"</span>: {
+      <span style="color:#7ee787;">"command"</span>: <span style="color:#a5d6ff;">"npx"</span>,
+      <span style="color:#7ee787;">"args"</span>: [<span style="color:#a5d6ff;">"@modelcontextprotocol/server-postgres"</span>],
+      <span style="color:#7ee787;">"env"</span>: {
+        <span style="color:#7ee787;">"POSTGRES_CONNECTION_STRING"</span>: <span style="color:#a5d6ff;">"${input:pg_connection}"</span>
+      }
+    }
+  }
+<span style="color:#8b949e;">}</span></code>
+      </div>
+    </div>
+
+    <!-- CLI Config Example -->
+    <div style="max-width:800px;margin:0 auto;">
+      <div class="code-label">📄 ~/.copilot/mcp-config.json</div>
+      <div class="code-block">
+<code><span style="color:#8b949e;">{</span>
+  <span style="color:#7ee787;">"mcpServers"</span>: {
+    <span style="color:#7ee787;">"github"</span>: {
+      <span style="color:#7ee787;">"command"</span>: <span style="color:#a5d6ff;">"npx"</span>,
+      <span style="color:#7ee787;">"args"</span>: [<span style="color:#a5d6ff;">"-y"</span>, <span style="color:#a5d6ff;">"@modelcontextprotocol/server-github"</span>],
+      <span style="color:#7ee787;">"env"</span>: {
+        <span style="color:#7ee787;">"GITHUB_PERSONAL_ACCESS_TOKEN"</span>: <span style="color:#a5d6ff;">"${GITHUB_TOKEN}"</span>
+      }
+    },
+    <span style="color:#7ee787;">"filesystem"</span>: {
+      <span style="color:#7ee787;">"command"</span>: <span style="color:#a5d6ff;">"npx"</span>,
+      <span style="color:#7ee787;">"args"</span>: [<span style="color:#a5d6ff;">"-y"</span>, <span style="color:#a5d6ff;">"@modelcontextprotocol/server-filesystem"</span>, <span style="color:#a5d6ff;">"."</span>]
+    }
+  }
+<span style="color:#8b949e;">}</span></code>
+      </div>
+    </div>
+
+    <!-- GitHub Remote MCP -->
+    <div class="card" style="max-width:800px;margin:32px auto 0;border-color:#3fb950;background:rgba(63,185,80,0.04);">
+      <h4 style="color:#3fb950;margin-bottom:10px;">🌐 GitHub's Remote MCP Endpoint</h4>
+      <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">GitHub offers a managed hosted MCP server at <code style="color:#3fb950;">https://api.githubcopilot.com/mcp/</code> — no Docker, no PATs, sign in once with OAuth.</p>
+      <div style="overflow-x:auto;">
+        <table class="comparison-table" style="font-size:13px;">
+          <thead><tr><th>Feature</th><th>Local Docker</th><th>Hosted Endpoint</th></tr></thead>
+          <tbody>
+            <tr><td style="color:#e6edf3;">Maintenance</td><td>Maintain Docker image manually</td><td style="color:#3fb950;">Auto-patched by GitHub</td></tr>
+            <tr><td style="color:#e6edf3;">Auth</td><td>Manage PATs manually</td><td style="color:#3fb950;">OAuth — sign in once</td></tr>
+            <tr><td style="color:#e6edf3;">Access</td><td>Localhost only</td><td style="color:#3fb950;">Any IDE or remote dev box</td></tr>
+            <tr><td style="color:#e6edf3;">Permissions</td><td>Full write unless customized</td><td style="color:#3fb950;">Built-in read-only switch</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== POPULAR MCP SERVERS ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>The MCP Ecosystem</h2>
+      <p>Thousands of MCP servers are available — from official first-party to community-built integrations.</p>
+    </div>
+
+    <!-- Official Servers -->
+    <h3 style="font-size:18px;margin-bottom:16px;color:#8b949e;">Official & First-Party</h3>
+    <div class="grid-4" style="margin-bottom:32px;">
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🐙</div>
+        <h3 style="font-size:16px;">GitHub</h3>
+        <span class="tag tag-green">28K+ installs</span>
+        <p style="font-size:13px;margin-top:8px;">Repos, issues, PRs, code search, Actions, Dependabot alerts.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🎭</div>
+        <h3 style="font-size:16px;">Playwright</h3>
+        <span class="tag tag-blue">Microsoft</span>
+        <p style="font-size:13px;margin-top:8px;">Browser automation — read, interact with, and screenshot web pages.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🐘</div>
+        <h3 style="font-size:16px;">PostgreSQL</h3>
+        <span class="tag tag-blue">Anthropic</span>
+        <p style="font-size:13px;margin-top:8px;">Query and interact with PostgreSQL databases via SQL.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">📁</div>
+        <h3 style="font-size:16px;">Filesystem</h3>
+        <span class="tag tag-blue">Anthropic</span>
+        <p style="font-size:13px;margin-top:8px;">Read, write, and manage files on the local filesystem.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">💬</div>
+        <h3 style="font-size:16px;">Slack</h3>
+        <span class="tag tag-blue">Anthropic</span>
+        <p style="font-size:13px;margin-top:8px;">Interact with Slack workspaces — channels, messages, users.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">📂</div>
+        <h3 style="font-size:16px;">Google Drive</h3>
+        <span class="tag tag-blue">Anthropic</span>
+        <p style="font-size:13px;margin-top:8px;">Access files and documents in Google Drive.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🔀</div>
+        <h3 style="font-size:16px;">Git</h3>
+        <span class="tag tag-blue">Anthropic</span>
+        <p style="font-size:13px;margin-top:8px;">Local git repository operations — commit, diff, log, branch.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🤖</div>
+        <h3 style="font-size:16px;">Puppeteer</h3>
+        <span class="tag tag-blue">Anthropic</span>
+        <p style="font-size:13px;margin-top:8px;">Browser automation via Puppeteer for testing and scraping.</p>
+      </div>
+    </div>
+
+    <!-- Community Servers -->
+    <h3 style="font-size:18px;margin-bottom:16px;color:#8b949e;">Popular Community Servers</h3>
+    <div class="grid-4">
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">📚</div>
+        <h3 style="font-size:16px;">Context7</h3>
+        <span class="tag tag-purple">Docs</span>
+        <p style="font-size:13px;margin-top:8px;">Fetch up-to-date, version-specific documentation and code examples.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🔍</div>
+        <h3 style="font-size:16px;">Exa Search</h3>
+        <span class="tag tag-purple">Search</span>
+        <p style="font-size:13px;margin-top:8px;">Fast, intelligent web search and content crawling.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">📖</div>
+        <h3 style="font-size:16px;">Microsoft Learn</h3>
+        <span class="tag tag-purple">Docs</span>
+        <p style="font-size:13px;margin-top:8px;">Search and fetch Azure / Microsoft official documentation.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">☁️</div>
+        <h3 style="font-size:16px;">Cloudflare</h3>
+        <span class="tag tag-orange">Infra</span>
+        <p style="font-size:13px;margin-top:8px;">DNS management, WAF/DDoS, cache purging, zone admin.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🏗️</div>
+        <h3 style="font-size:16px;">Terraform</h3>
+        <span class="tag tag-orange">Infra</span>
+        <p style="font-size:13px;margin-top:8px;">HashiCorp Terraform provider and module management.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🎬</div>
+        <h3 style="font-size:16px;">YouTube</h3>
+        <span class="tag tag-purple">Media</span>
+        <p style="font-size:13px;margin-top:8px;">Search videos, get details, channel analytics, captions.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🗃️</div>
+        <h3 style="font-size:16px;">Database MCPs</h3>
+        <span class="tag tag-orange">Data</span>
+        <p style="font-size:13px;margin-top:8px;">MySQL, MongoDB, SQLite, Redis — query any database.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:24px;margin-bottom:8px;">🌊</div>
+        <h3 style="font-size:16px;">Browserbase</h3>
+        <span class="tag tag-purple">Browser</span>
+        <p style="font-size:13px;margin-top:8px;">Cloud browser automation using Stagehand.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== BUILDING CUSTOM MCP SERVERS ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Build Your Own</h2>
+      <p>Create custom MCP servers with official SDKs in TypeScript, Python, C#, Go, Java, Kotlin, Ruby, and Swift.</p>
+    </div>
+
+    <!-- SDK Tags -->
+    <div style="text-align:center;margin-bottom:32px;">
+      <span class="tag tag-blue" style="font-size:14px;padding:6px 14px;">TypeScript</span>
+      <span class="tag tag-green" style="font-size:14px;padding:6px 14px;">Python</span>
+      <span class="tag tag-purple" style="font-size:14px;padding:6px 14px;">C# / .NET</span>
+      <span class="tag tag-orange" style="font-size:14px;padding:6px 14px;">Go</span>
+      <span class="tag tag-blue" style="font-size:14px;padding:6px 14px;">Java</span>
+      <span class="tag tag-green" style="font-size:14px;padding:6px 14px;">Kotlin</span>
+      <span class="tag tag-purple" style="font-size:14px;padding:6px 14px;">Ruby</span>
+      <span class="tag tag-orange" style="font-size:14px;padding:6px 14px;">Swift</span>
+    </div>
+
+    <!-- Code example -->
+    <div style="max-width:900px;margin:0 auto;">
+      <div class="code-label">📄 Minimal TypeScript MCP Server</div>
+      <div class="code-block">
+<code><span style="color:#ff7b72;">import</span> { <span style="color:#e6edf3;">Server</span> } <span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">"@modelcontextprotocol/sdk/server/index.js"</span>;
+<span style="color:#ff7b72;">import</span> { <span style="color:#e6edf3;">StdioServerTransport</span> } <span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">"@modelcontextprotocol/sdk/server/stdio.js"</span>;
+<span style="color:#ff7b72;">import</span> {
+  <span style="color:#e6edf3;">CallToolRequestSchema</span>,
+  <span style="color:#e6edf3;">ListToolsRequestSchema</span>,
+} <span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">"@modelcontextprotocol/sdk/types.js"</span>;
+<span style="color:#ff7b72;">import</span> <span style="color:#e6edf3;">z</span> <span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">"zod"</span>;
+
+<span style="color:#8b949e;">// Create the server</span>
+<span style="color:#ff7b72;">const</span> <span style="color:#e6edf3;">server</span> = <span style="color:#ff7b72;">new</span> <span style="color:#d2a8ff;">Server</span>(
+  { <span style="color:#e6edf3;">name</span>: <span style="color:#a5d6ff;">"my-server"</span>, <span style="color:#e6edf3;">version</span>: <span style="color:#a5d6ff;">"1.0.0"</span> },
+  { <span style="color:#e6edf3;">capabilities</span>: { <span style="color:#e6edf3;">tools</span>: {} } }
+);
+
+<span style="color:#8b949e;">// Define available tools</span>
+<span style="color:#e6edf3;">server</span>.<span style="color:#d2a8ff;">setRequestHandler</span>(<span style="color:#e6edf3;">ListToolsRequestSchema</span>, <span style="color:#ff7b72;">async</span> () =&gt; ({
+  <span style="color:#e6edf3;">tools</span>: [{
+    <span style="color:#e6edf3;">name</span>: <span style="color:#a5d6ff;">"greet"</span>,
+    <span style="color:#e6edf3;">description</span>: <span style="color:#a5d6ff;">"Greet a user by name"</span>,
+    <span style="color:#e6edf3;">inputSchema</span>: {
+      <span style="color:#e6edf3;">type</span>: <span style="color:#a5d6ff;">"object"</span>,
+      <span style="color:#e6edf3;">properties</span>: {
+        <span style="color:#e6edf3;">name</span>: { <span style="color:#e6edf3;">type</span>: <span style="color:#a5d6ff;">"string"</span>, <span style="color:#e6edf3;">description</span>: <span style="color:#a5d6ff;">"User's name"</span> }
+      },
+      <span style="color:#e6edf3;">required</span>: [<span style="color:#a5d6ff;">"name"</span>],
+    },
+  }],
+}));
+
+<span style="color:#8b949e;">// Handle tool invocations</span>
+<span style="color:#e6edf3;">server</span>.<span style="color:#d2a8ff;">setRequestHandler</span>(<span style="color:#e6edf3;">CallToolRequestSchema</span>, <span style="color:#ff7b72;">async</span> (<span style="color:#e6edf3;">request</span>) =&gt; {
+  <span style="color:#ff7b72;">if</span> (<span style="color:#e6edf3;">request</span>.<span style="color:#e6edf3;">params</span>.<span style="color:#e6edf3;">name</span> === <span style="color:#a5d6ff;">"greet"</span>) {
+    <span style="color:#ff7b72;">const</span> { <span style="color:#e6edf3;">name</span> } = <span style="color:#e6edf3;">z</span>
+      .<span style="color:#d2a8ff;">object</span>({ <span style="color:#e6edf3;">name</span>: <span style="color:#e6edf3;">z</span>.<span style="color:#d2a8ff;">string</span>() })
+      .<span style="color:#d2a8ff;">parse</span>(<span style="color:#e6edf3;">request</span>.<span style="color:#e6edf3;">params</span>.<span style="color:#e6edf3;">arguments</span>);
+    <span style="color:#ff7b72;">return</span> {
+      <span style="color:#e6edf3;">content</span>: [{ <span style="color:#e6edf3;">type</span>: <span style="color:#a5d6ff;">"text"</span>, <span style="color:#e6edf3;">text</span>: <span style="color:#a5d6ff;">`Hello, ${</span><span style="color:#e6edf3;">name</span><span style="color:#a5d6ff;">}!`</span> }],
+    };
+  }
+  <span style="color:#ff7b72;">return</span> {
+    <span style="color:#e6edf3;">isError</span>: <span style="color:#79c0ff;">true</span>,
+    <span style="color:#e6edf3;">content</span>: [{ <span style="color:#e6edf3;">type</span>: <span style="color:#a5d6ff;">"text"</span>, <span style="color:#e6edf3;">text</span>: <span style="color:#a5d6ff;">`Unknown tool: ${</span><span style="color:#e6edf3;">request</span>.<span style="color:#e6edf3;">params</span>.<span style="color:#e6edf3;">name</span><span style="color:#a5d6ff;">}`</span> }],
+  };
+});
+
+<span style="color:#8b949e;">// Start the server</span>
+<span style="color:#ff7b72;">const</span> <span style="color:#e6edf3;">transport</span> = <span style="color:#ff7b72;">new</span> <span style="color:#d2a8ff;">StdioServerTransport</span>();
+<span style="color:#ff7b72;">await</span> <span style="color:#e6edf3;">server</span>.<span style="color:#d2a8ff;">connect</span>(<span style="color:#e6edf3;">transport</span>);</code>
+      </div>
+    </div>
+
+    <!-- Dev Patterns -->
+    <div class="grid-3" style="margin-top:32px;">
+      <div class="card" style="padding:20px;">
+        <h4 style="color:#58a6ff;font-size:15px;margin-bottom:8px;">🛡️ Input Validation</h4>
+        <p style="font-size:13px;">Use Zod (TS), Pydantic (Python), or equivalent to validate all tool inputs before processing.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <h4 style="color:#3fb950;font-size:15px;margin-bottom:8px;">⚠️ Error Handling</h4>
+        <p style="font-size:13px;">Wrap handlers in try-catch. Return structured errors with <code style="font-size:12px;">isError: true</code>.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <h4 style="color:#bc8cff;font-size:15px;margin-bottom:8px;">📡 Discovery</h4>
+        <p style="font-size:13px;">Register all tools with clear names, descriptions, and input schemas for the AI to understand.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <h4 style="color:#d29922;font-size:15px;margin-bottom:8px;">🔄 Async Patterns</h4>
+        <p style="font-size:13px;">Use async/await for all external API calls and I/O operations.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <h4 style="color:#58a6ff;font-size:15px;margin-bottom:8px;">🪵 Logging</h4>
+        <p style="font-size:13px;">Log errors to stderr — stdout is reserved for MCP protocol communication in STDIO mode.</p>
+      </div>
+      <div class="card" style="padding:20px;">
+        <h4 style="color:#3fb950;font-size:15px;margin-bottom:8px;">🔌 Transport Choice</h4>
+        <p style="font-size:13px;">Use STDIO for local/CLI tools. Use Streamable HTTP for remote/shared/production servers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== ENTERPRISE PATTERNS ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Enterprise Governance Patterns</h2>
+      <p>MCP provides enterprises with a standardized, governable way to extend AI agent capabilities.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:32px;">
+      <!-- Centralized Management -->
+      <div class="card">
+        <div class="icon-accent icon-blue">🏢</div>
+        <h3>Centralized Tool Management</h3>
+        <p>Administrators configure which MCP servers are available at the repository, organization, or user level. Add capabilities incrementally without modifying the core AI system.</p>
+      </div>
+
+      <!-- Permission Boundaries -->
+      <div class="card">
+        <div class="icon-accent icon-green">🔐</div>
+        <h3>Permission Boundaries</h3>
+        <p>MCP servers operate within defined permission boundaries. The GitHub MCP Server's default token has read-only access to the current repository only.</p>
+      </div>
+
+      <!-- Audit Trail -->
+      <div class="card">
+        <div class="icon-accent icon-purple">📋</div>
+        <h3>Audit Trail</h3>
+        <p>All tool invocations are logged and traceable, providing compliance-grade visibility into what the AI agent accessed and modified.</p>
+      </div>
+
+      <!-- Read-Only Mode -->
+      <div class="card">
+        <div class="icon-accent icon-orange">👁️</div>
+        <h3>Read-Only Mode</h3>
+        <p>Enable read-only mode for safe exploration. The agent can query and analyze without any write operations.</p>
+      </div>
+    </div>
+
+    <!-- Config examples side by side -->
+    <div class="grid-2">
+      <div>
+        <div class="code-label">🔒 Read-Only Mode</div>
+        <div class="code-block">
+<code>{
+  <span style="color:#7ee787;">"servers"</span>: {
+    <span style="color:#7ee787;">"github"</span>: {
+      <span style="color:#7ee787;">"type"</span>: <span style="color:#a5d6ff;">"http"</span>,
+      <span style="color:#7ee787;">"url"</span>: <span style="color:#a5d6ff;">"https://api.githubcopilot.com/mcp/"</span>,
+      <span style="color:#7ee787;">"headers"</span>: {
+        <span style="color:#7ee787;">"X-MCP-Readonly"</span>: <span style="color:#a5d6ff;">"true"</span>
+      }
+    }
+  }
+}</code>
+        </div>
+      </div>
+      <div>
+        <div class="code-label">🎯 Tool Scoping</div>
+        <div class="code-block">
+<code>{
+  <span style="color:#7ee787;">"servers"</span>: {
+    <span style="color:#7ee787;">"github"</span>: {
+      <span style="color:#7ee787;">"type"</span>: <span style="color:#a5d6ff;">"http"</span>,
+      <span style="color:#7ee787;">"url"</span>: <span style="color:#a5d6ff;">"https://api.githubcopilot.com/mcp/"</span>,
+      <span style="color:#7ee787;">"tools"</span>: [
+        <span style="color:#a5d6ff;">"listPullRequests"</span>,
+        <span style="color:#a5d6ff;">"getPullRequest"</span>,
+        <span style="color:#a5d6ff;">"searchPullRequests"</span>
+      ]
+    }
+  }
+}</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enterprise Gateways -->
+    <h3 style="font-size:18px;margin:32px 0 16px;color:#8b949e;">Enterprise MCP Gateways</h3>
+    <div class="grid-4">
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">🐳</div>
+        <h4 style="font-size:15px;">Docker MCP Gateway</h4>
+        <p style="font-size:13px;">Container isolation, security sandboxing</p>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">🔗</div>
+        <h4 style="font-size:15px;">WSO2 MCP Gateway</h4>
+        <p style="font-size:13px;">API conversion, enterprise API management</p>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">🌙</div>
+        <h4 style="font-size:15px;">Lunar.dev</h4>
+        <p style="font-size:13px;">Rate limiting, monitoring, policy enforcement</p>
+      </div>
+      <div class="card" style="padding:20px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">📊</div>
+        <h4 style="font-size:15px;">Maxim</h4>
+        <p style="font-size:13px;">Observability, access control, compliance</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== SECURITY CONSIDERATIONS ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>MCP Security Best Practices</h2>
+      <p>Securing MCP in production requires attention to authentication, permissions, and isolation.</p>
+    </div>
+
+    <div class="grid-3">
+      <!-- OAuth 2.1 -->
+      <div class="card">
+        <div class="icon-accent icon-blue">🔑</div>
+        <h3>Authentication (OAuth 2.1)</h3>
+        <p style="margin-bottom:10px;">MCP servers follow strict OAuth authorization flows with explicit user consent per scope.</p>
+        <ul style="color:#8b949e;font-size:13px;padding-left:18px;display:flex;flex-direction:column;gap:4px;">
+          <li>Short-lived, minimally scoped tokens</li>
+          <li>Cryptographically secure session IDs</li>
+          <li>HTTPS required in production</li>
+          <li>Validate token audiences</li>
+        </ul>
+      </div>
+
+      <!-- Permission Scoping -->
+      <div class="card">
+        <div class="icon-accent icon-green">🛡️</div>
+        <h3>Permission Scoping</h3>
+        <p style="margin-bottom:10px;">Follow the principle of least privilege — only expose what the server needs.</p>
+        <ul style="color:#8b949e;font-size:13px;padding-left:18px;display:flex;flex-direction:column;gap:4px;">
+          <li>Read-only modes by default</li>
+          <li>Tool whitelisting per server</li>
+          <li>Per-user permission enforcement</li>
+          <li>Limit exposed tool surface area</li>
+        </ul>
+      </div>
+
+      <!-- Prompt Injection -->
+      <div class="card">
+        <div class="icon-accent icon-purple">🚫</div>
+        <h3>Prompt Injection Prevention</h3>
+        <p style="margin-bottom:10px;">Treat all data from clients or LLMs as untrusted input.</p>
+        <ul style="color:#8b949e;font-size:13px;padding-left:18px;display:flex;flex-direction:column;gap:4px;">
+          <li>Validate input lengths, types, patterns</li>
+          <li>Use allow-lists for commands and paths</li>
+          <li>Centralize validation logic</li>
+          <li>Fewer tools = smaller attack surface</li>
+        </ul>
+      </div>
+
+      <!-- Transport Security -->
+      <div class="card">
+        <div class="icon-accent icon-orange">🔒</div>
+        <h3>Transport Security</h3>
+        <p style="margin-bottom:10px;">Encrypt all communication beyond localhost with TLS.</p>
+        <ul style="color:#8b949e;font-size:13px;padding-left:18px;display:flex;flex-direction:column;gap:4px;">
+          <li>TLS encryption for all remote connections</li>
+          <li>Mutual authentication (client certs)</li>
+          <li>SSRF mitigations for OAuth URLs</li>
+          <li>Block private IP range requests</li>
+        </ul>
+      </div>
+
+      <!-- Secret Management -->
+      <div class="card">
+        <div class="icon-accent icon-blue">🗝️</div>
+        <h3>Secret Management</h3>
+        <p style="margin-bottom:10px;">Never store credentials in configuration files — use secret vaults.</p>
+        <ul style="color:#8b949e;font-size:13px;padding-left:18px;display:flex;flex-direction:column;gap:4px;">
+          <li>Hardened vault for all credentials</li>
+          <li>Automated secret scanning</li>
+          <li>Runtime credential usage monitoring</li>
+          <li>Use <code style="font-size:12px;">COPILOT_MCP_</code> prefix for agent</li>
+        </ul>
+      </div>
+
+      <!-- Sandboxing -->
+      <div class="card">
+        <div class="icon-accent icon-green">📦</div>
+        <h3>Sandboxing & Isolation</h3>
+        <p style="margin-bottom:10px;">Run MCP servers in sandboxed, containerized environments.</p>
+        <ul style="color:#8b949e;font-size:13px;padding-left:18px;display:flex;flex-direction:column;gap:4px;">
+          <li>Containerized execution environments</li>
+          <li>Minimal default privileges</li>
+          <li>OS-level access controls (SELinux)</li>
+          <li>CPU, memory, and network limits</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GitHub's best practices callout -->
+    <div class="card" style="max-width:800px;margin:32px auto 0;border-left:3px solid #d29922;background:rgba(210,153,34,0.04);">
+      <h4 style="color:#d29922;margin-bottom:10px;">⚠️ GitHub's Official Guidance</h4>
+      <ul style="color:#8b949e;font-size:14px;padding-left:18px;display:flex;flex-direction:column;gap:6px;">
+        <li>Enabling third-party MCP servers may impact agent performance and output quality — <strong style="color:#e6edf3;">review thoroughly</strong></li>
+        <li>By default, the coding agent does not have write access to MCP tools — <strong style="color:#e6edf3;">review available tools carefully</strong></li>
+        <li>Update the <code style="color:#d29922;">tools</code> field with <strong style="color:#e6edf3;">only the necessary tooling</strong></li>
+        <li>Carefully review configured MCP servers prior to saving</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== MCP vs TRADITIONAL APIs ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>MCP vs Traditional API Integrations</h2>
+      <p>Why MCP is a better fit for agent-based workflows compared to custom REST/GraphQL integrations.</p>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th style="color:#8b949e;">Traditional APIs</th>
+            <th style="color:#3fb950;">MCP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:#e6edf3;">Integration Model</td>
+            <td>Custom code per AI + data source (M×N)</td>
+            <td style="color:#3fb950;">Standardized protocol (M+N)</td>
+          </tr>
+          <tr>
+            <td style="color:#e6edf3;">Discovery</td>
+            <td>Manual — developer reads API docs</td>
+            <td style="color:#3fb950;">Automatic at runtime</td>
+          </tr>
+          <tr>
+            <td style="color:#e6edf3;">Schema</td>
+            <td>Varies (REST, GraphQL, gRPC)</td>
+            <td style="color:#3fb950;">Standardized JSON-RPC 2.0</td>
+          </tr>
+          <tr>
+            <td style="color:#e6edf3;">Agent Awareness</td>
+            <td>Must be trained per API</td>
+            <td style="color:#3fb950;">Dynamic capability negotiation</td>
+          </tr>
+          <tr>
+            <td style="color:#e6edf3;">Reusability</td>
+            <td>Built for one AI application</td>
+            <td style="color:#3fb950;">Works across all MCP clients</td>
+          </tr>
+          <tr>
+            <td style="color:#e6edf3;">Maintenance</td>
+            <td>Update each integration independently</td>
+            <td style="color:#3fb950;">Update server once, all clients benefit</td>
+          </tr>
+          <tr>
+            <td style="color:#e6edf3;">Auth</td>
+            <td>Custom per API</td>
+            <td style="color:#3fb950;">Standardized OAuth 2.1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== MCP REGISTRIES ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>MCP Registries</h2>
+      <p>Discover and install MCP servers from these major registries and directories.</p>
+    </div>
+
+    <div class="grid-3">
+      <a href="https://registry.modelcontextprotocol.io" target="_blank" style="text-decoration:none;">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-size:24px;">📋</div>
+            <h3 style="color:#58a6ff;">Official MCP Registry</h3>
+          </div>
+          <p>Canonical GitHub-hosted source. Verifies servers automatically. Supports subregistries and moderation.</p>
+          <span class="tag tag-green" style="margin-top:8px;">Authoritative</span>
+        </div>
+      </a>
+
+      <a href="https://mcp.so" target="_blank" style="text-decoration:none;">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-size:24px;">📊</div>
+            <h3 style="color:#58a6ff;">MCP.SO</h3>
+          </div>
+          <p>Usage-driven rankings with call metrics. Filters for Featured, Latest, Official, and Hosted servers.</p>
+          <span class="tag tag-blue" style="margin-top:8px;">Trending</span>
+        </div>
+      </a>
+
+      <a href="https://smithery.ai" target="_blank" style="text-decoration:none;">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-size:24px;">🔨</div>
+            <h3 style="color:#58a6ff;">Smithery</h3>
+          </div>
+          <p>"Connect agents to MCPs in minutes" — curated registry with step-by-step install instructions.</p>
+          <span class="tag tag-purple" style="margin-top:8px;">Quick Setup</span>
+        </div>
+      </a>
+
+      <a href="https://glama.ai/mcp/servers" target="_blank" style="text-decoration:none;">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-size:24px;">🌐</div>
+            <h3 style="color:#58a6ff;">Glama</h3>
+          </div>
+          <p>~10,000 curated servers with category and status filters. Skips duplicates for quality.</p>
+          <span class="tag tag-orange" style="margin-top:8px;">Largest</span>
+        </div>
+      </a>
+
+      <a href="https://mcpdirectory.app" target="_blank" style="text-decoration:none;">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-size:24px;">📖</div>
+            <h3 style="color:#58a6ff;">MCP Directory</h3>
+          </div>
+          <p>Tutorials, reviews, and categorized listings for learning and discovery.</p>
+          <span class="tag tag-blue" style="margin-top:8px;">Learning</span>
+        </div>
+      </a>
+
+      <a href="https://mcp-get.com" target="_blank" style="text-decoration:none;">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <div style="font-size:24px;">📈</div>
+            <h3 style="color:#58a6ff;">MCP-Get</h3>
+          </div>
+          <p>Real-time uptime monitoring, activity metrics, and search across the ecosystem.</p>
+          <span class="tag tag-green" style="margin-top:8px;">Monitoring</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Client support -->
+    <div class="card" style="max-width:800px;margin:32px auto 0;">
+      <h4 style="margin-bottom:12px;">🌍 Broad Client Support</h4>
+      <p style="color:#8b949e;font-size:14px;margin-bottom:12px;">MCP is supported across the AI ecosystem — every new server works with every client:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <span class="tag tag-blue" style="font-size:13px;">GitHub Copilot</span>
+        <span class="tag tag-purple" style="font-size:13px;">Claude Desktop</span>
+        <span class="tag tag-green" style="font-size:13px;">ChatGPT</span>
+        <span class="tag tag-orange" style="font-size:13px;">Cursor</span>
+        <span class="tag tag-blue" style="font-size:13px;">Windsurf</span>
+        <span class="tag tag-purple" style="font-size:13px;">Zed</span>
+        <span class="tag tag-green" style="font-size:13px;">Cline</span>
+        <span class="tag tag-orange" style="font-size:13px;">MCPJam</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== FEATURED VIDEOS ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Featured Videos</h2>
+      <p>Learn MCP from the best — curated video content to get started fast.</p>
+    </div>
+
+    <div class="video-grid">
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/GuTcle5edjk" title="You need to learn MCP RIGHT NOW" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="video-info">
+          <h4>you need to learn MCP RIGHT NOW!!</h4>
+          <p>1.3M views — The viral introduction to MCP that started the movement.</p>
+        </div>
+      </div>
+      <div class="video-card">
+        <iframe src="https://www.youtube.com/embed/vUQfqW5GKAQ" title="MCP Servers in VS Code and GitHub Copilot" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="video-info">
+          <h4>MCP Servers in VS Code and GitHub Copilot</h4>
+          <p>75K views — Official walkthrough of MCP configuration in VS Code.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===================== KEY LINKS ===================== -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Key Links & References</h2>
+      <p>Official documentation and learning resources for MCP.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 style="margin-bottom:16px;">📚 Official Documentation</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="https://modelcontextprotocol.io" target="_blank">MCP Specification & Docs ↗</a></li>
+          <li><a href="https://github.com/modelcontextprotocol" target="_blank">MCP GitHub Organization ↗</a></li>
+          <li><a href="https://www.anthropic.com/news/model-context-protocol" target="_blank">Anthropic MCP Announcement ↗</a></li>
+          <li><a href="https://github.com/modelcontextprotocol/typescript-sdk" target="_blank">TypeScript SDK ↗</a></li>
+          <li><a href="https://github.com/modelcontextprotocol/python-sdk" target="_blank">Python SDK ↗</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:16px;">🐙 GitHub Copilot + MCP</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="https://docs.github.com/en/copilot/concepts/coding-agent/mcp-and-coding-agent" target="_blank">MCP and Copilot Coding Agent ↗</a></li>
+          <li><a href="https://docs.github.com/copilot/how-tos/use-copilot-agents/coding-agent/extend-coding-agent-with-mcp" target="_blank">Extending Coding Agent with MCP ↗</a></li>
+          <li><a href="https://docs.github.com/copilot/customizing-copilot/using-model-context-protocol" target="_blank">Using Model Context Protocol ↗</a></li>
+          <li><a href="https://github.blog/ai-and-ml/generative-ai/a-practical-guide-on-how-to-use-the-github-mcp-server/" target="_blank">Practical Guide to GitHub MCP Server ↗</a></li>
+          <li><a href="https://github.com/github/github-mcp-server" target="_blank">GitHub MCP Server Repository ↗</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:16px;">🔒 Security</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices" target="_blank">MCP Security Best Practices ↗</a></li>
+          <li><a href="https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/" target="_blank">OWASP Secure MCP Development ↗</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:16px;">🎓 Tutorials & Guides</h3>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+          <li><a href="https://dev.to/shadid12/how-to-build-mcp-servers-with-typescript-sdk-1c28" target="_blank">Building MCP Servers with TypeScript ↗</a></li>
+          <li><a href="https://devblogs.microsoft.com/dotnet/build-a-model-context-protocol-mcp-server-in-csharp/" target="_blank">C# MCP Server (Microsoft DevBlog) ↗</a></li>
+          <li><a href="https://www.freecodecamp.org/news/how-to-build-a-custom-mcp-server-with-typescript-a-handbook-for-developers/" target="_blank">freeCodeCamp MCP Handbook ↗</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="border-top:1px solid #30363d;padding:32px 24px;text-align:center;color:#8b949e;font-size:14px;margin-top:64px;">
+  <p>Built with 🛡️ by <a href="https://htek.dev" style="color:#58a6ff;text-decoration:none;">htek.dev</a> | Powered by GitHub Pages</p>
+  <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
+</footer>
+
+</body>
+</html>

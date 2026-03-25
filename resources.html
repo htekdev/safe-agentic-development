@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resources & Links — Safe Agentic Development with GitHub Copilot</title>
+<meta name="description" content="Curated documentation, tools, MCP servers, learning paths, and enterprise governance resources for safe agentic development with GitHub Copilot.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;
+  --secondary:#8b949e;--link:#58a6ff;--green:#3fb950;--purple:#bc8cff;
+  --orange:#d29922;--red:#f85149;--yellow:#d29922;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;
+  --mono:SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;
+}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+a{color:var(--link);text-decoration:none;transition:color .2s}
+a:hover{color:#79c0ff}
+::selection{background:rgba(88,166,255,.3)}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--secondary)}
+
+.container{max-width:1400px;margin:0 auto;padding:0 24px}
+
+/* Hero */
+.hero{padding:120px 24px 48px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:60px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(88,166,255,.08) 0%,transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;margin-bottom:16px;position:relative}
+.hero h1 .accent{background:linear-gradient(135deg,var(--link),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--secondary);font-size:clamp(1rem,2vw,1.25rem);max-width:700px;margin:0 auto 24px}
+.hero .stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:24px}
+.hero .stat{text-align:center}
+.hero .stat .num{font-size:2rem;font-weight:700;color:var(--link)}
+.hero .stat .label{font-size:.85rem;color:var(--secondary)}
+
+/* Section */
+.section{padding:48px 0}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.section-header h2{font-size:1.6rem;font-weight:700}
+.section-header .count{background:var(--border);color:var(--secondary);font-size:.8rem;padding:2px 10px;border-radius:12px}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .25s ease;position:relative;display:flex;flex-direction:column}
+.card:hover{border-color:var(--link);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.card-title{font-size:1rem;font-weight:600;margin-bottom:6px;display:flex;align-items:flex-start;gap:8px}
+.card-title a{color:var(--text)}
+.card-title a:hover{color:var(--link)}
+.card-desc{color:var(--secondary);font-size:.875rem;flex:1;margin-bottom:12px}
+.card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto}
+.card-url{font-size:.75rem;color:var(--secondary);word-break:break-all;opacity:.7;margin-top:8px;font-family:var(--mono)}
+
+/* Badges */
+.badge{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap;display:inline-block}
+.badge-essential{background:rgba(248,81,73,.15);color:var(--red);border:1px solid rgba(248,81,73,.3)}
+.badge-recommended{background:rgba(210,153,34,.15);color:var(--yellow);border:1px solid rgba(210,153,34,.3)}
+.badge-supplementary{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+.badge-cat{background:rgba(88,166,255,.1);color:var(--link);border:1px solid rgba(88,166,255,.2)}
+
+/* Checklist */
+.checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.check-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;transition:all .25s;cursor:pointer}
+.check-item:hover{border-color:var(--green);transform:translateY(-1px)}
+.check-item.checked{border-color:var(--green);background:rgba(63,185,80,.05)}
+.check-item .check-box{width:22px;height:22px;border:2px solid var(--border);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:2px}
+.check-item.checked .check-box{background:var(--green);border-color:var(--green);color:var(--bg)}
+.check-item .check-box svg{opacity:0;transition:opacity .2s}
+.check-item.checked .check-box svg{opacity:1}
+.check-num{font-size:.8rem;color:var(--secondary);font-weight:700;min-width:20px}
+.check-content h3{font-size:.95rem;font-weight:600;margin-bottom:4px}
+.check-content p{font-size:.85rem;color:var(--secondary)}
+.check-content a{font-size:.8rem}
+
+/* Quick Ref */
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.qr-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;transition:all .25s}
+.qr-card:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.qr-card h3{font-size:.95rem;font-weight:700;margin-bottom:6px;color:var(--purple)}
+.qr-card p{font-size:.82rem;color:var(--secondary);margin-bottom:10px}
+.qr-card a{font-size:.82rem;font-weight:500}
+
+/* Filter Bar */
+.filter-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 0;position:sticky;top:56px;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);margin-bottom:24px}
+.filter-btn{background:var(--card);border:1px solid var(--border);color:var(--secondary);padding:6px 16px;border-radius:20px;font-size:.85rem;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.filter-btn:hover{border-color:var(--link);color:var(--text)}
+.filter-btn.active{background:rgba(88,166,255,.15);border-color:var(--link);color:var(--link)}
+.search-box{flex:1;min-width:200px;max-width:400px;margin-left:auto}
+.search-box input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px 8px 36px;border-radius:8px;font-size:.9rem;font-family:var(--font);outline:none;transition:border-color .2s}
+.search-box input:focus{border-color:var(--link)}
+.search-box{position:relative}
+.search-box::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.85rem;pointer-events:none}
+
+/* No results */
+.no-results{text-align:center;padding:48px 24px;color:var(--secondary);display:none}
+.no-results.show{display:block}
+.no-results h3{font-size:1.2rem;margin-bottom:8px;color:var(--text)}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.animate{animation:fadeUp .4s ease forwards;opacity:0}
+.section:nth-child(2) .animate{animation-delay:.05s}
+.section:nth-child(3) .animate{animation-delay:.1s}
+
+/* Responsive */
+@media(max-width:768px){
+  .card-grid{grid-template-columns:1fr}
+  .qr-grid{grid-template-columns:1fr 1fr}
+  .checklist{grid-template-columns:1fr}
+  .filter-bar{top:52px}
+  .hero .stats{gap:20px}
+}
+@media(max-width:480px){
+  .qr-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #30363d;padding:12px 24px;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <a href="index.html" style="color:#e6edf3;text-decoration:none;font-weight:600;font-size:18px;">🛡️ Safe Agentic Dev</a>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+      <a href="index.html" style="color:#8b949e;text-decoration:none;">Home</a>
+      <a href="safety-stack.html" style="color:#8b949e;text-decoration:none;">Safety Stack</a>
+      <a href="instructions.html" style="color:#8b949e;text-decoration:none;">Instructions</a>
+      <a href="hooks.html" style="color:#8b949e;text-decoration:none;">Hooks</a>
+      <a href="mcp.html" style="color:#8b949e;text-decoration:none;">MCP</a>
+      <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
+      <a href="planning.html" style="color:#8b949e;text-decoration:none;">Planning</a>
+      <a href="videos.html" style="color:#8b949e;text-decoration:none;">Videos</a>
+      <a href="resources.html" style="color:#3fb950;text-decoration:none;">Resources</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <h1 class="animate">📚 <span class="accent">Resources & Links</span></h1>
+    <p class="animate" style="animation-delay:.1s">Curated documentation, tools, MCP servers, learning paths, and enterprise governance resources for safe agentic development with GitHub Copilot.</p>
+    <div class="stats animate" style="animation-delay:.2s">
+      <div class="stat"><div class="num" style="color:#f85149">24</div><div class="label">Essential</div></div>
+      <div class="stat"><div class="num" style="color:#d29922">32</div><div class="label">Recommended</div></div>
+      <div class="stat"><div class="num" style="color:#3fb950">20</div><div class="label">Supplementary</div></div>
+      <div class="stat"><div class="num">76</div><div class="label">Total Resources</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- Getting Started Checklist -->
+<section class="section" id="checklist">
+  <div class="section-header">
+    <h2>🚀 Getting Started Checklist</h2>
+    <span class="count">5 steps</span>
+  </div>
+  <div class="checklist">
+    <div class="check-item animate" onclick="this.classList.toggle('checked')">
+      <div class="check-box"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="check-content">
+        <h3><span class="check-num">1.</span> Understand Copilot features</h3>
+        <p>Review what's available across plans — agent mode, chat, CLI, code review, coding agent.</p>
+        <a href="https://docs.github.com/en/copilot/get-started/features" target="_blank" rel="noopener">Copilot Features Overview →</a>
+      </div>
+    </div>
+    <div class="check-item animate" onclick="this.classList.toggle('checked')">
+      <div class="check-box"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="check-content">
+        <h3><span class="check-num">2.</span> Learn agent mode</h3>
+        <p>Understand how Copilot autonomously plans, edits files, runs commands, and iterates.</p>
+        <a href="https://github.blog/ai-and-ml/github-copilot/agent-mode-101-all-about-github-copilots-powerful-mode/" target="_blank" rel="noopener">Agent Mode 101 →</a>
+      </div>
+    </div>
+    <div class="check-item animate" onclick="this.classList.toggle('checked')">
+      <div class="check-box"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="check-content">
+        <h3><span class="check-num">3.</span> Install &amp; configure the CLI</h3>
+        <p>Set up Copilot CLI for terminal-native agentic development.</p>
+        <a href="https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-in-the-cli" target="_blank" rel="noopener">Install Copilot CLI →</a>
+      </div>
+    </div>
+    <div class="check-item animate" onclick="this.classList.toggle('checked')">
+      <div class="check-box"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="check-content">
+        <h3><span class="check-num">4.</span> Set up guardrails</h3>
+        <p>Create <code style="background:var(--border);padding:1px 6px;border-radius:4px;font-size:.8rem;font-family:var(--mono)">copilot-instructions.md</code> and scaffold extensions (test-enforcer, lint-on-edit, repo-shield).</p>
+        <a href="https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions" target="_blank" rel="noopener">Custom Instructions →</a>
+      </div>
+    </div>
+    <div class="check-item animate" onclick="this.classList.toggle('checked')">
+      <div class="check-box"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="check-content">
+        <h3><span class="check-num">5.</span> Connect MCP servers</h3>
+        <p>Extend agent capabilities with MCP for GitHub, databases, documentation, and more.</p>
+        <a href="https://docs.github.com/copilot/customizing-copilot/using-model-context-protocol" target="_blank" rel="noopener">Using MCP with Copilot →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Reference Cards -->
+<section class="section" id="quick-ref">
+  <div class="section-header">
+    <h2>📋 Quick Reference</h2>
+    <span class="count">9 concepts</span>
+  </div>
+  <div class="qr-grid">
+    <div class="qr-card animate">
+      <h3>Agent Mode</h3>
+      <p>Copilot autonomously plans, edits files, runs terminal commands, and self-corrects on errors.</p>
+      <a href="https://github.blog/ai-and-ml/github-copilot/agent-mode-101-all-about-github-copilots-powerful-mode/" target="_blank" rel="noopener">Agent Mode 101 →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>Coding Agent</h3>
+      <p>Autonomous agent on GitHub.com that works on issues and creates PRs asynchronously without an IDE.</p>
+      <a href="https://docs.github.com/copilot/concepts/agents/coding-agent/about-coding-agent" target="_blank" rel="noopener">About Coding Agent →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>Hooks</h3>
+      <p>Lifecycle callbacks that programmatically intercept and gate agent actions for governance.</p>
+      <a href="https://docs.github.com/en/copilot/reference/hooks-configuration" target="_blank" rel="noopener">Hooks Reference →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>Custom Instructions</h3>
+      <p>Natural-language Markdown files that define coding standards, security rules, and project conventions.</p>
+      <a href="https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions" target="_blank" rel="noopener">Custom Instructions →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>MCP Protocol</h3>
+      <p>Open standard for connecting AI agents to external tools and data sources via JSON-RPC.</p>
+      <a href="https://modelcontextprotocol.io/specification/2025-11-25/" target="_blank" rel="noopener">MCP Specification →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>Extensions</h3>
+      <p>Programmatic governance gates that enforce quality and security rules in real time during Copilot sessions.</p>
+      <a href="https://github.com/github/copilot-sdk" target="_blank" rel="noopener">Copilot SDK →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>Agentic Workflows</h3>
+      <p>GitHub Actions-triggered agent tasks defined in Markdown — triage, CI fixes, docs updates.</p>
+      <a href="https://github.blog/ai-and-ml/automate-repository-tasks-with-github-agentic-workflows" target="_blank" rel="noopener">Agentic Workflows →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>Safety Stack</h3>
+      <p>Multi-layered defense: Instructions → Extensions → Validation → Sandboxing → Human-in-the-Loop → Audit.</p>
+      <a href="https://github.blog/ai-and-ml/github-copilot/how-githubs-agentic-security-principles-make-our-ai-agents-as-secure-as-possible/" target="_blank" rel="noopener">Security Principles →</a>
+    </div>
+    <div class="qr-card animate">
+      <h3>Agent Control Plane</h3>
+      <p>Enterprise admin infrastructure for centralized policy enforcement, access controls, and audit.</p>
+      <a href="https://github.blog/changelog/2026-02-26-enterprise-ai-controls-agent-control-plane-now-generally-available/" target="_blank" rel="noopener">Enterprise Controls →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Category Filter + Search -->
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-cat="all" onclick="filterResources('all',this)">All</button>
+  <button class="filter-btn" data-cat="docs" onclick="filterResources('docs',this)">📚 Docs</button>
+  <button class="filter-btn" data-cat="blog" onclick="filterResources('blog',this)">📝 Blog</button>
+  <button class="filter-btn" data-cat="mcp" onclick="filterResources('mcp',this)">🔌 MCP</button>
+  <button class="filter-btn" data-cat="repos" onclick="filterResources('repos',this)">💻 Repos</button>
+  <button class="filter-btn" data-cat="learning" onclick="filterResources('learning',this)">🎓 Learning</button>
+  <button class="filter-btn" data-cat="tools" onclick="filterResources('tools',this)">🛠️ Tools</button>
+  <button class="filter-btn" data-cat="enterprise" onclick="filterResources('enterprise',this)">🏢 Enterprise</button>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search resources..." oninput="searchResources(this.value)">
+  </div>
+</div>
+
+<div id="noResults" class="no-results">
+  <h3>No resources found</h3>
+  <p>Try a different search term or filter category.</p>
+</div>
+
+<!-- SECTION: Official Documentation -->
+<section class="section resource-section" data-section="docs" id="sec-docs">
+  <div class="section-header">
+    <h2>📚 Official Documentation</h2>
+    <span class="count" id="count-docs"></span>
+  </div>
+  <div class="card-grid" id="grid-docs">
+
+    <!-- Core Copilot Docs -->
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="GitHub Copilot Docs Hub" data-desc="Central entry point for all Copilot documentation — features, setup, and how-tos.">
+      <div class="card-title"><a href="https://docs.github.com/copilot" target="_blank" rel="noopener">GitHub Copilot Docs Hub</a></div>
+      <div class="card-desc">Central entry point for all Copilot documentation — features, setup, and how-tos.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/copilot</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="Copilot Features Overview" data-desc="Feature matrix across plans — agent mode, chat, CLI, code review, coding agent.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/get-started/features" target="_blank" rel="noopener">Copilot Features Overview</a></div>
+      <div class="card-desc">Feature matrix across plans — agent mode, chat, CLI, code review, coding agent.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/en/copilot/get-started/features</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="About GitHub Copilot Coding Agent" data-desc="How the autonomous coding agent works on issues and creates PRs.">
+      <div class="card-title"><a href="https://docs.github.com/copilot/concepts/agents/coding-agent/about-coding-agent" target="_blank" rel="noopener">About GitHub Copilot Coding Agent</a></div>
+      <div class="card-desc">How the autonomous coding agent works on issues and creates PRs.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/copilot/concepts/agents/coding-agent/about-coding-agent</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="Use GitHub Copilot Agents" data-desc="Overview of agent capabilities: coding agent, code review, managing agents.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/how-tos/use-copilot-agents" target="_blank" rel="noopener">Use GitHub Copilot Agents</a></div>
+      <div class="card-desc">Overview of agent capabilities: coding agent, code review, managing agents.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/en/copilot/how-tos/use-copilot-agents</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="Custom Instructions for Copilot" data-desc="How to use copilot-instructions.md for repo-level guidance.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions" target="_blank" rel="noopener">Custom Instructions for Copilot</a></div>
+      <div class="card-desc">How to use <code style="background:var(--border);padding:1px 5px;border-radius:3px;font-size:.8rem;font-family:var(--mono)">copilot-instructions.md</code> for repo-level guidance.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../add-repository-instructions</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="Copilot Best Practices" data-desc="Official best practices for prompting, MCP, and agent workflows.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/get-started/best-practices" target="_blank" rel="noopener">Copilot Best Practices</a></div>
+      <div class="card-desc">Official best practices for prompting, MCP, and agent workflows.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/en/copilot/get-started/best-practices</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="Supported AI Models" data-desc="Reference for all models available in Copilot (Claude, GPT, Gemini, etc.).">
+      <div class="card-title"><a href="https://docs.github.com/copilot/reference/ai-models/supported-models" target="_blank" rel="noopener">Supported AI Models</a></div>
+      <div class="card-desc">Reference for all models available in Copilot (Claude, GPT, Gemini, etc.).</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/copilot/reference/ai-models/supported-models</div>
+    </div>
+
+    <!-- Hooks & Customization -->
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="Hooks Configuration Reference" data-desc="YAML/JSON schema reference for all hook events, inputs, and outputs.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/reference/hooks-configuration" target="_blank" rel="noopener">Hooks Configuration Reference</a></div>
+      <div class="card-desc">YAML/JSON schema reference for all hook events, inputs, and outputs.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/en/copilot/reference/hooks-configuration</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="Use Hooks (Coding Agent)" data-desc="Configure lifecycle hooks for the coding agent.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/use-hooks" target="_blank" rel="noopener">Use Hooks (Coding Agent)</a></div>
+      <div class="card-desc">Configure lifecycle hooks for the coding agent.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../use-hooks</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="VS Code Copilot Hooks" data-desc="VS Code-specific hooks (preview) — validate tool use, inject context, block operations.">
+      <div class="card-title"><a href="https://code.visualstudio.com/docs/copilot/customization/hooks" target="_blank" rel="noopener">VS Code Copilot Hooks</a></div>
+      <div class="card-desc">VS Code-specific hooks (preview) — validate tool use, inject context, block operations.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">code.visualstudio.com/docs/copilot/customization/hooks</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="CLI Hooks Documentation" data-desc="Hooks for the Copilot CLI agent at lifecycle points.">
+      <div class="card-title"><a href="https://docs.github.com/en/enterprise-cloud@latest/copilot/how-tos/copilot-cli/customize-copilot/use-hooks" target="_blank" rel="noopener">CLI Hooks Documentation</a></div>
+      <div class="card-desc">Hooks for the Copilot CLI agent at lifecycle points.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../use-hooks</div>
+    </div>
+
+    <!-- MCP Integration Docs -->
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="Extend Coding Agent with MCP" data-desc="Configure MCP servers for the autonomous coding agent.">
+      <div class="card-title"><a href="https://docs.github.com/copilot/how-tos/use-copilot-agents/coding-agent/extend-coding-agent-with-mcp" target="_blank" rel="noopener">Extend Coding Agent with MCP</a></div>
+      <div class="card-desc">Configure MCP servers for the autonomous coding agent.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../extend-coding-agent-with-mcp</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="Using the GitHub MCP Server" data-desc="Official GitHub MCP server setup — repos, issues, PRs, Actions via MCP.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp/use-the-github-mcp-server" target="_blank" rel="noopener">Using the GitHub MCP Server</a></div>
+      <div class="card-desc">Official GitHub MCP server setup — repos, issues, PRs, Actions via MCP.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../use-the-github-mcp-server</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="MCP and Copilot Coding Agent" data-desc="Conceptual overview of MCP in the coding agent context.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/concepts/coding-agent/mcp-and-coding-agent" target="_blank" rel="noopener">MCP and Copilot Coding Agent</a></div>
+      <div class="card-desc">Conceptual overview of MCP in the coding agent context.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../mcp-and-coding-agent</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="Using Model Context Protocol" data-desc="General MCP configuration for Copilot.">
+      <div class="card-title"><a href="https://docs.github.com/copilot/customizing-copilot/using-model-context-protocol" target="_blank" rel="noopener">Using Model Context Protocol</a></div>
+      <div class="card-desc">General MCP configuration for Copilot.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../using-model-context-protocol</div>
+    </div>
+
+    <!-- MCP Protocol Docs -->
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="MCP Official Website" data-desc="Main site for the Model Context Protocol — docs, guides, quickstart.">
+      <div class="card-title"><a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP Official Website</a></div>
+      <div class="card-desc">Main site for the Model Context Protocol — docs, guides, quickstart.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">modelcontextprotocol.io</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="MCP Specification (2025-11-25)" data-desc="The current official MCP spec — JSON-RPC 2.0, resources, prompts, tools.">
+      <div class="card-title"><a href="https://modelcontextprotocol.io/specification/2025-11-25/" target="_blank" rel="noopener">MCP Specification (2025-11-25)</a></div>
+      <div class="card-desc">The current official MCP spec — JSON-RPC 2.0, resources, prompts, tools.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">modelcontextprotocol.io/specification/2025-11-25/</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="MCP GitHub Organization" data-desc="All official MCP repos — spec, servers, SDKs, registry.">
+      <div class="card-title"><a href="https://github.com/modelcontextprotocol" target="_blank" rel="noopener">MCP GitHub Organization</a></div>
+      <div class="card-desc">All official MCP repos — spec, servers, SDKs, registry.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">github.com/modelcontextprotocol</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="supplementary" data-title="Anthropic MCP Announcement" data-desc="Original Anthropic announcement introducing MCP.">
+      <div class="card-title"><a href="https://www.anthropic.com/news/model-context-protocol" target="_blank" rel="noopener">Anthropic MCP Announcement</a></div>
+      <div class="card-desc">Original Anthropic announcement introducing MCP.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">anthropic.com/news/model-context-protocol</div>
+    </div>
+
+    <!-- Copilot CLI -->
+    <div class="card resource-card animate" data-cat="docs" data-priority="essential" data-title="Installing Copilot in the CLI" data-desc="Setup guide for Copilot CLI on Windows, macOS, and Linux.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-in-the-cli" target="_blank" rel="noopener">Installing Copilot in the CLI</a></div>
+      <div class="card-desc">Setup guide for Copilot CLI on Windows, macOS, and Linux.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../install-copilot-in-the-cli</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="Copilot CLI Overview" data-desc="Full CLI documentation — agent mode, slash commands, extensions.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/how-tos/copilot-cli" target="_blank" rel="noopener">Copilot CLI Overview</a></div>
+      <div class="card-desc">Full CLI documentation — agent mode, slash commands, extensions.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/en/copilot/how-tos/copilot-cli</div>
+    </div>
+
+    <!-- GitHub Actions -->
+    <div class="card resource-card animate" data-cat="docs" data-priority="recommended" data-title="GitHub Actions Documentation" data-desc="Core Actions docs — workflows, runners, reusable workflows.">
+      <div class="card-title"><a href="https://docs.github.com/en/actions" target="_blank" rel="noopener">GitHub Actions Documentation</a></div>
+      <div class="card-desc">Core Actions docs — workflows, runners, reusable workflows.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/en/actions</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="docs" data-priority="supplementary" data-title="Reusable Workflows" data-desc="Composable CI/CD workflows for agent-driven repositories.">
+      <div class="card-title"><a href="https://docs.github.com/en/actions/sharing-automations/reusing-workflows" target="_blank" rel="noopener">Reusable Workflows</a></div>
+      <div class="card-desc">Composable CI/CD workflows for agent-driven repositories.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Docs</span></div>
+      <div class="card-url">docs.github.com/.../reusing-workflows</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION: Blog Posts & Announcements -->
+<section class="section resource-section" data-section="blog" id="sec-blog">
+  <div class="section-header">
+    <h2>📝 Blog Posts &amp; Announcements</h2>
+    <span class="count" id="count-blog"></span>
+  </div>
+  <div class="card-grid" id="grid-blog">
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="essential" data-title="Agent Mode 101" data-desc="Comprehensive primer on agent mode — tools, MCP, and capabilities.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/github-copilot/agent-mode-101-all-about-github-copilots-powerful-mode/" target="_blank" rel="noopener">Agent Mode 101: All About GitHub Copilot's Powerful Mode</a></div>
+      <div class="card-desc">Comprehensive primer on agent mode — tools, MCP, and capabilities.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/ai-and-ml/github-copilot/agent-mode-101...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="essential" data-title="Agentic Security Principles" data-desc="GitHub's six security rules for agentic products — the foundation of safe agentic development.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/github-copilot/how-githubs-agentic-security-principles-make-our-ai-agents-as-secure-as-possible/" target="_blank" rel="noopener">How GitHub's Agentic Security Principles Make Our AI Agents Secure</a></div>
+      <div class="card-desc">GitHub's six security rules for agentic products — the foundation of safe agentic development.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../agentic-security-principles...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="essential" data-title="Agentic Workflows" data-desc="Trigger agents from Actions events with guardrails — agentic workflows for repo automation.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/automate-repository-tasks-with-github-agentic-workflows" target="_blank" rel="noopener">Automate Repository Tasks with GitHub Agentic Workflows</a></div>
+      <div class="card-desc">Trigger agents from Actions events with guardrails — agentic workflows for repo automation.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../automate-repository-tasks...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="What's New with Coding Agent" data-desc="Latest updates to the autonomous coding agent — multi-repo, improved context.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/github-copilot/whats-new-with-github-copilot-coding-agent/" target="_blank" rel="noopener">What's New with GitHub Copilot Coding Agent</a></div>
+      <div class="card-desc">Latest updates to the autonomous coding agent — multi-repo, improved context.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../whats-new-with-github-copilot-coding-agent</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="5 Ways to Integrate Coding Agent" data-desc="Practical patterns for integrating the coding agent into team workflows.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/github-copilot/5-ways-to-integrate-github-copilot-coding-agent-into-your-workflow/" target="_blank" rel="noopener">5 Ways to Integrate Copilot Coding Agent</a></div>
+      <div class="card-desc">Practical patterns for integrating the coding agent into team workflows.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../5-ways-to-integrate...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="Introducing Agent HQ" data-desc="Multi-agent orchestration platform from GitHub Universe 2025.">
+      <div class="card-title"><a href="https://github.blog/news-insights/company-news/welcome-home-agents/" target="_blank" rel="noopener">Introducing Agent HQ: Any Agent, Any Way You Work</a></div>
+      <div class="card-desc">Multi-agent orchestration platform from GitHub Universe 2025.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../welcome-home-agents</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="Building an Agentic Memory System" data-desc="How GitHub is building persistent memory across agent sessions — architecture deep-dive.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/github-copilot/building-an-agentic-memory-system-for-github-copilot/" target="_blank" rel="noopener">Building an Agentic Memory System for GitHub Copilot</a></div>
+      <div class="card-desc">How GitHub is building persistent memory across agent sessions — architecture deep-dive.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../building-an-agentic-memory-system...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="Reliable AI Workflows with Agentic Primitives" data-desc="Agentic primitives and context engineering for reliable agent workflows.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/github-copilot/how-to-build-reliable-ai-workflows-with-agentic-primitives-and-context-engineering/" target="_blank" rel="noopener">How to Build Reliable AI Workflows with Agentic Primitives</a></div>
+      <div class="card-desc">Agentic primitives and context engineering for reliable agent workflows.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../agentic-primitives-and-context-engineering</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="Introducing Copilot Agent Mode (VS Code)" data-desc="VS Code team's introduction of agent mode — architecture, tool use, iterative loop.">
+      <div class="card-title"><a href="https://code.visualstudio.com/blogs/2025/02/24/introducing-copilot-agent-mode" target="_blank" rel="noopener">Introducing Copilot Agent Mode (VS Code Blog)</a></div>
+      <div class="card-desc">VS Code team's introduction of agent mode — architecture, tool use, iterative loop.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">code.visualstudio.com/blogs/.../introducing-copilot-agent-mode</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="A Practical Guide to the GitHub MCP Server" data-desc="Hands-on guide for using the GitHub MCP server in real workflows.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/generative-ai/a-practical-guide-on-how-to-use-the-github-mcp-server/" target="_blank" rel="noopener">A Practical Guide to the GitHub MCP Server</a></div>
+      <div class="card-desc">Hands-on guide for using the GitHub MCP server in real workflows.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/.../practical-guide-github-mcp-server</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="supplementary" data-title="Agent Mode in Visual Studio" data-desc="Visual Studio's implementation of agent mode — planning tools, adapting plans.">
+      <div class="card-title"><a href="https://learn.microsoft.com/en-us/visualstudio/ide/copilot-agent-mode?view=visualstudio" target="_blank" rel="noopener">Agent Mode in Visual Studio (Microsoft Learn)</a></div>
+      <div class="card-desc">Visual Studio's implementation of agent mode — planning tools, adapting plans.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">learn.microsoft.com/.../copilot-agent-mode</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="recommended" data-title="Enterprise AI Controls — Now GA" data-desc="Enterprise Agent Control Plane reaches general availability.">
+      <div class="card-title"><a href="https://github.blog/changelog/2026-02-26-enterprise-ai-controls-agent-control-plane-now-generally-available/" target="_blank" rel="noopener">Enterprise AI Controls — Now GA</a></div>
+      <div class="card-desc">Enterprise Agent Control Plane reaches general availability.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/changelog/.../enterprise-ai-controls...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="supplementary" data-title="Configure Coding Agent's Validation Tools" data-desc="Customizable security validation in the coding agent pipeline.">
+      <div class="card-title"><a href="https://github.blog/changelog/2026-03-18-configure-copilot-coding-agents-validation-tools/" target="_blank" rel="noopener">Configure Copilot Coding Agent's Validation Tools</a></div>
+      <div class="card-desc">Customizable security validation in the coding agent pipeline.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/changelog/.../validation-tools</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="supplementary" data-title="Copilot Auto-Generates Custom Instructions" data-desc="Coding agent auto-generates copilot-instructions.md on first PR.">
+      <div class="card-title"><a href="https://github.blog/changelog/2025-08-06-copilot-coding-agent-automatically-generate-custom-instructions/" target="_blank" rel="noopener">Copilot Auto-Generates Custom Instructions</a></div>
+      <div class="card-desc">Coding agent auto-generates <code style="background:var(--border);padding:1px 5px;border-radius:3px;font-size:.8rem;font-family:var(--mono)">copilot-instructions.md</code> on first PR.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/changelog/.../auto-generate-instructions</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="blog" data-priority="supplementary" data-title="Agent Mode + MCP in JetBrains, Eclipse, Xcode" data-desc="Agent mode expanding beyond VS Code to all major IDEs.">
+      <div class="card-title"><a href="https://github.blog/changelog/2025-05-19-agent-mode-and-mcp-support-for-copilot-in-jetbrains-eclipse-and-xcode-now-in-public-preview/" target="_blank" rel="noopener">Agent Mode + MCP in JetBrains, Eclipse, Xcode</a></div>
+      <div class="card-desc">Agent mode expanding beyond VS Code to all major IDEs.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Blog</span></div>
+      <div class="card-url">github.blog/changelog/.../agent-mode-jetbrains...</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION: MCP Servers & Registries -->
+<section class="section resource-section" data-section="mcp" id="sec-mcp">
+  <div class="section-header">
+    <h2>🔌 MCP Servers &amp; Registries</h2>
+    <span class="count" id="count-mcp"></span>
+  </div>
+  <div class="card-grid" id="grid-mcp">
+
+    <!-- Registries -->
+    <div class="card resource-card animate" data-cat="mcp" data-priority="essential" data-title="Official MCP Registry" data-desc="Canonical GitHub-hosted registry — verified servers, moderation, subregistries.">
+      <div class="card-title"><a href="https://registry.modelcontextprotocol.io" target="_blank" rel="noopener">Official MCP Registry</a></div>
+      <div class="card-desc">Canonical GitHub-hosted registry — verified servers, moderation, subregistries.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">registry.modelcontextprotocol.io</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="essential" data-title="Official MCP Servers Collection" data-desc="Reference implementations — filesystem, GitHub, Google Drive, Slack, Postgres, etc.">
+      <div class="card-title"><a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">Official MCP Servers Collection</a></div>
+      <div class="card-desc">Reference implementations — filesystem, GitHub, Google Drive, Slack, Postgres, etc.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">github.com/modelcontextprotocol/servers</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="Smithery" data-desc="Curated MCP directory with install instructions — &quot;Connect agents to MCPs in minutes.&quot;">
+      <div class="card-title"><a href="https://smithery.ai" target="_blank" rel="noopener">Smithery</a></div>
+      <div class="card-desc">Curated MCP directory with install instructions — "Connect agents to MCPs in minutes."</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">smithery.ai</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="Glama MCP Servers" data-desc="~10,000 curated servers with category/status filters.">
+      <div class="card-title"><a href="https://glama.ai/mcp/servers" target="_blank" rel="noopener">Glama MCP Servers</a></div>
+      <div class="card-desc">~10,000 curated servers with category/status filters.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">glama.ai/mcp/servers</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="supplementary" data-title="MCP.SO" data-desc="Usage-driven rankings with call counts and Featured/Latest/Official/Hosted filters.">
+      <div class="card-title"><a href="https://mcp.so" target="_blank" rel="noopener">MCP.SO</a></div>
+      <div class="card-desc">Usage-driven rankings with call counts and Featured/Latest/Official/Hosted filters.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">mcp.so</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="supplementary" data-title="PulseMCP Leaderboard" data-desc="Top 215+ MCP servers ranked by community usage and activity.">
+      <div class="card-title"><a href="https://www.pulsemcp.com/servers" target="_blank" rel="noopener">PulseMCP Leaderboard</a></div>
+      <div class="card-desc">Top 215+ MCP servers ranked by community usage and activity.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">pulsemcp.com/servers</div>
+    </div>
+
+    <!-- Key MCP Servers -->
+    <div class="card resource-card animate" data-cat="mcp" data-priority="essential" data-title="GitHub MCP Server" data-desc="Repos, issues, PRs, code search, Actions, Dependabot — full GitHub API via MCP.">
+      <div class="card-title"><a href="https://github.com/github/github-mcp-server" target="_blank" rel="noopener">GitHub MCP Server</a></div>
+      <div class="card-desc">Repos, issues, PRs, code search, Actions, Dependabot — full GitHub API via MCP.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">github.com/github/github-mcp-server</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="GitHub Copilot Remote MCP" data-desc="GitHub's hosted remote MCP endpoint — no Docker required.">
+      <div class="card-title"><a href="https://api.githubcopilot.com/mcp/" target="_blank" rel="noopener">GitHub Copilot Remote MCP</a></div>
+      <div class="card-desc">GitHub's hosted remote MCP endpoint — no Docker required.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">api.githubcopilot.com/mcp/</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="Playwright MCP Server" data-desc="Browser automation via MCP — testing, scraping, interaction.">
+      <div class="card-title"><a href="https://github.com/microsoft/playwright-mcp" target="_blank" rel="noopener">Playwright MCP Server</a></div>
+      <div class="card-desc">Browser automation via MCP — testing, scraping, interaction.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">github.com/microsoft/playwright-mcp</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="Filesystem MCP Server" data-desc="Read/write local files with configurable security boundaries.">
+      <div class="card-title"><a href="https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem" target="_blank" rel="noopener">Filesystem MCP Server</a></div>
+      <div class="card-desc">Read/write local files with configurable security boundaries.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">github.com/modelcontextprotocol/servers/.../filesystem</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="supplementary" data-title="PostgreSQL MCP Server" data-desc="Query Postgres databases from AI agents.">
+      <div class="card-title"><a href="https://github.com/modelcontextprotocol/servers/tree/main/src/postgres" target="_blank" rel="noopener">PostgreSQL MCP Server</a></div>
+      <div class="card-desc">Query Postgres databases from AI agents.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">github.com/modelcontextprotocol/servers/.../postgres</div>
+    </div>
+
+    <!-- SDKs -->
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="TypeScript SDK" data-desc="Official TypeScript SDK for building MCP servers (Node.js, Bun, Deno).">
+      <div class="card-title"><a href="https://github.com/modelcontextprotocol/typescript-sdk" target="_blank" rel="noopener">TypeScript SDK</a></div>
+      <div class="card-desc">Official TypeScript SDK for building MCP servers (Node.js, Bun, Deno).</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">github.com/modelcontextprotocol/typescript-sdk</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="Python SDK" data-desc="Official Python SDK for building MCP servers (Python 3.10+).">
+      <div class="card-title"><a href="https://github.com/modelcontextprotocol/python-sdk" target="_blank" rel="noopener">Python SDK</a></div>
+      <div class="card-desc">Official Python SDK for building MCP servers (Python 3.10+).</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">github.com/modelcontextprotocol/python-sdk</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="mcp" data-priority="recommended" data-title="MCP Inspector" data-desc="Debug and test MCP servers during development.">
+      <div class="card-title"><a href="https://modelcontextprotocol.io/docs/tools/inspector" target="_blank" rel="noopener">MCP Inspector</a></div>
+      <div class="card-desc">Debug and test MCP servers during development.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">MCP</span></div>
+      <div class="card-url">modelcontextprotocol.io/docs/tools/inspector</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION: Example Repositories -->
+<section class="section resource-section" data-section="repos" id="sec-repos">
+  <div class="section-header">
+    <h2>💻 Example Repositories</h2>
+    <span class="count" id="count-repos"></span>
+  </div>
+  <div class="card-grid" id="grid-repos">
+
+    <div class="card resource-card animate" data-cat="repos" data-priority="essential" data-title="Awesome Copilot" data-desc="Official community collection — agents, hooks, extensions, skills, instructions, configurations.">
+      <div class="card-title"><a href="https://github.com/github/awesome-copilot" target="_blank" rel="noopener">Awesome Copilot</a></div>
+      <div class="card-desc">Official community collection — agents, hooks, extensions, skills, instructions, configurations.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Repos</span></div>
+      <div class="card-url">github.com/github/awesome-copilot</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="repos" data-priority="essential" data-title="GitHub Copilot SDK" data-desc="Official SDK (TypeScript, Python, C#, Go) — embed Copilot's agentic workflows in your apps.">
+      <div class="card-title"><a href="https://github.com/github/copilot-sdk" target="_blank" rel="noopener">GitHub Copilot SDK</a></div>
+      <div class="card-desc">Official SDK (TypeScript, Python, C#, Go) — embed Copilot's agentic workflows in your apps.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Repos</span></div>
+      <div class="card-url">github.com/github/copilot-sdk</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="repos" data-priority="recommended" data-title="Governance Audit Hook" data-desc="Real-time threat detection and audit logging hook for Copilot sessions.">
+      <div class="card-title"><a href="https://github.com/github/awesome-copilot/blob/main/hooks/governance-audit/README.md" target="_blank" rel="noopener">Governance Audit Hook</a></div>
+      <div class="card-desc">Real-time threat detection and audit logging hook for Copilot sessions.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Repos</span></div>
+      <div class="card-url">github.com/github/awesome-copilot/.../governance-audit</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="repos" data-priority="recommended" data-title="GitHub Copilot Global Bootcamp" data-desc="Hands-on labs — GitHub basics, Codespaces, Copilot setup, agent mode.">
+      <div class="card-title"><a href="https://github.com/microsoft/GitHub-Copilot-Global-Bootcamp" target="_blank" rel="noopener">GitHub Copilot Global Bootcamp</a></div>
+      <div class="card-desc">Hands-on labs — GitHub basics, Codespaces, Copilot setup, agent mode.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Repos</span></div>
+      <div class="card-url">github.com/microsoft/GitHub-Copilot-Global-Bootcamp</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="repos" data-priority="supplementary" data-title="VS Code Chat Extension Sample" data-desc="VS Code Tools API sample — build extensions that contribute tools to agents.">
+      <div class="card-title"><a href="https://github.com/microsoft/vscode-extension-samples/tree/main/chat-sample" target="_blank" rel="noopener">VS Code Chat Extension Sample</a></div>
+      <div class="card-desc">VS Code Tools API sample — build extensions that contribute tools to agents.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Repos</span></div>
+      <div class="card-url">github.com/microsoft/vscode-extension-samples/.../chat-sample</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="repos" data-priority="supplementary" data-title="GitHub MCP Tools Reference (Gist)" data-desc="Comprehensive list of 51 GitHub Remote MCP tools and their parameters.">
+      <div class="card-title"><a href="https://gist.github.com/didier-durand/2970be82fec6c84d522f7953ac7881b4" target="_blank" rel="noopener">GitHub MCP Tools Reference (Gist)</a></div>
+      <div class="card-desc">Comprehensive list of 51 GitHub Remote MCP tools and their parameters.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Repos</span></div>
+      <div class="card-url">gist.github.com/didier-durand/...</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION: Learning Paths & Courses -->
+<section class="section resource-section" data-section="learning" id="sec-learning">
+  <div class="section-header">
+    <h2>🎓 Learning Paths &amp; Courses</h2>
+    <span class="count" id="count-learning"></span>
+  </div>
+  <div class="card-grid" id="grid-learning">
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="essential" data-title="Getting Started with GitHub Copilot (GitHub Skills)" data-desc="Free interactive course — explaining, writing, planning, and developing code with Copilot.">
+      <div class="card-title"><a href="https://github.com/skills/getting-started-with-github-copilot" target="_blank" rel="noopener">Getting Started with GitHub Copilot</a></div>
+      <div class="card-desc">Free interactive course — explaining, writing, planning, and developing code with Copilot.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3)">Free</span></div>
+      <div class="card-url">github.com/skills/getting-started-with-github-copilot</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="recommended" data-title="GitHub Skills Hub" data-desc="All free GitHub Skills courses — Actions, Pages, Codespaces, and more.">
+      <div class="card-title"><a href="https://skills.github.com" target="_blank" rel="noopener">GitHub Skills Hub</a></div>
+      <div class="card-desc">All free GitHub Skills courses — Actions, Pages, Codespaces, and more.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3)">Free</span></div>
+      <div class="card-url">skills.github.com</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="essential" data-title="GitHub Copilot Fundamentals (Microsoft Learn)" data-desc="Beginner-to-intermediate path — responsible AI, prompt engineering, IDE/Chat/CLI.">
+      <div class="card-title"><a href="https://learn.microsoft.com/en-us/training/paths/copilot/" target="_blank" rel="noopener">GitHub Copilot Fundamentals</a></div>
+      <div class="card-desc">Beginner-to-intermediate path — responsible AI, prompt engineering, IDE/Chat/CLI.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(188,140,255,.15);color:#bc8cff;border:1px solid rgba(188,140,255,.3)">Microsoft Learn</span></div>
+      <div class="card-url">learn.microsoft.com/.../training/paths/copilot/</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="recommended" data-title="GitHub Copilot Certification" data-desc="Official certification — responsible AI, features, prompts, and testing.">
+      <div class="card-title"><a href="https://learn.microsoft.com/en-us/credentials/certifications/github-copilot/" target="_blank" rel="noopener">GitHub Copilot Certification</a></div>
+      <div class="card-desc">Official certification — responsible AI, features, prompts, and testing.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(188,140,255,.15);color:#bc8cff;border:1px solid rgba(188,140,255,.3)">Microsoft Learn</span></div>
+      <div class="card-url">learn.microsoft.com/.../certifications/github-copilot/</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="recommended" data-title="GitHub Copilot Global Bootcamp" data-desc="Hands-on workshop modules — setup, labs, projects.">
+      <div class="card-title"><a href="https://github.com/microsoft/GitHub-Copilot-Global-Bootcamp" target="_blank" rel="noopener">GitHub Copilot Global Bootcamp</a></div>
+      <div class="card-desc">Hands-on workshop modules — setup, labs, projects.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3)">Free</span></div>
+      <div class="card-url">github.com/microsoft/GitHub-Copilot-Global-Bootcamp</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="supplementary" data-title="Coursera: Boost Productivity with Copilot" data-desc="Beginner course — setup, prompting, chat, Python Todo project.">
+      <div class="card-title"><a href="https://www.coursera.org/learn/introduction-to-github-copilot" target="_blank" rel="noopener">Coursera: Boost Productivity with Copilot</a></div>
+      <div class="card-desc">Beginner course — setup, prompting, chat, Python Todo project.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(210,153,34,.15);color:#d29922;border:1px solid rgba(210,153,34,.3)">Coursera</span></div>
+      <div class="card-url">coursera.org/learn/introduction-to-github-copilot</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="supplementary" data-title="GitHub Skills: Complete Learning Path" data-desc="Comprehensive walkthrough of all GitHub Skills courses with recommended learning order.">
+      <div class="card-title"><a href="https://dev.to/pwd9000/github-skills-your-complete-learning-path-to-ai-powered-development-ieo" target="_blank" rel="noopener">GitHub Skills: Complete Learning Path (Dev.to)</a></div>
+      <div class="card-desc">Comprehensive walkthrough of all GitHub Skills courses with recommended learning order.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(88,166,255,.1);color:#58a6ff;border:1px solid rgba(88,166,255,.2)">Dev.to</span></div>
+      <div class="card-url">dev.to/pwd9000/github-skills-your-complete-learning-path...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="supplementary" data-title="Building MCP Servers with TypeScript" data-desc="Step-by-step guide to building custom MCP servers with the TypeScript SDK.">
+      <div class="card-title"><a href="https://dev.to/shadid12/how-to-build-mcp-servers-with-typescript-sdk-1c28" target="_blank" rel="noopener">Building MCP Servers with TypeScript</a></div>
+      <div class="card-desc">Step-by-step guide to building custom MCP servers with the TypeScript SDK.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(88,166,255,.1);color:#58a6ff;border:1px solid rgba(88,166,255,.2)">Dev.to</span></div>
+      <div class="card-url">dev.to/shadid12/how-to-build-mcp-servers-with-typescript...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="supplementary" data-title="Build a C# MCP Server" data-desc=".NET MCP server tutorial from the official Microsoft DevBlog.">
+      <div class="card-title"><a href="https://devblogs.microsoft.com/dotnet/build-a-model-context-protocol-mcp-server-in-csharp/" target="_blank" rel="noopener">Build a C# MCP Server (Microsoft DevBlog)</a></div>
+      <div class="card-desc">.NET MCP server tutorial from the official Microsoft DevBlog.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(188,140,255,.15);color:#bc8cff;border:1px solid rgba(188,140,255,.3)">Microsoft</span></div>
+      <div class="card-url">devblogs.microsoft.com/.../build-a-model-context-protocol...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="learning" data-priority="supplementary" data-title="freeCodeCamp MCP Handbook" data-desc="Comprehensive developer handbook for building custom MCP servers.">
+      <div class="card-title"><a href="https://www.freecodecamp.org/news/how-to-build-a-custom-mcp-server-with-typescript-a-handbook-for-developers/" target="_blank" rel="noopener">freeCodeCamp MCP Handbook</a></div>
+      <div class="card-desc">Comprehensive developer handbook for building custom MCP servers.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Learning</span><span class="badge" style="background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3)">Free</span></div>
+      <div class="card-url">freecodecamp.org/.../how-to-build-a-custom-mcp-server...</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION: Tools & Extensions -->
+<section class="section resource-section" data-section="tools" id="sec-tools">
+  <div class="section-header">
+    <h2>🛠️ Tools &amp; Extensions</h2>
+    <span class="count" id="count-tools"></span>
+  </div>
+  <div class="card-grid" id="grid-tools">
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="essential" data-title="GitHub Copilot (VS Code)" data-desc="Core extension — code completion, chat, agent mode.">
+      <div class="card-title"><a href="https://marketplace.visualstudio.com/items?itemName=GitHub.copilot" target="_blank" rel="noopener">GitHub Copilot (VS Code)</a></div>
+      <div class="card-desc">Core extension — code completion, chat, agent mode.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">marketplace.visualstudio.com/.../GitHub.copilot</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="essential" data-title="GitHub Copilot Chat (VS Code)" data-desc="Chat interface with agent mode, MCP support, and tool use.">
+      <div class="card-title"><a href="https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat" target="_blank" rel="noopener">GitHub Copilot Chat (VS Code)</a></div>
+      <div class="card-desc">Chat interface with agent mode, MCP support, and tool use.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">marketplace.visualstudio.com/.../GitHub.copilot-chat</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="recommended" data-title="GitHub Pull Requests (VS Code)" data-desc="Review agent-created PRs directly in VS Code.">
+      <div class="card-title"><a href="https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github" target="_blank" rel="noopener">GitHub Pull Requests (VS Code)</a></div>
+      <div class="card-desc">Review agent-created PRs directly in VS Code.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">marketplace.visualstudio.com/.../GitHub.vscode-pull-request-github</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="supplementary" data-title="GitHub Actions (VS Code)" data-desc="Manage GitHub Actions workflows from VS Code.">
+      <div class="card-title"><a href="https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-github-actions" target="_blank" rel="noopener">GitHub Actions (VS Code)</a></div>
+      <div class="card-desc">Manage GitHub Actions workflows from VS Code.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">marketplace.visualstudio.com/.../GitHub.vscode-github-actions</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="essential" data-title="GitHub Copilot CLI" data-desc="Terminal-native agent — full agentic development from the command line.">
+      <div class="card-title"><a href="https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-in-the-cli" target="_blank" rel="noopener">GitHub Copilot CLI</a></div>
+      <div class="card-desc">Terminal-native agent — full agentic development from the command line.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">docs.github.com/.../install-copilot-in-the-cli</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="essential" data-title="GitHub CLI (gh)" data-desc="Foundation for Copilot CLI — manage repos, PRs, issues, and Actions.">
+      <div class="card-title"><a href="https://cli.github.com" target="_blank" rel="noopener">GitHub CLI (gh)</a></div>
+      <div class="card-desc">Foundation for Copilot CLI — manage repos, PRs, issues, and Actions.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">cli.github.com</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="recommended" data-title="MCP Inspector" data-desc="Debug and test MCP servers during development.">
+      <div class="card-title"><a href="https://modelcontextprotocol.io/docs/tools/inspector" target="_blank" rel="noopener">MCP Inspector</a></div>
+      <div class="card-desc">Debug and test MCP servers during development.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">modelcontextprotocol.io/docs/tools/inspector</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="recommended" data-title="GitHub Copilot SDK (npm)" data-desc="NPM package for embedding Copilot agentic workflows in custom applications.">
+      <div class="card-title"><a href="https://www.npmjs.com/package/@github/copilot-sdk" target="_blank" rel="noopener">GitHub Copilot SDK (npm)</a></div>
+      <div class="card-desc">NPM package for embedding Copilot agentic workflows in custom applications.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">npmjs.com/package/@github/copilot-sdk</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="tools" data-priority="recommended" data-title="Playwright MCP Server" data-desc="Browser automation for agent-driven testing and interaction.">
+      <div class="card-title"><a href="https://github.com/microsoft/playwright-mcp" target="_blank" rel="noopener">Playwright MCP Server</a></div>
+      <div class="card-desc">Browser automation for agent-driven testing and interaction.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Tools</span></div>
+      <div class="card-url">github.com/microsoft/playwright-mcp</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION: Enterprise & Governance -->
+<section class="section resource-section" data-section="enterprise" id="sec-enterprise">
+  <div class="section-header">
+    <h2>🏢 Enterprise &amp; Governance</h2>
+    <span class="count" id="count-enterprise"></span>
+  </div>
+  <div class="card-grid" id="grid-enterprise">
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="essential" data-title="Enterprise AI Controls & Agent Control Plane (GA)" data-desc="Centralized policy enforcement, session analytics, and audit for all AI agent activity.">
+      <div class="card-title"><a href="https://github.blog/changelog/2026-02-26-enterprise-ai-controls-agent-control-plane-now-generally-available/" target="_blank" rel="noopener">Enterprise AI Controls &amp; Agent Control Plane (GA)</a></div>
+      <div class="card-desc">Centralized policy enforcement, session analytics, and audit for all AI agent activity.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">github.blog/changelog/.../enterprise-ai-controls...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="essential" data-title="GitHub's Agentic Security Principles" data-desc="GitHub's six rules for agentic products — the security foundation.">
+      <div class="card-title"><a href="https://github.blog/ai-and-ml/github-copilot/how-githubs-agentic-security-principles-make-our-ai-agents-as-secure-as-possible/" target="_blank" rel="noopener">GitHub's Agentic Security Principles</a></div>
+      <div class="card-desc">GitHub's six rules for agentic products — the security foundation.</div>
+      <div class="card-meta"><span class="badge badge-essential">🔴 Essential</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">github.blog/.../agentic-security-principles...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="recommended" data-title="MCP Security Best Practices" data-desc="Official security guidelines for MCP server development and deployment.">
+      <div class="card-title"><a href="https://modelcontextprotocol.io/docs/tutorials/security/security_best_practices" target="_blank" rel="noopener">MCP Security Best Practices</a></div>
+      <div class="card-desc">Official security guidelines for MCP server development and deployment.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">modelcontextprotocol.io/.../security_best_practices</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="recommended" data-title="OWASP Secure MCP Server Development" data-desc="OWASP's practical guide for building secure MCP servers.">
+      <div class="card-title"><a href="https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/" target="_blank" rel="noopener">OWASP Secure MCP Server Development</a></div>
+      <div class="card-desc">OWASP's practical guide for building secure MCP servers.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">genai.owasp.org/.../secure-mcp-server-development</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="recommended" data-title="OWASP Agentic AI Top 10 & Coding Agent Risks" data-desc="Analysis of OWASP's agentic AI threat categories applied to coding agents.">
+      <div class="card-title"><a href="https://www.legitsecurity.com/blog/from-chatbot-to-code-threat-owasps-agentic-ai-top-10-and-the-specialized-risks-of-coding-agents" target="_blank" rel="noopener">OWASP Agentic AI Top 10 &amp; Coding Agent Risks</a></div>
+      <div class="card-desc">Analysis of OWASP's agentic AI threat categories applied to coding agents.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">legitsecurity.com/.../owasps-agentic-ai-top-10...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="supplementary" data-title="Guardrails for Agentic Coding" data-desc="Practical framework for moving from assisted to autonomous coding without lowering quality.">
+      <div class="card-title"><a href="https://jvaneyck.wordpress.com/2026/02/22/guardrails-for-agentic-coding-how-to-move-up-the-ladder-without-lowering-your-bar/" target="_blank" rel="noopener">Guardrails for Agentic Coding</a></div>
+      <div class="card-desc">Practical framework for moving from assisted to autonomous coding without lowering quality.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">jvaneyck.wordpress.com/.../guardrails-for-agentic-coding...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="recommended" data-title="Agentic DevOps Safe Mode (Arinco)" data-desc="Comprehensive enterprise framework for secure GitHub Copilot agent adoption.">
+      <div class="card-title"><a href="https://arinco.com.au/blog/agentic-devops-safe-mode-a-practical-framework-for-secure-github-copilot-agents/" target="_blank" rel="noopener">Agentic DevOps Safe Mode (Arinco)</a></div>
+      <div class="card-desc">Comprehensive enterprise framework for secure GitHub Copilot agent adoption.</div>
+      <div class="card-meta"><span class="badge badge-recommended">🟡 Recommended</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">arinco.com.au/.../agentic-devops-safe-mode...</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="supplementary" data-title="AI Coding Agent Security (Knostic)" data-desc="Security analysis of the risks when agents move from assistants to autonomous actors.">
+      <div class="card-title"><a href="https://www.knostic.ai/blog/ai-coding-agent-security" target="_blank" rel="noopener">AI Coding Agent Security (Knostic)</a></div>
+      <div class="card-desc">Security analysis of the risks when agents move from assistants to autonomous actors.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">knostic.ai/blog/ai-coding-agent-security</div>
+    </div>
+
+    <div class="card resource-card animate" data-cat="enterprise" data-priority="supplementary" data-title="Agentic Development (Xebia)" data-desc="The Recon-Repair-Validate loop and human-in-the-loop patterns for safe agentic development.">
+      <div class="card-title"><a href="https://xebia.com/articles/agentic-development/" target="_blank" rel="noopener">Agentic Development (Xebia)</a></div>
+      <div class="card-desc">The Recon-Repair-Validate loop and human-in-the-loop patterns for safe agentic development.</div>
+      <div class="card-meta"><span class="badge badge-supplementary">🟢 Supplementary</span><span class="badge badge-cat">Enterprise</span></div>
+      <div class="card-url">xebia.com/articles/agentic-development/</div>
+    </div>
+
+  </div>
+</section>
+
+</div><!-- /.container -->
+
+<!-- Footer -->
+<footer style="border-top:1px solid #30363d;padding:32px 24px;text-align:center;color:#8b949e;font-size:14px;margin-top:64px;">
+  <p>Built with 🛡️ by <a href="https://htek.dev" style="color:#58a6ff;text-decoration:none;">htek.dev</a> | Powered by GitHub Pages</p>
+  <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
+</footer>
+
+<script>
+(function(){
+  // Update section counts
+  var sections = ['docs','blog','mcp','repos','learning','tools','enterprise'];
+  sections.forEach(function(s){
+    var cards = document.querySelectorAll('#grid-'+s+' .resource-card');
+    var el = document.getElementById('count-'+s);
+    if(el) el.textContent = cards.length + ' resources';
+  });
+
+  // Intersection Observer for scroll animations
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.style.animationPlayState='running';
+        e.target.classList.add('visible');
+      }
+    });
+  },{threshold:0.05,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.animate').forEach(function(el){
+    el.style.animationPlayState='paused';
+    observer.observe(el);
+  });
+
+  // State
+  var activeCategory = 'all';
+  var searchQuery = '';
+
+  // Category filtering
+  window.filterResources = function(cat, btn){
+    activeCategory = cat;
+    document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    applyFilters();
+  };
+
+  // Search
+  window.searchResources = function(q){
+    searchQuery = q.toLowerCase().trim();
+    applyFilters();
+  };
+
+  function applyFilters(){
+    var allCards = document.querySelectorAll('.resource-card');
+    var allSections = document.querySelectorAll('.resource-section');
+    var visibleCount = 0;
+
+    allCards.forEach(function(card){
+      var cat = card.getAttribute('data-cat');
+      var title = (card.getAttribute('data-title')||'').toLowerCase();
+      var desc = (card.getAttribute('data-desc')||'').toLowerCase();
+      var priority = (card.getAttribute('data-priority')||'').toLowerCase();
+
+      var catMatch = (activeCategory === 'all' || cat === activeCategory);
+      var searchMatch = !searchQuery || title.indexOf(searchQuery)!==-1 || desc.indexOf(searchQuery)!==-1 || priority.indexOf(searchQuery)!==-1 || cat.indexOf(searchQuery)!==-1;
+
+      if(catMatch && searchMatch){
+        card.style.display='';
+        visibleCount++;
+      } else {
+        card.style.display='none';
+      }
+    });
+
+    // Show/hide sections based on whether they have visible cards
+    allSections.forEach(function(sec){
+      var secCat = sec.getAttribute('data-section');
+      var cards = sec.querySelectorAll('.resource-card');
+      var anyVisible = false;
+      cards.forEach(function(c){ if(c.style.display !== 'none') anyVisible = true; });
+      sec.style.display = anyVisible ? '' : 'none';
+    });
+
+    // No results message
+    var noRes = document.getElementById('noResults');
+    if(visibleCount === 0){
+      noRes.classList.add('show');
+    } else {
+      noRes.classList.remove('show');
+    }
+  }
+
+  // Allow keyboard shortcut for search: Ctrl+K or /
+  document.addEventListener('keydown', function(e){
+    if((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT')){
+      e.preventDefault();
+      document.getElementById('searchInput').focus();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

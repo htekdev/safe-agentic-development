@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Hooks &amp; Extensions — Safe Agentic Development</title>
+  <meta name="description" content="Programmatic guardrails that intercept, validate, and govern every AI agent action — from blocking dangerous commands to enforcing test coverage.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background: #0d1117; color: #e6edf3; line-height: 1.6; padding-top: 60px;
+    }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero { text-align: center; padding: 80px 24px 48px; }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1;
+      background: linear-gradient(135deg, #3fb950, #58a6ff, #bc8cff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 16px;
+    }
+    .hero p { color: #8b949e; font-size: 18px; max-width: 780px; margin: 0 auto 24px; }
+    .badge {
+      display: inline-block; background: rgba(63,185,80,0.15); color: #3fb950;
+      border: 1px solid rgba(63,185,80,0.3); border-radius: 20px;
+      padding: 6px 16px; font-size: 13px; font-weight: 600;
+    }
+
+    /* Cards */
+    .card {
+      background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+      padding: 24px; transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: #58a6ff; transform: translateY(-2px); }
+    .card h3 { font-size: 20px; margin-bottom: 8px; color: #e6edf3; }
+    .card p, .card li { color: #8b949e; font-size: 14px; }
+
+    /* Grid layouts */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin: 32px 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; margin: 32px 0; }
+
+    /* Section */
+    .section { margin: 64px 0; }
+    .section-title {
+      font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #e6edf3;
+    }
+    .section-sub { color: #8b949e; font-size: 16px; margin-bottom: 24px; }
+
+    /* Code blocks */
+    .code-block {
+      background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+      overflow-x: auto; margin: 16px 0; position: relative;
+    }
+    .code-block .code-header {
+      background: #1c2128; border-bottom: 1px solid #30363d; padding: 8px 16px;
+      font-size: 12px; color: #8b949e; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .code-block pre {
+      padding: 16px; font-size: 13px; line-height: 1.5; color: #e6edf3; margin: 0;
+      white-space: pre; overflow-x: auto;
+    }
+    .code-block .kw { color: #ff7b72; }
+    .code-block .str { color: #a5d6ff; }
+    .code-block .cm { color: #8b949e; }
+    .code-block .fn { color: #d2a8ff; }
+    .code-block .var { color: #ffa657; }
+    .code-block .green { color: #3fb950; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table {
+      width: 100%; border-collapse: collapse; background: #161b22;
+      border: 1px solid #30363d; border-radius: 8px; overflow: hidden;
+    }
+    th { background: #1c2128; color: #e6edf3; font-weight: 600; text-align: left; padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #30363d; }
+    td { padding: 12px 16px; font-size: 14px; color: #8b949e; border-bottom: 1px solid #21262d; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #1c2128; }
+
+    .tag-yes { color: #3fb950; font-weight: 600; }
+    .tag-no { color: #f85149; font-weight: 600; }
+
+    /* Lifecycle */
+    .lifecycle { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin: 32px 0; }
+    .lifecycle-step {
+      background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+      padding: 12px 18px; text-align: center; font-size: 13px; font-weight: 600;
+      color: #e6edf3; min-width: 130px; transition: border-color 0.2s;
+    }
+    .lifecycle-step:hover { border-color: #58a6ff; }
+    .lifecycle-step.blocking { border-color: #f85149; color: #f85149; }
+    .lifecycle-step.tool { border-color: #3fb950; color: #3fb950; background: rgba(63,185,80,0.08); }
+    .lifecycle-arrow { color: #30363d; font-size: 24px; padding: 0 4px; flex-shrink: 0; }
+    .lifecycle-step small { display: block; font-weight: 400; font-size: 11px; color: #8b949e; margin-top: 4px; }
+
+    /* Tag pills */
+    .pill {
+      display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 10px;
+      border-radius: 12px; margin-right: 6px;
+    }
+    .pill-green { background: rgba(63,185,80,0.15); color: #3fb950; }
+    .pill-blue { background: rgba(88,166,255,0.15); color: #58a6ff; }
+    .pill-purple { background: rgba(188,140,255,0.15); color: #bc8cff; }
+    .pill-orange { background: rgba(210,153,34,0.15); color: #d29922; }
+
+    /* Getting started cards */
+    .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%; font-size: 14px; font-weight: 700;
+      background: rgba(88,166,255,0.15); color: #58a6ff; margin-bottom: 8px;
+    }
+    .steps-list { list-style: none; padding: 0; }
+    .steps-list li { padding: 8px 0; border-bottom: 1px solid #21262d; color: #8b949e; font-size: 14px; }
+    .steps-list li:last-child { border-bottom: none; }
+    .steps-list li code { background: #1c2128; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #e6edf3; }
+
+    @media (max-width: 768px) {
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .lifecycle { gap: 8px; }
+      .lifecycle-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #30363d;padding:12px 24px;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <a href="index.html" style="color:#e6edf3;text-decoration:none;font-weight:600;font-size:18px;">🛡️ Safe Agentic Dev</a>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+      <a href="index.html" style="color:#8b949e;text-decoration:none;">Home</a>
+      <a href="safety-stack.html" style="color:#8b949e;text-decoration:none;">Safety Stack</a>
+      <a href="instructions.html" style="color:#8b949e;text-decoration:none;">Instructions</a>
+      <a href="hooks.html" style="color:#3fb950;text-decoration:none;">Hooks</a>
+      <a href="mcp.html" style="color:#8b949e;text-decoration:none;">MCP</a>
+      <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
+      <a href="planning.html" style="color:#8b949e;text-decoration:none;">Planning</a>
+      <a href="videos.html" style="color:#8b949e;text-decoration:none;">Videos</a>
+      <a href="resources.html" style="color:#8b949e;text-decoration:none;">Resources</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Agent Hooks &amp; Extensions</h1>
+    <p>Programmatic guardrails that intercept, validate, and govern every AI agent action — from blocking dangerous commands to enforcing test coverage.</p>
+    <span class="badge">🔒 Layer 2 — Programmatic Guardrails</span>
+  </section>
+
+  <!-- Three Governance Systems -->
+  <section class="section">
+    <h2 class="section-title">Three Governance Systems</h2>
+    <p class="section-sub">GitHub Copilot offers three complementary mechanisms for governing agent behavior at the tool-call level.</p>
+    <div class="grid-3">
+      <div class="card">
+        <span class="pill pill-green">Simplest</span>
+        <h3>🐚 Shell Hooks</h3>
+        <p style="margin:8px 0;color:#8b949e;font-size:13px;font-family:'SFMono-Regular',Consolas,monospace;">.github/hooks/</p>
+        <p>Bash or PowerShell scripts that run on hook events. The simplest way to add guardrails — no SDK, no dependencies, fully cross-platform.</p>
+        <ul style="margin-top:12px;padding-left:18px;">
+          <li>Write in Bash or PowerShell</li>
+          <li>Configured via <code>hooks.json</code></li>
+          <li>Read JSON from stdin, write JSON to stdout</li>
+          <li>Stateless per invocation</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="pill pill-purple">Most Powerful</span>
+        <h3>⚡ CLI Extensions</h3>
+        <p style="margin:8px 0;color:#8b949e;font-size:13px;font-family:'SFMono-Regular',Consolas,monospace;">.github/extensions/</p>
+        <p>JavaScript/TypeScript modules using <code>@github/copilot-sdk</code>. Full programmatic control with session state, custom tools, and rich lifecycle hooks.</p>
+        <ul style="margin-top:12px;padding-left:18px;">
+          <li>Stateful across the entire session</li>
+          <li>Can expose custom tools to the agent</li>
+          <li>Rich API: deny, inject context, track files</li>
+          <li>Import npm packages</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="pill pill-blue">Most Readable</span>
+        <h3>📜 Hookflows</h3>
+        <p style="margin:8px 0;color:#8b949e;font-size:13px;font-family:'SFMono-Regular',Consolas,monospace;">.github/hookflows/</p>
+        <p>Markdown-based workflow rules with YAML frontmatter. Declare governance policies in plain language that anyone on the team can read and review.</p>
+        <ul style="margin-top:12px;padding-left:18px;">
+          <li>Markdown + YAML frontmatter</li>
+          <li>Declarative event matching</li>
+          <li>Block, warn, or inject context</li>
+          <li>No code required</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shell Hooks -->
+  <section class="section" id="shell-hooks">
+    <h2 class="section-title">🐚 Shell Hooks</h2>
+    <p class="section-sub">The simplest governance mechanism — Bash or PowerShell scripts triggered by agent lifecycle events. Configured with a <code>hooks.json</code> manifest in <code>.github/hooks/</code>.</p>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3>hooks.json Configuration</h3>
+      <p style="margin:8px 0;">The manifest file maps event types to scripts. Each hook specifies the event it handles and the script to run.</p>
+      <div class="code-block">
+        <div class="code-header">📄 .github/hooks/hooks.json</div>
+        <pre>{
+  <span class="str">"hooks"</span>: [
+    {
+      <span class="str">"event"</span>: <span class="str">"preToolUse"</span>,
+      <span class="str">"script"</span>: <span class="str">"block-secrets.sh"</span>
+    },
+    {
+      <span class="str">"event"</span>: <span class="str">"sessionStart"</span>,
+      <span class="str">"script"</span>: <span class="str">"audit-log.sh"</span>
+    },
+    {
+      <span class="str">"event"</span>: <span class="str">"postToolUse"</span>,
+      <span class="str">"script"</span>: <span class="str">"validate-output.sh"</span>
+    }
+  ]
+}</pre>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:16px;">Hook Event Types</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Event</th>
+            <th>Can Block?</th>
+            <th>Receives</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>sessionStart</code></td>
+            <td><span class="tag-no">No</span></td>
+            <td>Session metadata</td>
+            <td>Audit logging, environment setup</td>
+          </tr>
+          <tr>
+            <td><code>userPromptSubmitted</code></td>
+            <td><span class="tag-no">No</span></td>
+            <td>User prompt text</td>
+            <td>Prompt analysis, policy check</td>
+          </tr>
+          <tr>
+            <td><code>preToolUse</code></td>
+            <td><span class="tag-yes">✅ YES</span></td>
+            <td>toolName, toolArgs</td>
+            <td>Block dangerous actions, validate inputs</td>
+          </tr>
+          <tr>
+            <td><code>postToolUse</code></td>
+            <td><span class="tag-no">No</span></td>
+            <td>toolName, toolArgs, result</td>
+            <td>Validate outputs, inject context</td>
+          </tr>
+          <tr>
+            <td><code>errorOccurred</code></td>
+            <td><span class="tag-no">No</span></td>
+            <td>Error details</td>
+            <td>Error tracking, alerting</td>
+          </tr>
+          <tr>
+            <td><code>sessionEnd</code></td>
+            <td><span class="tag-no">No</span></td>
+            <td>Session summary</td>
+            <td>Session cleanup, final audit</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin:24px 0 12px;">Example: Block Secret File Edits</h3>
+    <div class="code-block">
+      <div class="code-header">📄 .github/hooks/block-secrets.sh</div>
+      <pre><span class="cm">#!/bin/bash</span>
+<span class="var">INPUT</span>=$(<span class="fn">cat</span>)
+<span class="var">TOOL</span>=$(<span class="kw">echo</span> <span class="str">"$INPUT"</span> | <span class="fn">jq</span> -r <span class="str">'.toolName'</span>)
+<span class="var">ARGS</span>=$(<span class="kw">echo</span> <span class="str">"$INPUT"</span> | <span class="fn">jq</span> -r <span class="str">'.toolArgs'</span>)
+<span class="var">FILE</span>=$(<span class="kw">echo</span> <span class="str">"$ARGS"</span> | <span class="fn">jq</span> -r <span class="str">'.path // empty'</span>)
+
+<span class="kw">if</span> [[ <span class="str">"$FILE"</span> =~ \.(env|pem|key)$ ]]; <span class="kw">then</span>
+  <span class="kw">echo</span> <span class="str">'{"permissionDecision":"deny","permissionDecisionReason":"Blocked: Cannot modify secret files (.env, .pem, .key)"}'</span>
+  <span class="kw">exit</span> 0
+<span class="kw">fi</span></pre>
+    </div>
+  </section>
+
+  <!-- CLI Extensions -->
+  <section class="section" id="cli-extensions">
+    <h2 class="section-title">⚡ CLI Extensions</h2>
+    <p class="section-sub">The most powerful governance mechanism — JavaScript/TypeScript modules using <code>@github/copilot-sdk</code> that maintain state across the entire agent session.</p>
+
+    <div class="grid-2" style="margin-bottom:24px;">
+      <div class="card">
+        <h3>Core API</h3>
+        <ul style="padding-left:18px;margin-top:8px;">
+          <li><code style="color:#d2a8ff;">joinSession()</code> — Connect to the active agent session</li>
+          <li><code style="color:#d2a8ff;">onPreToolUse</code> — Intercept before execution <span class="pill pill-green" style="font-size:11px;">can deny</span></li>
+          <li><code style="color:#d2a8ff;">onPostToolUse</code> — React after execution, inject context</li>
+          <li><code style="color:#d2a8ff;">onSessionStart</code> — Inject baseline context at startup</li>
+          <li><code style="color:#d2a8ff;">approveAll</code> — Default permission handler</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Key Capabilities</h3>
+        <ul style="padding-left:18px;margin-top:8px;">
+          <li><strong style="color:#e6edf3;">Stateful</strong> — Track files, patterns, and decisions across the session</li>
+          <li><strong style="color:#e6edf3;">Block actions</strong> — Return <code>permissionDecision: "deny"</code> to stop tool use</li>
+          <li><strong style="color:#e6edf3;">Inject context</strong> — Return <code>additionalContext</code> to guide the agent</li>
+          <li><strong style="color:#e6edf3;">Custom tools</strong> — Expose new tools the agent can use</li>
+          <li><strong style="color:#e6edf3;">npm ecosystem</strong> — Import any npm package</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:12px;">Example: Test Enforcer Extension</h3>
+    <p style="color:#8b949e;margin-bottom:12px;">Tracks modified source and test files. Blocks <code>git commit</code> if source files were changed without corresponding test updates.</p>
+    <div class="code-block">
+      <div class="code-header">📄 .github/extensions/test-enforcer/extension.mjs</div>
+      <pre><span class="cm">// Tracks modified source and test files across the session</span>
+<span class="kw">import</span> { <span class="var">approveAll</span> } <span class="kw">from</span> <span class="str">"@github/copilot-sdk"</span>;
+<span class="kw">import</span> { <span class="var">joinSession</span> } <span class="kw">from</span> <span class="str">"@github/copilot-sdk/extension"</span>;
+
+<span class="kw">const</span> <span class="var">modifiedSourceFiles</span> = <span class="kw">new</span> <span class="fn">Set</span>();
+<span class="kw">const</span> <span class="var">modifiedTestFiles</span> = <span class="kw">new</span> <span class="fn">Set</span>();
+
+<span class="kw">const</span> <span class="var">session</span> = <span class="kw">await</span> <span class="fn">joinSession</span>({
+  <span class="var">onPermissionRequest</span>: <span class="var">approveAll</span>,
+  <span class="var">hooks</span>: {
+    <span class="fn">onPostToolUse</span>: <span class="kw">async</span> (<span class="var">input</span>) =&gt; {
+      <span class="kw">if</span> (<span class="var">input</span>.<span class="var">toolName</span> === <span class="str">"edit"</span> || <span class="var">input</span>.<span class="var">toolName</span> === <span class="str">"create"</span>) {
+        <span class="kw">const</span> <span class="var">filePath</span> = <span class="fn">String</span>(<span class="var">input</span>.<span class="var">toolArgs</span>?.<span class="var">path</span> || <span class="str">""</span>);
+        <span class="kw">if</span> (<span class="str">/\.(test|spec)\.[jt]sx?$/</span>.<span class="fn">test</span>(<span class="var">filePath</span>)) {
+          <span class="var">modifiedTestFiles</span>.<span class="fn">add</span>(<span class="var">filePath</span>);
+        } <span class="kw">else if</span> (<span class="str">/\.[jt]sx?$/</span>.<span class="fn">test</span>(<span class="var">filePath</span>)) {
+          <span class="var">modifiedSourceFiles</span>.<span class="fn">add</span>(<span class="var">filePath</span>);
+          <span class="kw">return</span> {
+            <span class="var">additionalContext</span>:
+              <span class="str">`[test-enforcer] Source modified: ${filePath}. Write tests before committing.`</span>
+          };
+        }
+      }
+    },
+    <span class="fn">onPreToolUse</span>: <span class="kw">async</span> (<span class="var">input</span>) =&gt; {
+      <span class="kw">if</span> (<span class="var">input</span>.<span class="var">toolName</span> !== <span class="str">"powershell"</span>) <span class="kw">return</span>;
+      <span class="kw">const</span> <span class="var">cmd</span> = <span class="fn">String</span>(<span class="var">input</span>.<span class="var">toolArgs</span>?.<span class="var">command</span> || <span class="str">""</span>);
+      <span class="kw">if</span> (!<span class="str">/\bgit\b.*\bcommit\b/</span>.<span class="fn">test</span>(<span class="var">cmd</span>)) <span class="kw">return</span>;
+
+      <span class="kw">const</span> <span class="var">untested</span> = [...<span class="var">modifiedSourceFiles</span>].<span class="fn">filter</span>(<span class="var">src</span> =&gt; {
+        <span class="kw">const</span> <span class="var">base</span> = <span class="var">src</span>.<span class="fn">replace</span>(<span class="str">/\.[^.]+$/</span>, <span class="str">""</span>);
+        <span class="kw">return</span> ![...<span class="var">modifiedTestFiles</span>].<span class="fn">some</span>(<span class="var">t</span> =&gt; <span class="var">t</span>.<span class="fn">includes</span>(<span class="var">base</span>));
+      });
+
+      <span class="kw">if</span> (<span class="var">untested</span>.<span class="var">length</span> &gt; <span class="var">0</span>) {
+        <span class="kw">return</span> {
+          <span class="var">permissionDecision</span>: <span class="str">"deny"</span>,
+          <span class="var">permissionDecisionReason</span>:
+            <span class="str">`[test-enforcer] BLOCKED: Untested files:\n${untested.join("\n")}`</span>
+        };
+      }
+    },
+  },
+  <span class="var">tools</span>: [],
+});</pre>
+    </div>
+  </section>
+
+  <!-- Hookflows -->
+  <section class="section" id="hookflows">
+    <h2 class="section-title">📜 Hookflows</h2>
+    <p class="section-sub">Markdown-based governance rules in <code>.github/hookflows/</code>. Declare policies with YAML frontmatter — no code required. The most accessible way to add guardrails for any team member.</p>
+
+    <div class="grid-2" style="margin-bottom:24px;">
+      <div class="card">
+        <h3>How They Work</h3>
+        <p style="margin-top:8px;">Each <code>.md</code> file in <code>.github/hookflows/</code> defines a rule. The YAML frontmatter specifies the event, file pattern, and action. The markdown body provides the message shown to the agent.</p>
+        <ul style="margin-top:12px;padding-left:18px;">
+          <li><code>event: file</code> — Triggers on file create/edit</li>
+          <li><code>event: command</code> — Triggers on shell commands</li>
+          <li><code>action: block</code> — Prevents the action</li>
+          <li><code>action: warn</code> — Allows but injects a warning</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>When to Use Hookflows</h3>
+        <ul style="margin-top:8px;padding-left:18px;">
+          <li>Protecting sensitive files from modification</li>
+          <li>Blocking dangerous command patterns</li>
+          <li>Enforcing file naming conventions</li>
+          <li>Adding review reminders for critical paths</li>
+          <li>Team-wide policies anyone can read and edit</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:12px;">Example: Block Environment File Edits</h3>
+    <div class="code-block">
+      <div class="code-header">📄 .github/hookflows/block-env-files.md</div>
+      <pre><span class="cm">---</span>
+<span class="var">name</span>: <span class="str">block-env-files</span>
+<span class="var">event</span>: <span class="str">file</span>
+<span class="var">on</span>:
+  <span class="var">paths</span>: [<span class="str">'**/.env*'</span>, <span class="str">'**/*.pem'</span>]
+  <span class="var">types</span>: [<span class="str">create</span>, <span class="str">edit</span>]
+<span class="var">action</span>: <span class="str">block</span>
+<span class="cm">---</span>
+
+<span class="kw"># ⛔ Environment File Protection</span>
+
+Modifying sensitive environment files is not allowed.
+Store secrets in environment variables or a secrets manager.
+Use <span class="str">`.env.example`</span> for documenting required variables.</pre>
+    </div>
+
+    <h3 style="margin:24px 0 12px;">Example: Warn on Workflow Changes</h3>
+    <div class="code-block">
+      <div class="code-header">📄 .github/hookflows/warn-workflow-changes.md</div>
+      <pre><span class="cm">---</span>
+<span class="var">name</span>: <span class="str">warn-workflow-changes</span>
+<span class="var">event</span>: <span class="str">file</span>
+<span class="var">on</span>:
+  <span class="var">paths</span>: [<span class="str">'.github/workflows/**'</span>]
+  <span class="var">types</span>: [<span class="str">create</span>, <span class="str">edit</span>]
+<span class="var">action</span>: <span class="str">warn</span>
+<span class="cm">---</span>
+
+<span class="kw"># ⚠️ CI/CD Workflow Change</span>
+
+You are modifying a GitHub Actions workflow.
+Ensure the change follows the team's CI/CD standards.
+Test the workflow in a branch before merging to main.</pre>
+    </div>
+  </section>
+
+  <!-- Lifecycle Diagram -->
+  <section class="section" id="lifecycle">
+    <h2 class="section-title">Hook Event Lifecycle</h2>
+    <p class="section-sub">Every agent action flows through this lifecycle. Only <code>preToolUse</code> can block execution.</p>
+
+    <div class="lifecycle">
+      <div class="lifecycle-step">
+        👤 User Prompt
+        <small>User sends message</small>
+      </div>
+      <span class="lifecycle-arrow">→</span>
+      <div class="lifecycle-step">
+        sessionStart
+        <small>Audit &amp; setup</small>
+      </div>
+      <span class="lifecycle-arrow">→</span>
+      <div class="lifecycle-step">
+        userPromptSubmitted
+        <small>Prompt analysis</small>
+      </div>
+      <span class="lifecycle-arrow">→</span>
+      <div class="lifecycle-step blocking">
+        ⛔ preToolUse
+        <small>CAN BLOCK</small>
+      </div>
+      <span class="lifecycle-arrow">→</span>
+      <div class="lifecycle-step tool">
+        ⚙️ TOOL EXECUTES
+        <small>edit, powershell, etc.</small>
+      </div>
+      <span class="lifecycle-arrow">→</span>
+      <div class="lifecycle-step">
+        postToolUse
+        <small>Validate &amp; context</small>
+      </div>
+      <span class="lifecycle-arrow">→</span>
+      <div class="lifecycle-step">
+        sessionEnd
+        <small>Cleanup &amp; audit</small>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;text-align:center;">
+      <p style="font-size:14px;">
+        <span style="color:#f85149;font-weight:600;">⛔ preToolUse</span> is the critical control point — it's the only event where hooks can return
+        <code style="background:#1c2128;padding:2px 6px;border-radius:4px;">permissionDecision: "deny"</code>
+        to prevent an action from executing.
+      </p>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section class="section" id="comparison">
+    <h2 class="section-title">System Comparison</h2>
+    <p class="section-sub">Choose the right governance mechanism for your needs — or combine all three for defense in depth.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>🐚 Shell Hooks</th>
+            <th>⚡ CLI Extensions</th>
+            <th>📜 Hookflows</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:#e6edf3;">Language</strong></td>
+            <td>Bash / PowerShell</td>
+            <td>JavaScript / TypeScript</td>
+            <td>Markdown + YAML</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#e6edf3;">Location</strong></td>
+            <td><code>.github/hooks/</code></td>
+            <td><code>.github/extensions/</code></td>
+            <td><code>.github/hookflows/</code></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#e6edf3;">Can Block?</strong></td>
+            <td><span class="tag-yes">Yes</span> (preToolUse)</td>
+            <td><span class="tag-yes">Yes</span> (permissionDecision: deny)</td>
+            <td><span class="tag-yes">Yes</span> (action: block)</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#e6edf3;">State</strong></td>
+            <td>Stateless per invocation</td>
+            <td>Stateful across session</td>
+            <td>Stateless per rule</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#e6edf3;">Complexity</strong></td>
+            <td><span class="pill pill-green">Low</span></td>
+            <td><span class="pill pill-orange">Medium–High</span></td>
+            <td><span class="pill pill-green">Low</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#e6edf3;">Custom Tools</strong></td>
+            <td><span class="tag-no">No</span></td>
+            <td><span class="tag-yes">Yes</span></td>
+            <td><span class="tag-no">No</span></td>
+          </tr>
+          <tr>
+            <td><strong style="color:#e6edf3;">Dependencies</strong></td>
+            <td>None (system shell)</td>
+            <td>Node.js + @github/copilot-sdk</td>
+            <td>None</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#e6edf3;">Best For</strong></td>
+            <td>Simple gates &amp; checks</td>
+            <td>Complex governance logic</td>
+            <td>Readable team-wide policies</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Getting Started -->
+  <section class="section" id="getting-started">
+    <h2 class="section-title">Getting Started</h2>
+    <p class="section-sub">Set up your first guardrails in under 5 minutes. Choose the system that fits your team best.</p>
+    <div class="grid-3">
+
+      <div class="card">
+        <span class="pill pill-green">Beginner</span>
+        <h3 style="margin-top:8px;">🐚 Start with Shell Hooks</h3>
+        <ol class="steps-list" style="margin-top:12px;">
+          <li><span class="step-num">1</span> Create <code>.github/hooks/</code> directory</li>
+          <li><span class="step-num">2</span> Add <code>hooks.json</code> with your hook definitions</li>
+          <li><span class="step-num">3</span> Write a Bash script (e.g., <code>block-secrets.sh</code>)</li>
+          <li><span class="step-num">4</span> Make it executable: <code>chmod +x *.sh</code></li>
+          <li><span class="step-num">5</span> Test by running a Copilot session — hooks activate automatically</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <span class="pill pill-purple">Intermediate</span>
+        <h3 style="margin-top:8px;">⚡ Build CLI Extensions</h3>
+        <ol class="steps-list" style="margin-top:12px;">
+          <li><span class="step-num">1</span> Create <code>.github/extensions/my-ext/</code></li>
+          <li><span class="step-num">2</span> Run <code>npm init</code> and install <code>@github/copilot-sdk</code></li>
+          <li><span class="step-num">3</span> Create <code>extension.mjs</code> with <code>joinSession()</code></li>
+          <li><span class="step-num">4</span> Add hook handlers: <code>onPreToolUse</code>, <code>onPostToolUse</code></li>
+          <li><span class="step-num">5</span> Extensions auto-load when Copilot CLI starts in the repo</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <span class="pill pill-blue">Easiest</span>
+        <h3 style="margin-top:8px;">📜 Write Hookflows</h3>
+        <ol class="steps-list" style="margin-top:12px;">
+          <li><span class="step-num">1</span> Create <code>.github/hookflows/</code> directory</li>
+          <li><span class="step-num">2</span> Add a <code>.md</code> file (e.g., <code>block-env-files.md</code>)</li>
+          <li><span class="step-num">3</span> Define the rule in YAML frontmatter</li>
+          <li><span class="step-num">4</span> Write the message body in markdown</li>
+          <li><span class="step-num">5</span> Commit — hookflows are active immediately</li>
+        </ol>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Best Practices -->
+  <section class="section" id="best-practices">
+    <h2 class="section-title">Best Practices</h2>
+    <p class="section-sub">Patterns for effective agent governance at the hook level.</p>
+    <div class="grid-2">
+      <div class="card">
+        <h3>✅ Do</h3>
+        <ul style="padding-left:18px;margin-top:8px;">
+          <li>Layer all three systems for defense in depth</li>
+          <li>Use <code>preToolUse</code> for hard blocks, <code>postToolUse</code> for guidance</li>
+          <li>Keep shell hooks simple — one concern per script</li>
+          <li>Use extensions for stateful logic (tracking files across edits)</li>
+          <li>Write hookflows for policies the whole team should see</li>
+          <li>Test hooks locally before committing</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>❌ Don't</h3>
+        <ul style="padding-left:18px;margin-top:8px;">
+          <li>Don't block everything — overly strict hooks slow teams down</li>
+          <li>Don't put complex logic in shell hooks — use extensions instead</li>
+          <li>Don't forget to handle the "no match" case (return nothing)</li>
+          <li>Don't hardcode paths — use patterns for portability</li>
+          <li>Don't skip the deny reason — agents need context to self-correct</li>
+          <li>Don't rely on a single mechanism — combine them</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Footer -->
+<footer style="border-top:1px solid #30363d;padding:32px 24px;text-align:center;color:#8b949e;font-size:14px;margin-top:64px;">
+  <p>Built with 🛡️ by <a href="https://htek.dev" style="color:#58a6ff;text-decoration:none;">htek.dev</a> | Powered by GitHub Pages</p>
+  <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
+</footer>
+
+</body>
+</html>

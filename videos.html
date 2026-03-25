@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Library — Safe Agentic Development with GitHub Copilot</title>
+  <meta name="description" content="Curated video library for learning safe agentic development with GitHub Copilot — from getting started to enterprise governance.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    code, .mono {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; height: auto; }
+
+    /* Hero */
+    .hero {
+      max-width: 1400px; margin: 0 auto; padding: 120px 24px 48px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px); font-weight: 800;
+      background: linear-gradient(135deg, #58a6ff 0%, #bc8cff 50%, #3fb950 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 16px;
+    }
+    .hero p { color: #8b949e; font-size: 18px; max-width: 700px; margin: 0 auto; }
+    .hero .stat-row {
+      display: flex; gap: 32px; justify-content: center; margin-top: 24px; flex-wrap: wrap;
+    }
+    .hero .stat { color: #8b949e; font-size: 14px; }
+    .hero .stat strong { color: #e6edf3; font-size: 20px; display: block; }
+
+    /* Filter bar */
+    .filter-bar {
+      max-width: 1400px; margin: 0 auto; padding: 0 24px 32px;
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+    }
+    .filter-btn {
+      background: #161b22; color: #8b949e; border: 1px solid #30363d;
+      padding: 8px 16px; border-radius: 20px; cursor: pointer;
+      font-size: 14px; font-family: inherit; transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: #58a6ff; color: #e6edf3; }
+    .filter-btn.active {
+      background: #58a6ff; color: #0d1117; border-color: #58a6ff; font-weight: 600;
+    }
+
+    /* Section headers */
+    .section-container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+    .section-title {
+      font-size: 28px; font-weight: 700; margin: 48px 0 8px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-subtitle { color: #8b949e; font-size: 15px; margin-bottom: 24px; }
+
+    /* Learning paths */
+    .paths-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 24px; margin-bottom: 16px;
+    }
+    .path-card {
+      background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+      padding: 24px; transition: border-color 0.2s, transform 0.2s;
+    }
+    .path-card:hover { border-color: #58a6ff; transform: translateY(-2px); }
+    .path-card h3 { font-size: 18px; margin-bottom: 4px; }
+    .path-card .path-desc { color: #8b949e; font-size: 14px; margin-bottom: 16px; }
+    .path-card .path-tag {
+      display: inline-block; font-size: 12px; padding: 2px 10px;
+      border-radius: 12px; margin-bottom: 12px; font-weight: 600;
+    }
+    .path-scroll {
+      display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
+      scrollbar-width: thin; scrollbar-color: #30363d transparent;
+    }
+    .path-scroll::-webkit-scrollbar { height: 6px; }
+    .path-scroll::-webkit-scrollbar-track { background: transparent; }
+    .path-scroll::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    .path-item {
+      flex: 0 0 220px; background: #0d1117; border: 1px solid #30363d;
+      border-radius: 8px; overflow: hidden; transition: border-color 0.2s;
+      cursor: pointer; text-decoration: none; color: inherit;
+    }
+    .path-item:hover { border-color: #58a6ff; text-decoration: none; }
+    .path-item img { width: 100%; height: 124px; object-fit: cover; }
+    .path-item .path-item-info { padding: 8px 10px; }
+    .path-item .path-item-title {
+      font-size: 12px; font-weight: 600; line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .path-item .path-item-num {
+      font-size: 11px; color: #8b949e; margin-top: 4px;
+    }
+
+    /* Video grid */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 24px; margin-bottom: 32px;
+    }
+    .video-card {
+      background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+      overflow: hidden; transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      display: flex; flex-direction: column;
+      animation: fadeInUp 0.4s ease both;
+    }
+    .video-card:hover {
+      border-color: #58a6ff; transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(88, 166, 255, 0.08);
+    }
+    .video-card.hidden {
+      display: none;
+    }
+    .thumb-link {
+      display: block; position: relative; overflow: hidden;
+      aspect-ratio: 16/9; background: #0d1117;
+    }
+    .thumb-link img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .thumb-link:hover img { transform: scale(1.05); }
+    .play-overlay {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(0,0,0,0.7); display: flex;
+      align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.25s;
+      pointer-events: none;
+    }
+    .thumb-link:hover .play-overlay { opacity: 1; }
+    .play-overlay svg { fill: #fff; width: 24px; height: 24px; margin-left: 3px; }
+    .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .card-body h4 {
+      font-size: 16px; font-weight: 600; line-height: 1.35; margin-bottom: 8px;
+    }
+    .card-meta {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .channel-badge {
+      font-size: 12px; padding: 2px 10px; border-radius: 12px;
+      background: #21262d; color: #8b949e; white-space: nowrap;
+    }
+    .views { font-size: 12px; color: #8b949e; }
+    .card-desc {
+      font-size: 13px; color: #8b949e; line-height: 1.5; flex: 1;
+      margin-bottom: 12px;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .cat-tag {
+      font-size: 11px; padding: 3px 10px; border-radius: 12px;
+      background: #21262d; color: #8b949e; white-space: nowrap;
+    }
+    .watch-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #238636; color: #fff; padding: 6px 16px;
+      border-radius: 6px; font-size: 13px; font-weight: 600;
+      text-decoration: none; transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .watch-btn:hover { background: #2ea043; text-decoration: none; }
+    .watch-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+    /* Category section header */
+    .cat-header {
+      display: flex; align-items: center; gap: 12px;
+      margin: 56px 0 20px; padding-bottom: 12px;
+      border-bottom: 1px solid #21262d;
+    }
+    .cat-header h2 { font-size: 24px; font-weight: 700; }
+    .cat-header .cat-count {
+      font-size: 13px; color: #8b949e;
+      background: #21262d; padding: 2px 10px; border-radius: 12px;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      .video-grid { grid-template-columns: 1fr; }
+      .paths-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #30363d;padding:12px 24px;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <a href="index.html" style="color:#e6edf3;text-decoration:none;font-weight:600;font-size:18px;">🛡️ Safe Agentic Dev</a>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+      <a href="index.html" style="color:#8b949e;text-decoration:none;">Home</a>
+      <a href="safety-stack.html" style="color:#8b949e;text-decoration:none;">Safety Stack</a>
+      <a href="instructions.html" style="color:#8b949e;text-decoration:none;">Instructions</a>
+      <a href="hooks.html" style="color:#8b949e;text-decoration:none;">Hooks</a>
+      <a href="mcp.html" style="color:#8b949e;text-decoration:none;">MCP</a>
+      <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
+      <a href="planning.html" style="color:#8b949e;text-decoration:none;">Planning</a>
+      <a href="videos.html" style="color:#3fb950;text-decoration:none;">Videos</a>
+      <a href="resources.html" style="color:#8b949e;text-decoration:none;">Resources</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>🎬 Video Library</h1>
+  <p>Curated video content from GitHub, Microsoft, and the developer community — learn safe agentic development through the best tutorials, deep dives, and keynotes.</p>
+  <div class="stat-row">
+    <div class="stat"><strong>28</strong>Videos Curated</div>
+    <div class="stat"><strong>8</strong>Topic Categories</div>
+    <div class="stat"><strong>3</strong>Learning Paths</div>
+    <div class="stat"><strong>3.5M+</strong>Combined Views</div>
+  </div>
+</section>
+
+<!-- Filter Bar -->
+<div class="filter-bar" role="toolbar" aria-label="Filter videos by category">
+  <button class="filter-btn active" data-filter="all" onclick="filterVideos('all')">All</button>
+  <button class="filter-btn" data-filter="getting-started" onclick="filterVideos('getting-started')">🚀 Getting Started</button>
+  <button class="filter-btn" data-filter="agent-mode" onclick="filterVideos('agent-mode')">🤖 Agent Mode</button>
+  <button class="filter-btn" data-filter="coding-agent" onclick="filterVideos('coding-agent')">☁️ Coding Agent</button>
+  <button class="filter-btn" data-filter="hooks" onclick="filterVideos('hooks')">🔧 Hooks &amp; Skills</button>
+  <button class="filter-btn" data-filter="mcp" onclick="filterVideos('mcp')">🔌 MCP</button>
+  <button class="filter-btn" data-filter="planning" onclick="filterVideos('planning')">📋 Planning</button>
+  <button class="filter-btn" data-filter="cli" onclick="filterVideos('cli')">💻 CLI</button>
+  <button class="filter-btn" data-filter="governance" onclick="filterVideos('governance')">🛡️ Governance</button>
+</div>
+
+<!-- Learning Paths -->
+<div class="section-container">
+  <h2 class="section-title">📚 Learning Paths</h2>
+  <p class="section-subtitle">Choose a path based on your experience level — each guides you through 8 videos in the best order.</p>
+
+  <div class="paths-grid">
+    <!-- Path A: New to Copilot -->
+    <div class="path-card" style="border-left: 3px solid #3fb950;">
+      <span class="path-tag" style="background:rgba(63,185,80,0.15);color:#3fb950;">Beginner</span>
+      <h3>🟢 New to Copilot</h3>
+      <p class="path-desc">Start here if you haven't used GitHub Copilot yet. Understand → See it in action → Configure → Expand.</p>
+      <div class="path-scroll">
+        <a class="path-item" href="https://www.youtube.com/watch?v=dutyOc_cAEU" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/dutyOc_cAEU/mqdefault.jpg" alt="VS Code Agent Mode Just Changed Everything" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">VS Code Agent Mode Just Changed Everything</div>
+            <div class="path-item-num">1 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=zwIlqbTHjac" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/zwIlqbTHjac/mqdefault.jpg" alt="Custom Instructions" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Smaller Prompts, Better Answers with Custom Instructions</div>
+            <div class="path-item-num">2 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=sYepbevm8TY" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/sYepbevm8TY/mqdefault.jpg" alt="Create an app from scratch" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Create an Application from Scratch</div>
+            <div class="path-item-num">3 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=eur8dUO9mvE" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/eur8dUO9mvE/mqdefault.jpg" alt="What is MCP?" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">What is MCP? Integrate AI Agents with Databases &amp; APIs</div>
+            <div class="path-item-num">4 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=EPyyyB23NUU" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/EPyyyB23NUU/mqdefault.jpg" alt="Introducing the coding agent" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Introducing the GitHub Copilot Coding Agent</div>
+            <div class="path-item-num">5 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=em3vIT9aUsg" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/em3vIT9aUsg/mqdefault.jpg" alt="Spec Kit" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Spec Kit: GitHub's NEW Tool That FINALLY Fixes AI Coding</div>
+            <div class="path-item-num">6 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=CqcqWLv-sDM" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/CqcqWLv-sDM/mqdefault.jpg" alt="Try the Copilot CLI" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">You Need to Try the GitHub Copilot CLI Right Now</div>
+            <div class="path-item-num">7 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=v07Y4fmSi6Y" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/v07Y4fmSi6Y/mqdefault.jpg" alt="Risks of Agentic AI" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Risks of Agentic AI: What You Need to Know</div>
+            <div class="path-item-num">8 of 8</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Path B: Already Using Copilot -->
+    <div class="path-card" style="border-left: 3px solid #58a6ff;">
+      <span class="path-tag" style="background:rgba(88,166,255,0.15);color:#58a6ff;">Intermediate</span>
+      <h3>🔵 Already Using Copilot</h3>
+      <p class="path-desc">Level up from autocomplete to full agentic workflows. Differentiate → Go deeper → Extend → Govern.</p>
+      <div class="path-scroll">
+        <a class="path-item" href="https://www.youtube.com/watch?v=a1BR6K3E4zs" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/a1BR6K3E4zs/mqdefault.jpg" alt="Coding agent vs agent mode" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Coding Agent vs Agent Mode</div>
+            <div class="path-item-num">1 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=5NxGqnTazR8" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/5NxGqnTazR8/mqdefault.jpg" alt="Ultimate Agent Mode Tutorial" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">The Ultimate Agent Mode Tutorial</div>
+            <div class="path-item-num">2 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=1GVBRhDI5No" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/1GVBRhDI5No/mqdefault.jpg" alt="How the coding agent works" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">How the GitHub Copilot Coding Agent Works</div>
+            <div class="path-item-num">3 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=0jEzUhU8bLc" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/0jEzUhU8bLc/mqdefault.jpg" alt="Your codebase, your rules" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Your Codebase, Your Rules</div>
+            <div class="path-item-num">4 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=fabAI1OKKww" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/fabAI1OKKww/mqdefault.jpg" alt="Agent Skills guide" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">The Complete Guide to Agent Skills</div>
+            <div class="path-item-num">5 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=vUQfqW5GKAQ" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/vUQfqW5GKAQ/mqdefault.jpg" alt="MCP Servers in VS Code" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">MCP Servers in VS Code and GitHub Copilot</div>
+            <div class="path-item-num">6 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=rxIjBKM-XvU" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/rxIjBKM-XvU/mqdefault.jpg" alt="Introducing Plan Mode" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Introducing Plan Mode</div>
+            <div class="path-item-num">7 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=3_i03fGXs9U" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/3_i03fGXs9U/mqdefault.jpg" alt="Introducing Agentic Workflows" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Introducing GitHub Agentic Workflows</div>
+            <div class="path-item-num">8 of 8</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Path C: Enterprise / Governance -->
+    <div class="path-card" style="border-left: 3px solid #bc8cff;">
+      <span class="path-tag" style="background:rgba(188,140,255,0.15);color:#bc8cff;">Advanced</span>
+      <h3>🟣 Enterprise / Governance</h3>
+      <p class="path-desc">For engineering managers and security leads. Understand risks → See controls → Implement governance → Scale.</p>
+      <div class="path-scroll">
+        <a class="path-item" href="https://www.youtube.com/watch?v=v07Y4fmSi6Y" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/v07Y4fmSi6Y/mqdefault.jpg" alt="Risks of Agentic AI" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Risks of Agentic AI: What You Need to Know</div>
+            <div class="path-item-num">1 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=4QXtObc61Lw" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/4QXtObc61Lw/mqdefault.jpg" alt="Security & AI Governance" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Security &amp; AI Governance: Reducing Risks</div>
+            <div class="path-item-num">2 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=boviC841YWs" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/boviC841YWs/mqdefault.jpg" alt="Managing and auditing Copilot agents" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Managing and Auditing Copilot Agents</div>
+            <div class="path-item-num">3 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=0jEzUhU8bLc" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/0jEzUhU8bLc/mqdefault.jpg" alt="Your codebase, your rules" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Your Codebase, Your Rules</div>
+            <div class="path-item-num">4 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=rMUycP_cp9g" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/rMUycP_cp9g/mqdefault.jpg" alt="Advanced Guardrails" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Advanced Guardrails for AI Agents</div>
+            <div class="path-item-num">5 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=3_i03fGXs9U" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/3_i03fGXs9U/mqdefault.jpg" alt="Agentic Workflows" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Introducing GitHub Agentic Workflows</div>
+            <div class="path-item-num">6 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=rxIjBKM-XvU" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/rxIjBKM-XvU/mqdefault.jpg" alt="Plan Mode" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">Introducing Plan Mode</div>
+            <div class="path-item-num">7 of 8</div>
+          </div>
+        </a>
+        <a class="path-item" href="https://www.youtube.com/watch?v=P6Va0_KILi4" target="_blank" rel="noopener">
+          <img src="https://img.youtube.com/vi/P6Va0_KILi4/mqdefault.jpg" alt="GitHub Universe 2025 keynote" loading="lazy">
+          <div class="path-item-info">
+            <div class="path-item-title">GitHub Universe 2025 Opening Keynote</div>
+            <div class="path-item-num">8 of 8</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- All Videos by Category -->
+<div class="section-container" id="video-library">
+
+  <!-- Category 1: Getting Started -->
+  <div class="cat-header" data-cat-header="getting-started">
+    <h2>🚀 Getting Started</h2>
+    <span class="cat-count">3 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="getting-started">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=dutyOc_cAEU" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/dutyOc_cAEU/maxresdefault.jpg" alt="VS Code Agent Mode Just Changed Everything" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>VS Code Agent Mode Just Changed Everything</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🔵 Visual Studio Code</span>
+          <span class="views">1M+ views</span>
+        </div>
+        <p class="card-desc">A breakthrough overview of what agent mode can do — writing apps, talking to databases, and following documentation autonomously. The best "wow moment" intro to agentic Copilot.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🚀 Getting Started</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=dutyOc_cAEU" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="getting-started">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=zwIlqbTHjac" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/zwIlqbTHjac/maxresdefault.jpg" alt="Custom Instructions" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Smaller Prompts, Better Answers with Custom Instructions</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🔵 Visual Studio Code</span>
+          <span class="views">69.7K views</span>
+        </div>
+        <p class="card-desc">How adding a simple <code>copilot-instructions.md</code> file supercharges Copilot's output — fewer prompts, better results. The foundation of context engineering and the first layer of governance.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🚀 Getting Started</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=zwIlqbTHjac" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="getting-started">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=0XoXNG65rfg" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/0XoXNG65rfg/maxresdefault.jpg" alt="Level Up Your VS Code Productivity" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Level Up Your VS Code Productivity (Mastering AI Workflows)</h4>
+        <div class="card-meta">
+          <span class="channel-badge">👤 Burke Holland</span>
+          <span class="views">146.9K views</span>
+        </div>
+        <p class="card-desc">Deep-dive into the architecture of VS Code Copilot — how to structure your workflow for maximum AI productivity including agents, instructions, and MCP.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🚀 Getting Started</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=0XoXNG65rfg" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Category 2: Agent Mode -->
+  <div class="cat-header" data-cat-header="agent-mode">
+    <h2>🤖 Agent Mode</h2>
+    <span class="cat-count">4 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="agent-mode">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=sYepbevm8TY" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/sYepbevm8TY/maxresdefault.jpg" alt="Create an application from scratch" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Use GitHub Copilot Agent Mode to Create an Application from Scratch</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🔵 Visual Studio Code</span>
+          <span class="views">160.8K views</span>
+        </div>
+        <p class="card-desc">Step-by-step walkthrough of building a complete application from zero using Copilot agent mode as an autonomous peer programmer.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🤖 Agent Mode</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=sYepbevm8TY" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="agent-mode">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=5NxGqnTazR8" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/5NxGqnTazR8/maxresdefault.jpg" alt="The Ultimate Agent Mode Tutorial" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>The Ultimate Agent Mode Tutorial: Vision, MCP, Custom Agents &amp; More!</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🔵 Visual Studio Code</span>
+          <span class="views">86.7K views</span>
+        </div>
+        <p class="card-desc">Comprehensive tutorial building a full finance app using Agent Mode, Copilot Vision, MCP, BYOK, and custom agents. The most complete single-video tutorial.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🤖 Agent Mode</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=5NxGqnTazR8" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="agent-mode">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=a1BR6K3E4zs" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/a1BR6K3E4zs/maxresdefault.jpg" alt="Coding agent vs agent mode" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>When to Use Coding Agent Versus Agent Mode</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">48K views</span>
+        </div>
+        <p class="card-desc">The key decision framework for choosing between local agent mode and the cloud-based coding agent. When each approach is appropriate and what it means for governance.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🤖 Agent Mode</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=a1BR6K3E4zs" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="agent-mode">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=onVn-lnHZ9s" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/onVn-lnHZ9s/maxresdefault.jpg" alt="End-to-end agentic development" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Demo: End-to-End Agentic Development with GitHub Copilot</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">62K views</span>
+        </div>
+        <p class="card-desc">Full end-to-end demonstration of agentic development — no local installation required. Shows the complete workflow from issue to merged PR.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🤖 Agent Mode</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=onVn-lnHZ9s" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Category 3: Coding Agent (Cloud) -->
+  <div class="cat-header" data-cat-header="coding-agent">
+    <h2>☁️ Coding Agent (Cloud)</h2>
+    <span class="cat-count">3 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="coding-agent">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=EPyyyB23NUU" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/EPyyyB23NUU/maxresdefault.jpg" alt="Introducing the coding agent" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Introducing the GitHub Copilot Coding Agent</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">195.8K views</span>
+        </div>
+        <p class="card-desc">Official introduction to the cloud coding agent — plan, build, test, and collaborate. Understand how assigning an issue triggers autonomous development.</p>
+        <div class="card-footer">
+          <span class="cat-tag">☁️ Coding Agent</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=EPyyyB23NUU" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="coding-agent">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=1GVBRhDI5No" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/1GVBRhDI5No/maxresdefault.jpg" alt="How the coding agent works" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>How the GitHub Copilot Coding Agent Works | GitHub Checkout</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">54.6K views</span>
+        </div>
+        <p class="card-desc">Tim Rogers demonstrates how the coding agent plans work, creates branches, runs tests, and submits PRs — the mechanical details under the hood.</p>
+        <div class="card-footer">
+          <span class="cat-tag">☁️ Coding Agent</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=1GVBRhDI5No" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="coding-agent">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=LafpndhNC_E" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/LafpndhNC_E/maxresdefault.jpg" alt="Tackling tech debt" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Tackling Your Tech Debt with Copilot Coding Agent</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">7.2K views</span>
+        </div>
+        <p class="card-desc">Practical guide to using the coding agent for tackling technical debt — a real-world "safe first use case" with well-defined scope and existing tests.</p>
+        <div class="card-footer">
+          <span class="cat-tag">☁️ Coding Agent</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=LafpndhNC_E" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Category 4: Agent Hooks, Skills & Extensions -->
+  <div class="cat-header" data-cat-header="hooks">
+    <h2>🔧 Agent Hooks, Skills &amp; Extensions</h2>
+    <span class="cat-count">3 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="hooks">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=fabAI1OKKww" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/fabAI1OKKww/maxresdefault.jpg" alt="The complete guide to Agent Skills" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>The Complete Guide to Agent Skills</h4>
+        <div class="card-meta">
+          <span class="channel-badge">👤 Burke Holland</span>
+          <span class="views">126.8K views</span>
+        </div>
+        <p class="card-desc">What Agent Skills are, how to build them, and why they're game-changing — a governed extension mechanism that lets teams provide agents with approved tools.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🔧 Hooks &amp; Skills</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=fabAI1OKKww" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="hooks">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=0jEzUhU8bLc" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/0jEzUhU8bLc/maxresdefault.jpg" alt="Your codebase, your rules" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Your Codebase, Your Rules: Customizing Copilot with Context Engineering</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">43.7K views</span>
+        </div>
+        <p class="card-desc">How to unlock Copilot as a deeply context-aware pair programmer through copilot-instructions, custom agents, and context engineering techniques.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🔧 Hooks &amp; Skills</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=0jEzUhU8bLc" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="hooks">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=boviC841YWs" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/boviC841YWs/maxresdefault.jpg" alt="Managing and auditing Copilot agents" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>The Latest in Managing and Auditing GitHub Copilot Agents</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">8.3K views</span>
+        </div>
+        <p class="card-desc">The admin and governance toolset for Copilot agents — managing, auditing, and controlling agent behavior at the organizational level. Directly relevant to safe agentic development.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🔧 Hooks &amp; Skills</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=boviC841YWs" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Category 5: MCP -->
+  <div class="cat-header" data-cat-header="mcp">
+    <h2>🔌 MCP (Model Context Protocol)</h2>
+    <span class="cat-count">4 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="mcp">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=eur8dUO9mvE" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/eur8dUO9mvE/maxresdefault.jpg" alt="What is MCP?" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>What is MCP? Integrate AI Agents with Databases &amp; APIs</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 IBM Technology</span>
+          <span class="views">516.1K views</span>
+        </div>
+        <p class="card-desc">Enterprise-grade explanation of MCP for integrating AI agents with databases and APIs. Clear, polished, and focused on practical integration patterns.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🔌 MCP</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=eur8dUO9mvE" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="mcp">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=CQywdSdi5iA" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/CQywdSdi5iA/maxresdefault.jpg" alt="The Model Context Protocol" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>The Model Context Protocol (MCP)</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 Anthropic</span>
+          <span class="views">232.8K views</span>
+        </div>
+        <p class="card-desc">The official Anthropic deep-dive into MCP — the protocol creators explain the standard that's changing how AI applications receive context.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🔌 MCP</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=CQywdSdi5iA" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="mcp">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=vUQfqW5GKAQ" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/vUQfqW5GKAQ/maxresdefault.jpg" alt="MCP Servers in VS Code" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>MCP Servers in VS Code and GitHub Copilot</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🔵 Visual Studio Code</span>
+          <span class="views">76K views</span>
+        </div>
+        <p class="card-desc">Official guide to supercharging developer workflows with MCP servers inside VS Code and Copilot agent mode — practical setup and configuration.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🔌 MCP</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=vUQfqW5GKAQ" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="mcp">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=50tkvZhOVqM" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/50tkvZhOVqM/maxresdefault.jpg" alt="How to Add MCP Servers" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>How to Add MCP Servers to VS Code (with GitHub Copilot)</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🔒 Snyk</span>
+          <span class="views">25.3K views</span>
+        </div>
+        <p class="card-desc">Step-by-step tutorial for adding MCP servers from a security-focused perspective — Snyk emphasizes safe configuration practices.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🔌 MCP</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=50tkvZhOVqM" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Category 6: Planning & Spec-Driven Dev -->
+  <div class="cat-header" data-cat-header="planning">
+    <h2>📋 Planning &amp; Spec-Driven Development</h2>
+    <span class="cat-count">3 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="planning">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=em3vIT9aUsg" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/em3vIT9aUsg/maxresdefault.jpg" alt="Spec Kit" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Spec Kit: GitHub's NEW Tool That FINALLY Fixes AI Coding</h4>
+        <div class="card-meta">
+          <span class="channel-badge">👤 Better Stack</span>
+          <span class="views">367.7K views</span>
+        </div>
+        <p class="card-desc">Deep dive into GitHub's open-source Spec Kit for spec-driven development — writing specifications before code to get predictable AI output.</p>
+        <div class="card-footer">
+          <span class="cat-tag">📋 Planning</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=em3vIT9aUsg" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="planning">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=rxIjBKM-XvU" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/rxIjBKM-XvU/maxresdefault.jpg" alt="Introducing Plan Mode" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Introducing Plan Mode: Build Better Plans with GitHub Copilot</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">28.2K views</span>
+        </div>
+        <p class="card-desc">Official introduction of Plan Mode — Copilot asks clarifying questions and creates a detailed plan before writing any code. Human-in-the-loop by design.</p>
+        <div class="card-footer">
+          <span class="cat-tag">📋 Planning</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=rxIjBKM-XvU" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="planning">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=VfBLlAN5zdQ" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/VfBLlAN5zdQ/maxresdefault.jpg" alt="Plan, Specify, and Implement" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Plan, Specify, and Implement with Spec Kit</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🟦 Microsoft Developer</span>
+          <span class="views">33.9K views</span>
+        </div>
+        <p class="card-desc">Spec Kit as an open-source toolkit for focusing on product scenarios and predictable outcomes instead of "vibe coding" — the antidote to uncontrolled AI coding.</p>
+        <div class="card-footer">
+          <span class="cat-tag">📋 Planning</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=VfBLlAN5zdQ" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Category 7: Copilot CLI -->
+  <div class="cat-header" data-cat-header="cli">
+    <h2>💻 Copilot CLI</h2>
+    <span class="cat-count">3 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="cli">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=VkOibxsQ1oU" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/VkOibxsQ1oU/maxresdefault.jpg" alt="Ultimate guide to Copilot CLI" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>The Ultimate Guide to the GitHub Copilot CLI | GitHub Checkout</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">51.6K views</span>
+        </div>
+        <p class="card-desc">Full feature walkthrough of the Copilot CLI with Product Manager Ryan Hecht — everything the CLI can do as an agentic terminal experience.</p>
+        <div class="card-footer">
+          <span class="cat-tag">💻 CLI</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=VkOibxsQ1oU" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="cli">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=CqcqWLv-sDM" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/CqcqWLv-sDM/maxresdefault.jpg" alt="You need to try the Copilot CLI" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>You Need to Try the GitHub Copilot CLI Right Now</h4>
+        <div class="card-meta">
+          <span class="channel-badge">👤 Burke Holland</span>
+          <span class="views">58.7K views</span>
+        </div>
+        <p class="card-desc">Getting started guide covering setup, configuration, and personal tips for effective CLI use from a GitHub DevRel engineer.</p>
+        <div class="card-footer">
+          <span class="cat-tag">💻 CLI</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=CqcqWLv-sDM" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="cli">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=82jciNezDMY" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/82jciNezDMY/maxresdefault.jpg" alt="Power agentic workflows in terminal" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Power Agentic Workflows in Your Terminal with GitHub Copilot CLI</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">24.5K views</span>
+        </div>
+        <p class="card-desc">How to transform the terminal into a full AI-powered development environment with the same agentic capabilities as VS Code.</p>
+        <div class="card-footer">
+          <span class="cat-tag">💻 CLI</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=82jciNezDMY" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Category 8: Safety, Governance & Keynotes -->
+  <div class="cat-header" data-cat-header="governance">
+    <h2>🛡️ Safety, Governance &amp; Keynotes</h2>
+    <span class="cat-count">5 videos</span>
+  </div>
+  <div class="video-grid">
+
+    <article class="video-card" data-category="governance">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=v07Y4fmSi6Y" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/v07Y4fmSi6Y/maxresdefault.jpg" alt="Risks of Agentic AI" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Risks of Agentic AI: What You Need to Know About Autonomous AI</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 IBM Technology</span>
+          <span class="views">86.5K views</span>
+        </div>
+        <p class="card-desc">Comprehensive overview of risks in agentic AI systems — autonomy, decision-making drift, hallucination, and safety concerns. Foundational safety video.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🛡️ Governance</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=v07Y4fmSi6Y" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="governance">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=4QXtObc61Lw" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/4QXtObc61Lw/maxresdefault.jpg" alt="Security & AI Governance" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Security &amp; AI Governance: Reducing Risks in AI Systems</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 IBM Technology</span>
+          <span class="views">50.3K views</span>
+        </div>
+        <p class="card-desc">Enterprise security frameworks and AI governance practices for reducing risks — organizational policies, access controls, and audit mechanisms.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🛡️ Governance</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=4QXtObc61Lw" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="governance">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=rMUycP_cp9g" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/rMUycP_cp9g/maxresdefault.jpg" alt="Advanced Guardrails for AI Agents" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Advanced Guardrails for AI Agents | Full Tutorial</h4>
+        <div class="card-meta">
+          <span class="channel-badge">👤 James Briggs</span>
+          <span class="views">12.3K views</span>
+        </div>
+        <p class="card-desc">Full tutorial on building advanced AI guardrails — input validation, output filtering, and protective systems for production-ready AI agents.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🛡️ Governance</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=rMUycP_cp9g" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="governance">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=3_i03fGXs9U" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/3_i03fGXs9U/maxresdefault.jpg" alt="Introducing Agentic Workflows" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>Introducing GitHub Agentic Workflows | Intent-Driven Repository Automation</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">23.2K views</span>
+        </div>
+        <p class="card-desc">Official introduction of Agentic Workflows — intent-driven repository automation that asks: "what does safe repo automation look like in the era of AI coding agents?"</p>
+        <div class="card-footer">
+          <span class="cat-tag">🛡️ Governance</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=3_i03fGXs9U" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="video-card" data-category="governance">
+      <a class="thumb-link" href="https://www.youtube.com/watch?v=P6Va0_KILi4" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/P6Va0_KILi4/maxresdefault.jpg" alt="GitHub Universe 2025 keynote" loading="lazy">
+        <div class="play-overlay"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+      </a>
+      <div class="card-body">
+        <h4>GitHub Universe 2025 Opening Keynote</h4>
+        <div class="card-meta">
+          <span class="channel-badge">🏢 GitHub</span>
+          <span class="views">22.4K views</span>
+        </div>
+        <p class="card-desc">GitHub's strategic vision for agentic development — major product announcements, live demos, and the roadmap for AI-assisted software development.</p>
+        <div class="card-footer">
+          <span class="cat-tag">🛡️ Keynote</span>
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=P6Va0_KILi4" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg> Watch
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer style="border-top:1px solid #30363d;padding:32px 24px;text-align:center;color:#8b949e;font-size:14px;margin-top:64px;">
+  <p>Built with 🛡️ by <a href="https://htek.dev" style="color:#58a6ff;text-decoration:none;">htek.dev</a> | Powered by GitHub Pages</p>
+  <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
+</footer>
+
+<!-- Filter & Animations Script -->
+<script>
+  function filterVideos(category) {
+    var buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-filter') === category);
+    });
+
+    var cards = document.querySelectorAll('.video-card');
+    var headers = document.querySelectorAll('.cat-header');
+
+    if (category === 'all') {
+      cards.forEach(function(card) {
+        card.classList.remove('hidden');
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'fadeInUp 0.4s ease both';
+      });
+      headers.forEach(function(h) { h.style.display = 'flex'; });
+    } else {
+      cards.forEach(function(card) {
+        var match = card.getAttribute('data-category') === category;
+        card.classList.toggle('hidden', !match);
+        if (match) {
+          card.style.animation = 'none';
+          card.offsetHeight;
+          card.style.animation = 'fadeInUp 0.4s ease both';
+        }
+      });
+      headers.forEach(function(h) {
+        var headerCat = h.getAttribute('data-cat-header');
+        h.style.display = headerCat === category ? 'flex' : 'none';
+      });
+    }
+
+    var librarySection = document.getElementById('video-library');
+    if (librarySection) {
+      librarySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // Thumbnail fallback: if maxresdefault fails, try hqdefault
+  document.querySelectorAll('.thumb-link img, .path-item img').forEach(function(img) {
+    img.addEventListener('error', function() {
+      var src = this.src;
+      if (src.includes('maxresdefault')) {
+        this.src = src.replace('maxresdefault', 'hqdefault');
+      } else if (src.includes('mqdefault')) {
+        this.src = src.replace('mqdefault', 'hqdefault');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

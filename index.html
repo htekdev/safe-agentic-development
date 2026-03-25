@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe Agentic Development with GitHub Copilot</title>
+  <meta name="description" content="Give AI agents the power to code — without giving up control. Learn GitHub's layered safety architecture for enterprise agentic development.">
+  <meta name="keywords" content="GitHub Copilot, AI agents, safe development, agentic workflows, hooks, extensions, MCP, enterprise AI">
+  <meta name="author" content="htek.dev">
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://htek.dev/safe-agentic-development/">
+  <meta property="og:title" content="Safe Agentic Development with GitHub Copilot">
+  <meta property="og:description" content="Give AI agents the power to code — without giving up control. Six layers of defense-in-depth for enterprise teams.">
+  <meta property="og:image" content="https://htek.dev/safe-agentic-development/og-image.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Safe Agentic Development with GitHub Copilot">
+  <meta name="twitter:description" content="Give AI agents the power to code — without giving up control. Six layers of defense-in-depth for enterprise teams.">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+
+  <style>
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 72px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background-color: #0d1117;
+      color: #e6edf3;
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+      color: #58a6ff;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    a:hover {
+      color: #79c0ff;
+    }
+
+    code {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      background: rgba(110, 118, 129, 0.15);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.9em;
+    }
+
+    /* ========================================
+       CONTAINER
+       ======================================== */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ========================================
+       SECTION SPACING
+       ======================================== */
+    .section {
+      padding: 80px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .section-header h2 {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .section-header p {
+      color: #8b949e;
+      font-size: 18px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* ========================================
+       CARDS
+       ======================================== */
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: #3fb950;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    /* ========================================
+       BUTTONS
+       ======================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #238636, #2ea043);
+      color: #fff;
+      border-color: #3fb950;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #2ea043, #3fb950);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(63, 185, 80, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #58a6ff;
+      border-color: #58a6ff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(88, 166, 255, 0.1);
+      color: #79c0ff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(88, 166, 255, 0.15);
+    }
+
+    /* ========================================
+       GRID LAYOUTS
+       ======================================== */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    /* ========================================
+       GRADIENT TEXT
+       ======================================== */
+    .gradient-text {
+      background: linear-gradient(135deg, #3fb950 0%, #58a6ff 50%, #bc8cff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ========================================
+       HERO SECTION
+       ======================================== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 72px;
+      background: radial-gradient(ellipse at 50% 30%, #161b22 0%, #0d1117 70%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(63, 185, 80, 0.03) 0%, transparent 50%);
+      animation: hero-pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes hero-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      padding: 0 24px;
+    }
+
+    .hero-shield {
+      font-size: 72px;
+      margin-bottom: 24px;
+      display: inline-block;
+      animation: shield-float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 24px rgba(63, 185, 80, 0.3));
+    }
+
+    @keyframes shield-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-size: 22px;
+      color: #8b949e;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .hero-description {
+      font-size: 17px;
+      color: #8b949e;
+      max-width: 700px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ========================================
+       PROBLEM SECTION
+       ======================================== */
+    .problem-quote {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-left: 4px solid #d29922;
+      border-radius: 12px;
+      padding: 32px;
+      font-size: 20px;
+      font-style: italic;
+      color: #8b949e;
+      max-width: 800px;
+      margin: 0 auto 48px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .risk-card {
+      border-left: 4px solid #f85149;
+    }
+
+    .manual-card {
+      border-left: 4px solid #d29922;
+    }
+
+    .risk-card h3, .manual-card h3 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .risk-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .risk-list li {
+      padding: 8px 0;
+      color: #e6edf3;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+
+    .risk-list li::before {
+      content: '→';
+      color: #8b949e;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .stat-callout {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(248, 81, 73, 0.08);
+      border-radius: 8px;
+      font-size: 14px;
+      color: #f85149;
+    }
+
+    .stat-callout.orange {
+      background: rgba(210, 153, 34, 0.08);
+      color: #d29922;
+    }
+
+    /* ========================================
+       ANSWER SECTION
+       ======================================== */
+    .answer-callout {
+      background: #161b22;
+      border: 2px solid #3fb950;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto 48px;
+      position: relative;
+    }
+
+    .answer-callout::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(63, 185, 80, 0.15), transparent);
+      z-index: -1;
+    }
+
+    .answer-callout p {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .value-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .value-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .value-card p {
+      color: #8b949e;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ========================================
+       SAFETY STACK SECTION
+       ======================================== */
+    .stack-layer {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .stack-layer:hover {
+      transform: translateX(8px);
+      border-color: var(--layer-color);
+      box-shadow: -4px 0 0 var(--layer-color);
+      color: inherit;
+    }
+
+    .layer-number {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0d1117;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .layer-content {
+      flex: 1;
+    }
+
+    .layer-content h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .layer-content p {
+      color: #8b949e;
+      font-size: 14px;
+    }
+
+    .layer-arrow {
+      color: #8b949e;
+      font-size: 20px;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .stack-layer:hover .layer-arrow {
+      transform: translateX(4px);
+    }
+
+    /* ========================================
+       WHY NOT MANUAL SECTION
+       ======================================== */
+    .comparison-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .comparison-cell {
+      padding: 20px 24px;
+      background: #161b22;
+    }
+
+    .comparison-cell.manual {
+      border-left: 3px solid #f85149;
+    }
+
+    .comparison-cell.agentic {
+      border-left: 3px solid #3fb950;
+    }
+
+    .comparison-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .comparison-cell.manual .comparison-label {
+      color: #f85149;
+    }
+
+    .comparison-cell.agentic .comparison-label {
+      color: #3fb950;
+    }
+
+    .comparison-cell h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .comparison-cell p {
+      color: #8b949e;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ========================================
+       STATISTICS SECTION
+       ======================================== */
+    .stat-card {
+      text-align: center;
+      padding: 32px 20px;
+    }
+
+    .stat-value {
+      font-size: 40px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #8b949e;
+      line-height: 1.4;
+    }
+
+    .stat-source {
+      font-size: 11px;
+      color: #484f58;
+      margin-top: 8px;
+    }
+
+    /* ========================================
+       GETTING STARTED SECTION
+       ======================================== */
+    .step-card {
+      position: relative;
+      padding-top: 40px;
+    }
+
+    .step-number {
+      position: absolute;
+      top: -2px;
+      left: 24px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #238636, #3fb950);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .step-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding-left: 0;
+    }
+
+    .step-card p {
+      color: #8b949e;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .step-code {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      white-space: pre;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+
+    .step-code .keyword { color: #ff7b72; }
+    .step-code .string { color: #a5d6ff; }
+    .step-code .comment { color: #8b949e; }
+    .step-code .function { color: #d2a8ff; }
+    .step-code .variable { color: #ffa657; }
+
+    /* ========================================
+       NAV CARDS SECTION
+       ======================================== */
+    .nav-card {
+      padding: 28px;
+    }
+
+    .nav-card-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .nav-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .nav-card p {
+      color: #8b949e;
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .nav-card .learn-more {
+      color: #58a6ff;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: gap 0.2s;
+    }
+
+    .card:hover .learn-more {
+      gap: 8px;
+    }
+
+    /* ========================================
+       SECURITY RULES
+       ======================================== */
+    .rule-card {
+      padding: 20px;
+    }
+
+    .rule-number {
+      font-size: 12px;
+      font-weight: 700;
+      color: #58a6ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .rule-card h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .rule-card p {
+      color: #8b949e;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ========================================
+       AFTER-SETUP CHECKLIST
+       ======================================== */
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .checklist li {
+      padding: 10px 0;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #e6edf3;
+    }
+
+    .check-icon {
+      color: #3fb950;
+      font-weight: 700;
+    }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    @media (max-width: 1024px) {
+      .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero-subtitle {
+        font-size: 18px;
+      }
+
+      .hero-description {
+        font-size: 15px;
+      }
+
+      .section {
+        padding: 48px 0;
+      }
+
+      .section-header h2 {
+        font-size: 26px;
+      }
+
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-shield {
+        font-size: 48px;
+      }
+
+      .stat-value {
+        font-size: 32px;
+      }
+
+      .answer-callout p {
+        font-size: 18px;
+      }
+
+      .problem-quote {
+        font-size: 17px;
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* ========================================
+       SCROLL REVEAL ANIMATION
+       ======================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <!-- ==========================================
+       NAVIGATION BAR
+       ========================================== -->
+  <nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #30363d;padding:12px 24px;">
+    <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <a href="index.html" style="color:#e6edf3;text-decoration:none;font-weight:600;font-size:18px;">🛡️ Safe Agentic Dev</a>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+        <a href="index.html" style="color:#3fb950;text-decoration:none;">Home</a>
+        <a href="safety-stack.html" style="color:#8b949e;text-decoration:none;">Safety Stack</a>
+        <a href="instructions.html" style="color:#8b949e;text-decoration:none;">Instructions</a>
+        <a href="hooks.html" style="color:#8b949e;text-decoration:none;">Hooks</a>
+        <a href="mcp.html" style="color:#8b949e;text-decoration:none;">MCP</a>
+        <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
+        <a href="planning.html" style="color:#8b949e;text-decoration:none;">Planning</a>
+        <a href="videos.html" style="color:#8b949e;text-decoration:none;">Videos</a>
+        <a href="resources.html" style="color:#8b949e;text-decoration:none;">Resources</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==========================================
+       SECTION 1: HERO
+       ========================================== -->
+  <section class="hero" id="top">
+    <div class="hero-content">
+      <div class="hero-shield" role="img" aria-label="Shield">🛡️</div>
+      <h1><span class="gradient-text">Safe Agentic Development</span></h1>
+      <p class="hero-subtitle">Give AI agents the power to code — without giving up control.</p>
+      <p class="hero-description">
+        AI coding agents are transforming software development — autonomously writing code, running tests, and creating pull requests. But autonomy without guardrails is a liability. GitHub's layered safety architecture lets your team unlock 10x productivity while maintaining the security, quality, and governance your enterprise demands.
+      </p>
+      <div class="hero-ctas">
+        <a href="#safety-stack" class="btn btn-primary">Explore the Safety Stack →</a>
+        <a href="#get-started" class="btn btn-secondary">Get Started →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 2: THE PROBLEM
+       ========================================== -->
+  <section class="section" id="the-problem">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>The Question Every Enterprise Is Asking</h2>
+      </div>
+
+      <div class="problem-quote reveal">
+        "Why not just write code manually? AI agents introduce risk. Humans can think critically. We've been shipping software for decades without AI agents."
+      </div>
+
+      <div class="grid-2 reveal">
+        <!-- The Risks Are Real -->
+        <div class="card risk-card">
+          <h3>⚠️ The Risks Are Real</h3>
+          <p style="color:#8b949e;margin-bottom:16px;">Unguarded AI agents pose genuine security threats that cannot be ignored.</p>
+          <ul class="risk-list">
+            <li>Supply chain poisoning — agents hallucinate package names that attackers register as malware ("slopsquatting")</li>
+            <li>AI-generated code has 1.5–2× more improper password handling issues</li>
+            <li>Sensitive data exfiltration through uncontrolled tool access</li>
+            <li>Unauthorized codebase modifications and cascading production failures</li>
+            <li>Prompt injection attacks that override safety instructions</li>
+            <li>Identity and privilege abuse — agents acting beyond authorized scope</li>
+          </ul>
+          <div class="stat-callout">
+            📊 AI-generated code shows <strong>8× more performance issues</strong> and <strong>3× more readability issues</strong> vs. human-written code.
+            <br><span style="font-size:12px;opacity:0.7;margin-top:4px;display:inline-block;">Source: Stack Overflow Blog, Jan 2026 · Legit Security</span>
+          </div>
+        </div>
+
+        <!-- But Manual Isn't Safe Either -->
+        <div class="card manual-card">
+          <h3>🤔 But Manual Coding Isn't Safe Either</h3>
+          <p style="color:#8b949e;margin-bottom:16px;">Manual processes have their own blind spots — often ones we've stopped noticing.</p>
+          <ul class="risk-list">
+            <li>Different developers follow different patterns — code reviews catch ~60–70% of issues at best</li>
+            <li>Developers forget to validate inputs, update dependencies, and run security scans</li>
+            <li>Speed vs. quality tradeoff — deadlines push shortcuts every sprint</li>
+            <li>Cognitive load leads to mistakes, especially in large codebases</li>
+            <li>Best practices evolve but existing code doesn't auto-update</li>
+            <li>Production incidents happen regularly despite fully manual processes</li>
+          </ul>
+          <div class="stat-callout orange">
+            💡 Manual coding <em>feels</em> more controlled — but humans make typos, forget edge cases, and introduce subtle bugs. Control is often an illusion.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 3: THE ANSWER
+       ========================================== -->
+  <section class="section" id="the-answer" style="background:linear-gradient(180deg, #0d1117 0%, #0f1318 50%, #0d1117 100%);">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>The Answer: Humans + AI Agents + Guardrails</h2>
+      </div>
+
+      <div class="answer-callout reveal">
+        <p>The question isn't <em>"AI agents vs. humans."</em><br>It's <strong class="gradient-text">"humans alone vs. humans with AI agents and guardrails."</strong></p>
+      </div>
+
+      <div class="grid-3 reveal">
+        <div class="card" style="text-align:center;">
+          <span class="value-icon">🎯</span>
+          <h3 style="font-size:20px;font-weight:600;margin-bottom:12px;">Consistency at Scale</h3>
+          <p style="color:#8b949e;font-size:15px;line-height:1.6;">A test-enforcer extension never forgets to check for tests. A lint-on-edit hook never gets tired. Instructions never take shortcuts because of deadlines.</p>
+        </div>
+
+        <div class="card" style="text-align:center;">
+          <span class="value-icon">🔒</span>
+          <h3 style="font-size:20px;font-weight:600;margin-bottom:12px;">Automatic Security</h3>
+          <p style="color:#8b949e;font-size:15px;line-height:1.6;">Extensions block secret commits automatically. CodeQL runs on every PR. Dependency scanning happens without anyone requesting it. Every time — not just when someone remembers.</p>
+        </div>
+
+        <div class="card" style="text-align:center;">
+          <span class="value-icon">⚡</span>
+          <h3 style="font-size:20px;font-weight:600;margin-bottom:12px;">Speed Without Sacrifice</h3>
+          <p style="color:#8b949e;font-size:15px;line-height:1.6;">An AI agent with proper guardrails writes code AND tests AND documentation in the same session. Guardrails ensure quality isn't sacrificed for speed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 4: THE SAFETY STACK
+       ========================================== -->
+  <section class="section" id="safety-stack">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Six Layers of Defense-in-Depth</h2>
+        <p>No single layer is sufficient alone — they work in concert, each adding independent protection. A failure in one layer is caught by the next.</p>
+      </div>
+
+      <div style="max-width:800px;margin:0 auto;" class="reveal">
+        <!-- Layer 6 -->
+        <a href="workflows.html" class="stack-layer" style="--layer-color:#58a6ff;">
+          <div class="layer-number" style="background:#58a6ff;">6</div>
+          <div class="layer-content">
+            <h3>Agentic Workflows</h3>
+            <p>Intent-driven automation with sandboxed execution, safe outputs, and zero-secret agents</p>
+          </div>
+          <span class="layer-arrow">→</span>
+        </a>
+
+        <!-- Layer 5 -->
+        <a href="safety-stack.html#human-in-loop" class="stack-layer" style="--layer-color:#79c0ff;">
+          <div class="layer-number" style="background:#79c0ff;">5</div>
+          <div class="layer-content">
+            <h3>Human-in-the-Loop</h3>
+            <p>PR review, CI approval gates, merge authorization — humans always have the final say</p>
+          </div>
+          <span class="layer-arrow">→</span>
+        </a>
+
+        <!-- Layer 4 -->
+        <a href="safety-stack.html#sandboxed" class="stack-layer" style="--layer-color:#bc8cff;">
+          <div class="layer-number" style="background:#bc8cff;">4</div>
+          <div class="layer-content">
+            <h3>Sandboxed Execution</h3>
+            <p>Isolated environments, network segmentation, kernel-enforced boundaries</p>
+          </div>
+          <span class="layer-arrow">→</span>
+        </a>
+
+        <!-- Layer 3 -->
+        <a href="safety-stack.html#automated-security" class="stack-layer" style="--layer-color:#f85149;">
+          <div class="layer-number" style="background:#f85149;">3</div>
+          <div class="layer-content">
+            <h3>Automated Security Validation</h3>
+            <p>CodeQL, secret scanning, advisory database, dependency review — all automated</p>
+          </div>
+          <span class="layer-arrow">→</span>
+        </a>
+
+        <!-- Layer 2 -->
+        <a href="hooks.html" class="stack-layer" style="--layer-color:#d29922;">
+          <div class="layer-number" style="background:#d29922;">2</div>
+          <div class="layer-content">
+            <h3>Hooks &amp; Extensions <span style="font-size:13px;color:#d29922;">(Hard Guardrails)</span></h3>
+            <p>Programmatic gates that block destructive commands, detect secrets, and enforce testing — deterministically</p>
+          </div>
+          <span class="layer-arrow">→</span>
+        </a>
+
+        <!-- Layer 1 -->
+        <a href="instructions.html" class="stack-layer" style="--layer-color:#3fb950;">
+          <div class="layer-number" style="background:#3fb950;">1</div>
+          <div class="layer-content">
+            <h3>Custom Instructions <span style="font-size:13px;color:#3fb950;">(Soft Guardrails)</span></h3>
+            <p>Coding standards, architectural patterns, testing requirements, and security rules in natural language</p>
+          </div>
+          <span class="layer-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 5: WHY NOT JUST MANUAL?
+       ========================================== -->
+  <section class="section" id="why-not-manual" style="background:linear-gradient(180deg, #0d1117 0%, #0f1318 50%, #0d1117 100%);">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Manual vs. Guarded Agentic Development</h2>
+        <p>The most common objection — and why the data tells a different story.</p>
+      </div>
+
+      <div style="max-width:900px;margin:0 auto;" class="reveal">
+        <!-- Comparison 1 -->
+        <div class="comparison-row">
+          <div class="comparison-cell manual">
+            <div class="comparison-label">❌ Manual Process</div>
+            <h4>Inconsistent Standards</h4>
+            <p>Different developers follow different patterns. Style guides are documents people may or may not read. Code reviews catch some issues, but teams drift over time.</p>
+          </div>
+          <div class="comparison-cell agentic">
+            <div class="comparison-label">✅ With Guardrails</div>
+            <h4>Consistent Every Time</h4>
+            <p>Custom instructions and extensions enforce patterns on every single action. A test-enforcer never forgets. A linter hook never gets tired. No shortcuts under deadline pressure.</p>
+          </div>
+        </div>
+
+        <!-- Comparison 2 -->
+        <div class="comparison-row">
+          <div class="comparison-cell manual">
+            <div class="comparison-label">❌ Manual Process</div>
+            <h4>Security by Memory</h4>
+            <p>Developers must remember to not hardcode secrets, validate inputs, use parameterized queries, update dependencies, and run security scans. Humans forget — especially under pressure.</p>
+          </div>
+          <div class="comparison-cell agentic">
+            <div class="comparison-label">✅ With Guardrails</div>
+            <h4>Security by Default</h4>
+            <p>Extensions block secret commits automatically. CodeQL runs on every PR. Dependency scanning happens without anyone requesting it. The security pipeline runs every time — not just when someone remembers.</p>
+          </div>
+        </div>
+
+        <!-- Comparison 3 -->
+        <div class="comparison-row">
+          <div class="comparison-cell manual">
+            <div class="comparison-label">❌ Manual Process</div>
+            <h4>Speed vs. Quality Tradeoff</h4>
+            <p>There's always a tradeoff. Deadlines push developers to skip tests, defer documentation, and cut corners. Quality suffers when velocity is prioritized.</p>
+          </div>
+          <div class="comparison-cell agentic">
+            <div class="comparison-label">✅ With Guardrails</div>
+            <h4>Speed AND Quality</h4>
+            <p>An AI agent with guardrails writes code AND tests AND documentation in the same session. The agent doesn't feel deadline pressure. Guardrails ensure quality isn't sacrificed for speed.</p>
+          </div>
+        </div>
+
+        <!-- Comparison 4 -->
+        <div class="comparison-row">
+          <div class="comparison-cell manual">
+            <div class="comparison-label">❌ Manual Process</div>
+            <h4>Cognitive Overload</h4>
+            <p>Developers must simultaneously think about business logic, security, performance, testing, documentation, naming, and error handling. This leads to mistakes in large codebases.</p>
+          </div>
+          <div class="comparison-cell agentic">
+            <div class="comparison-label">✅ With Guardrails</div>
+            <h4>Focused Human Judgment</h4>
+            <p>Agents handle mechanical aspects while humans focus on design, strategy, and critical thinking. Guardrails handle the "did you remember to..." checklist automatically.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Insight -->
+      <div style="max-width:900px;margin:32px auto 0;" class="reveal">
+        <div class="card" style="border-color:#3fb950;padding:28px 32px;">
+          <p style="font-size:16px;color:#e6edf3;margin-bottom:12px;">The safety stack doesn't remove humans — it <strong>augments</strong> them. Every PR still requires human review. Every merge requires human approval. But the code arriving for review has already been:</p>
+          <ul class="checklist">
+            <li><span class="check-icon">✅</span> Tested (test-enforcer)</li>
+            <li><span class="check-icon">✅</span> Linted (lint-on-edit)</li>
+            <li><span class="check-icon">✅</span> Scanned for secrets (repo-shield + secret scanning)</li>
+            <li><span class="check-icon">✅</span> Analyzed for vulnerabilities (CodeQL)</li>
+            <li><span class="check-icon">✅</span> Checked for malicious dependencies (Advisory Database)</li>
+          </ul>
+          <p style="color:#3fb950;font-weight:600;margin-top:12px;">This is more thorough than any manual process.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 6: KEY STATISTICS
+       ========================================== -->
+  <section class="section" id="statistics">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>By the Numbers</h2>
+        <p>Data-driven evidence for safe agentic development at enterprise scale.</p>
+      </div>
+
+      <div class="grid-4 reveal">
+        <div class="card stat-card">
+          <div class="stat-value" style="color:#3fb950;">22–34%</div>
+          <div class="stat-label">AI suggestion acceptance rate on active coding days</div>
+          <div class="stat-source">GitHub internal metrics</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-value" style="color:#58a6ff;">20–40%</div>
+          <div class="stat-label">Time savings on boilerplate and repetitive coding tasks</div>
+          <div class="stat-source">Community measurements</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-value" style="color:#bc8cff;">10,000+</div>
+          <div class="stat-label">MCP ecosystem servers across community registries</div>
+          <div class="stat-source">Smithery, MCP.SO, Glama</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-value" style="color:#d29922;">25,000+</div>
+          <div class="stat-label">GitHub Actions available to agentic workflows</div>
+          <div class="stat-source">GitHub Marketplace</div>
+        </div>
+      </div>
+
+      <!-- GitHub Security Rules -->
+      <div style="margin-top:64px;" class="reveal">
+        <div class="section-header">
+          <h2>GitHub's Six Rules for Agentic Products</h2>
+          <p>The security principles that govern every AI agent interaction across GitHub's platform.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card rule-card">
+            <div class="rule-number">Rule 1</div>
+            <h4>All Context Is Visible</h4>
+            <p>Remove invisible Unicode, hidden HTML. Only visible information reaches the agent — no hidden prompt injections.</p>
+          </div>
+          <div class="card rule-card">
+            <div class="rule-number">Rule 2</div>
+            <h4>Firewall the Agent</h4>
+            <p>Limit external resource access. Users configure allowed connections. Agents don't get unrestricted internet access.</p>
+          </div>
+          <div class="card rule-card">
+            <div class="rule-number">Rule 3</div>
+            <h4>Limit Sensitive Data</h4>
+            <p>Only necessary data. CI secrets never passed to agents. Tokens revoked after sessions end.</p>
+          </div>
+          <div class="card rule-card">
+            <div class="rule-number">Rule 4</div>
+            <h4>Prevent Irreversible Changes</h4>
+            <p>PRs only, never direct commits. CI doesn't auto-run on agent PRs. MCP tool calls require user approval.</p>
+          </div>
+          <div class="card rule-card">
+            <div class="rule-number">Rule 5</div>
+            <h4>Attribute Actions Clearly</h4>
+            <p>Co-commits show user + agent. AI-generated content is clearly attributed. Full audit trail on every action.</p>
+          </div>
+          <div class="card rule-card">
+            <div class="rule-number">Rule 6</div>
+            <h4>Authorized Users Only</h4>
+            <p>Agents operate under the initiating user's permissions. Write access required. No privilege escalation.</p>
+          </div>
+        </div>
+        <p style="text-align:center;margin-top:16px;font-size:13px;color:#484f58;">Source: GitHub Blog — Rahul Zhade, November 2025</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 7: GETTING STARTED
+       ========================================== -->
+  <section class="section" id="get-started" style="background:linear-gradient(180deg, #0d1117 0%, #0f1318 50%, #0d1117 100%);">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Get Started in 5 Minutes</h2>
+        <p>Three files. That's all it takes to go from zero guardrails to a fully governed AI development workflow.</p>
+      </div>
+
+      <div class="grid-3 reveal">
+        <!-- Step 1 -->
+        <div class="card step-card">
+          <div class="step-number">1</div>
+          <h3>Add Custom Instructions</h3>
+          <p>Create a Markdown file that defines your team's coding standards, testing requirements, and security rules.</p>
+          <div class="step-code"><span class="comment">&lt;!-- .github/copilot-instructions.md --&gt;</span>
+<span class="keyword"># Project Standards</span>
+
+<span class="keyword">## Tech Stack</span>
+- TypeScript with strict mode
+- React 18 with hooks
+
+<span class="keyword">## Security</span>
+- Never hardcode secrets
+- Use environment variables
+
+<span class="keyword">## Testing</span>
+- Every change requires tests
+- Run <span class="string">`npm test`</span> before committing</div>
+          <p style="margin-top:12px;font-size:13px;color:#3fb950;">Every Copilot session starts with your standards loaded.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="card step-card">
+          <div class="step-number">2</div>
+          <h3>Add a Safety Extension</h3>
+          <p>Create a JavaScript extension that blocks destructive commands before they execute.</p>
+          <div class="step-code"><span class="comment">// .github/extensions/repo-shield/extension.mjs</span>
+<span class="keyword">import</span> { <span class="variable">joinSession</span> } <span class="keyword">from</span>
+  <span class="string">"@github/copilot-sdk/extension"</span>;
+
+<span class="keyword">const</span> <span class="variable">DANGEROUS</span> = [
+  { pattern: <span class="string">/rm\s+-rf\s+\/(?!\w)/i</span>,
+    reason: <span class="string">"Recursive delete"</span> },
+  { pattern: <span class="string">/DROP\s+(DATABASE|TABLE)/i</span>,
+    reason: <span class="string">"Destructive DB op"</span> },
+];
+
+<span class="comment">// Blocks before execution</span>
+hooks: { <span class="function">onPreToolUse</span>: ... }</div>
+          <p style="margin-top:12px;font-size:13px;color:#3fb950;">Destructive commands are blocked — every time, deterministically.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="card step-card">
+          <div class="step-number">3</div>
+          <h3>Use Planning Mode</h3>
+          <p>Have Copilot create a structured plan for review before writing any code.</p>
+          <div class="step-code"><span class="comment"># In VS Code or Copilot CLI:</span>
+
+<span class="function">/plan</span> Add user authentication
+with OAuth2 and JWT.
+
+Requirements:
+- Google and GitHub OAuth
+- JWT in httpOnly cookies
+- Refresh token rotation
+- Integration tests
+
+<span class="comment"># → Copilot creates a reviewable</span>
+<span class="comment">#   plan BEFORE writing code</span></div>
+          <p style="margin-top:12px;font-size:13px;color:#3fb950;">Complex tasks get reviewed before any implementation begins.</p>
+        </div>
+      </div>
+
+      <!-- After Setup -->
+      <div style="max-width:700px;margin:48px auto 0;" class="reveal">
+        <div class="card" style="border-color:#3fb950;padding:28px 32px;">
+          <h3 style="font-size:20px;font-weight:600;margin-bottom:16px;text-align:center;">After Setup, Your Team Has:</h3>
+          <ul class="checklist">
+            <li><span class="check-icon">✅</span> <strong>Soft guardrails</strong> — Instructions guide every agent session</li>
+            <li><span class="check-icon">✅</span> <strong>Hard guardrails</strong> — Extensions block dangerous actions deterministically</li>
+            <li><span class="check-icon">✅</span> <strong>Structured planning</strong> — Complex tasks get reviewed before implementation</li>
+            <li><span class="check-icon">✅</span> <strong>Human oversight</strong> — All changes arrive as PRs requiring your approval</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 8: NAVIGATION GRID
+       ========================================== -->
+  <section class="section" id="explore">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Deep Dive Into Each Layer</h2>
+        <p>Explore every component of the safety architecture in detail.</p>
+      </div>
+
+      <div class="grid-3 reveal">
+        <a href="safety-stack.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">🛡️</span>
+            <h3>The Safety Stack</h3>
+            <p>Complete architecture overview — how all six layers work together for defense-in-depth.</p>
+            <span class="learn-more">Learn more →</span>
+          </div>
+        </a>
+
+        <a href="instructions.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">📋</span>
+            <h3>Custom Instructions</h3>
+            <p>Repository-wide, path-specific, and organization-level instructions that guide every session.</p>
+            <span class="learn-more">Learn more →</span>
+          </div>
+        </a>
+
+        <a href="hooks.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">🔒</span>
+            <h3>Hooks &amp; Extensions</h3>
+            <p>Programmatic guardrails — shell hooks, CLI extensions, and hookflows for deterministic enforcement.</p>
+            <span class="learn-more">Learn more →</span>
+          </div>
+        </a>
+
+        <a href="mcp.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">🔌</span>
+            <h3>Model Context Protocol</h3>
+            <p>The open standard connecting AI agents to databases, documentation, and external services safely.</p>
+            <span class="learn-more">Learn more →</span>
+          </div>
+        </a>
+
+        <a href="workflows.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">🤖</span>
+            <h3>Agentic Workflows</h3>
+            <p>Intent-driven automation in GitHub Actions with sandboxed execution and safe outputs.</p>
+            <span class="learn-more">Learn more →</span>
+          </div>
+        </a>
+
+        <a href="planning.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">📐</span>
+            <h3>Planning Mode</h3>
+            <p>Plan-before-code methodology with spec-driven development and structured implementation plans.</p>
+            <span class="learn-more">Learn more →</span>
+          </div>
+        </a>
+
+        <a href="videos.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">🎥</span>
+            <h3>Video Library</h3>
+            <p>65+ curated YouTube videos organized by topic — from getting started to advanced patterns.</p>
+            <span class="learn-more">Browse videos →</span>
+          </div>
+        </a>
+
+        <a href="resources.html" class="card-link">
+          <div class="card nav-card">
+            <span class="nav-card-icon">📚</span>
+            <h3>Resources &amp; Links</h3>
+            <p>Official documentation, blog posts, repositories, learning paths, and certifications.</p>
+            <span class="learn-more">View resources →</span>
+          </div>
+        </a>
+
+        <div class="card nav-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-style:dashed;">
+          <span class="nav-card-icon">🚀</span>
+          <h3>Ready to Start?</h3>
+          <p>Follow the 3-step quickstart above or explore the safety stack to build your governance strategy.</p>
+          <a href="#get-started" class="learn-more" style="margin-top:auto;">Jump to quickstart ↑</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       SECTION 9: FEATURED VIDEO
+       ========================================== -->
+  <section class="section" id="featured-video" style="background:linear-gradient(180deg, #0d1117 0%, #0f1318 50%, #0d1117 100%);">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>See It In Action</h2>
+        <p>Watch how agentic development transforms the coding workflow.</p>
+      </div>
+
+      <div style="max-width:800px;margin:0 auto;" class="reveal">
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;border:1px solid #30363d;">
+          <iframe
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
+            src="https://www.youtube.com/embed/dutyOc_cAEU"
+            title="VS Code Agent Mode Just Changed Everything"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>
+        <p style="text-align:center;margin-top:16px;color:#8b949e;font-size:15px;">
+          <a href="videos.html" style="color:#58a6ff;font-weight:500;">Browse all 65+ curated videos →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       FOOTER
+       ========================================== -->
+  <footer style="border-top:1px solid #30363d;padding:32px 24px;text-align:center;color:#8b949e;font-size:14px;margin-top:64px;">
+    <p>Built with 🛡️ by <a href="https://htek.dev" style="color:#58a6ff;text-decoration:none;">htek.dev</a> | Powered by GitHub Pages</p>
+    <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
+  </footer>
+
+  <!-- ==========================================
+       SCROLL REVEAL SCRIPT
+       ========================================== -->
+  <script>
+    (function() {
+      var reveals = document.querySelectorAll('.reveal');
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      reveals.forEach(function(el) {
+        observer.observe(el);
+      });
+    })();
+  </script>
+</body>
+</html>

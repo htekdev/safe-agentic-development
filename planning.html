@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planning Mode — Safe Agentic Development</title>
+  <meta name="description" content="Plan-before-code methodology with GitHub Copilot Planning Mode and Spec-Driven Development. Specify → Plan → Implement → Verify.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    code, pre {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero {
+      padding: 140px 24px 80px;
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, rgba(188,140,255,0.12) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #bc8cff;
+      background: rgba(188,140,255,0.12);
+      border: 1px solid rgba(188,140,255,0.25);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #bc8cff 0%, #58a6ff 50%, #3fb950 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      color: #8b949e;
+      max-width: 720px;
+      margin: 0 auto 32px;
+    }
+    .hero-quote {
+      font-size: 15px;
+      color: #8b949e;
+      font-style: italic;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      border-left: 3px solid #bc8cff;
+      text-align: left;
+      background: rgba(188,140,255,0.05);
+      border-radius: 0 8px 8px 0;
+    }
+    .hero-quote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      color: #58a6ff;
+      font-size: 13px;
+    }
+
+    /* Section */
+    .section {
+      padding: 64px 24px;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-header h2 {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section-header p {
+      color: #8b949e;
+      font-size: 16px;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .section-label {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #bc8cff;
+      margin-bottom: 8px;
+    }
+
+    /* Cards */
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .card p {
+      color: #8b949e;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    /* Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    /* Code blocks */
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #e6edf3;
+      margin: 16px 0;
+    }
+    .code-block .comment { color: #8b949e; }
+    .code-block .keyword { color: #ff7b72; }
+    .code-block .string { color: #a5d6ff; }
+    .code-block .fn { color: #d2a8ff; }
+    .code-block .flag { color: #79c0ff; }
+    .code-block .prompt { color: #3fb950; }
+    .code-block .file { color: #d29922; }
+
+    /* Inline code */
+    .inline-code {
+      background: rgba(110,118,129,0.15);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      color: #e6edf3;
+    }
+
+    /* Cycle Diagram */
+    .cycle-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+    }
+    .cycle-step {
+      text-align: center;
+      padding: 24px 28px;
+      border-radius: 12px;
+      border: 2px solid;
+      min-width: 160px;
+      position: relative;
+    }
+    .cycle-step h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .cycle-step p {
+      font-size: 12px;
+      color: #8b949e;
+    }
+    .cycle-arrow {
+      font-size: 24px;
+      color: #30363d;
+    }
+    .cycle-step.plan { border-color: #bc8cff; background: rgba(188,140,255,0.08); }
+    .cycle-step.plan h4 { color: #bc8cff; }
+    .cycle-step.implement { border-color: #58a6ff; background: rgba(88,166,255,0.08); }
+    .cycle-step.implement h4 { color: #58a6ff; }
+    .cycle-step.verify { border-color: #3fb950; background: rgba(63,185,80,0.08); }
+    .cycle-step.verify h4 { color: #3fb950; }
+    .cycle-step.correct { border-color: #d29922; background: rgba(210,153,34,0.08); }
+    .cycle-step.correct h4 { color: #d29922; }
+
+    /* SDD Flow */
+    .sdd-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .sdd-step {
+      display: flex;
+      align-items: stretch;
+      gap: 20px;
+      position: relative;
+    }
+    .sdd-step-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 50px;
+    }
+    .sdd-step-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .sdd-step-line {
+      width: 2px;
+      flex-grow: 1;
+      min-height: 20px;
+    }
+    .sdd-step-content {
+      flex: 1;
+      padding-bottom: 24px;
+    }
+    .sdd-step-content h4 { font-size: 16px; margin-bottom: 4px; }
+    .sdd-step-content .sdd-file { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .sdd-step-content p { color: #8b949e; font-size: 14px; }
+
+    /* Platform table */
+    .platform-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    .platform-table th {
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 2px solid #30363d;
+      color: #8b949e;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .platform-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #21262d;
+      color: #e6edf3;
+    }
+    .platform-table tr:hover td {
+      background: rgba(88,166,255,0.04);
+    }
+    .status-stable {
+      color: #3fb950;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .status-preview {
+      color: #d29922;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .status-ga {
+      color: #58a6ff;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    /* Metric card */
+    .metric-card {
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #3fb950, #58a6ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .metric-label {
+      font-size: 13px;
+      color: #8b949e;
+      margin-top: 4px;
+    }
+
+    /* File tree */
+    .file-tree {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px 24px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #8b949e;
+    }
+    .file-tree .dir { color: #58a6ff; }
+    .file-tree .file { color: #e6edf3; }
+    .file-tree .highlight { color: #3fb950; font-weight: 600; }
+
+    /* Steps list */
+    .steps-list {
+      list-style: none;
+      counter-reset: step;
+    }
+    .steps-list li {
+      counter-increment: step;
+      padding: 16px 20px 16px 52px;
+      position: relative;
+      margin-bottom: 8px;
+      background: rgba(22,27,34,0.6);
+      border-radius: 8px;
+      border: 1px solid #21262d;
+    }
+    .steps-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(188,140,255,0.15);
+      color: #bc8cff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .steps-list li strong { color: #e6edf3; }
+    .steps-list li span { color: #8b949e; font-size: 14px; }
+
+    /* Modes table */
+    .mode-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+    }
+    .mode-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mode-info h3 { font-size: 16px; margin-bottom: 4px; }
+    .mode-info p { font-size: 13px; color: #8b949e; }
+    .mode-info .mode-when { color: #58a6ff; font-size: 12px; margin-top: 6px; }
+
+    /* Tips */
+    .tip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .tip-do { border-left: 3px solid #3fb950; }
+    .tip-dont { border-left: 3px solid #f85149; }
+    .tip-do h4 { color: #3fb950; }
+    .tip-dont h4 { color: #f85149; }
+
+    /* CTA */
+    .cta-section {
+      text-align: center;
+      padding: 64px 24px;
+      background: radial-gradient(ellipse at 50% 100%, rgba(63,185,80,0.08) 0%, transparent 60%);
+    }
+    .cta-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      margin: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      text-decoration: none;
+    }
+    .cta-primary { background: linear-gradient(135deg, #bc8cff, #58a6ff); }
+    .cta-secondary { background: #21262d; border: 1px solid #30363d; }
+
+    /* Videos */
+    .video-embed {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #30363d;
+    }
+    .video-embed iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .video-meta {
+      margin-top: 12px;
+    }
+    .video-meta h3 { font-size: 15px; margin-bottom: 4px; }
+    .video-meta p { font-size: 13px; color: #8b949e; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .tip-grid { grid-template-columns: 1fr; }
+      .cycle-diagram { flex-direction: column; }
+      .cycle-arrow { transform: rotate(90deg); }
+      nav div:last-child { font-size: 13px; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #30363d;padding:12px 24px;">
+  <div style="max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <a href="index.html" style="color:#e6edf3;text-decoration:none;font-weight:600;font-size:18px;">🛡️ Safe Agentic Dev</a>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+      <a href="index.html" style="color:#8b949e;text-decoration:none;">Home</a>
+      <a href="safety-stack.html" style="color:#8b949e;text-decoration:none;">Safety Stack</a>
+      <a href="instructions.html" style="color:#8b949e;text-decoration:none;">Instructions</a>
+      <a href="hooks.html" style="color:#8b949e;text-decoration:none;">Hooks</a>
+      <a href="mcp.html" style="color:#8b949e;text-decoration:none;">MCP</a>
+      <a href="workflows.html" style="color:#8b949e;text-decoration:none;">Workflows</a>
+      <a href="planning.html" style="color:#3fb950;text-decoration:none;">Planning</a>
+      <a href="videos.html" style="color:#8b949e;text-decoration:none;">Videos</a>
+      <a href="resources.html" style="color:#8b949e;text-decoration:none;">Resources</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Section 1: Hero -->
+<section class="hero">
+  <div class="container">
+    <span class="hero-badge">📋 Plan → Code → Verify</span>
+    <h1>Planning Mode &amp; Spec-Driven Development</h1>
+    <p>Specify → Plan → Implement → Verify — intent is the new source of truth. Stop vibe-coding and start building with clarity, structure, and predictable outcomes.</p>
+    <blockquote class="hero-quote">
+      "We're moving from 'code is the source of truth' to 'intent is the source of truth.' With AI, the specification becomes the source of truth and determines what gets built."
+      <cite>— GitHub Blog, September 2025</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- Section 2: What is Planning Mode? -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">The Foundation</span>
+      <h2>Plan Before You Code</h2>
+      <p>Planning Mode is a plan-before-code approach built into GitHub Copilot. Instead of immediately generating code, Copilot first creates a structured implementation plan you review, refine, and approve.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <span class="card-icon">📋</span>
+        <h3>Planning Mode (Built-in Feature)</h3>
+        <p>A built-in Copilot feature for generating step-by-step implementation plans within a session. Use <span class="inline-code">/plan</span> or <span class="inline-code">Shift+Tab</span> to activate. Creates structured plans with checkboxes, verification steps, and implementation order.</p>
+        <p style="margin-top:12px;color:#58a6ff;font-size:13px;">Available in VS Code, Visual Studio, JetBrains, Eclipse, Xcode, and Copilot CLI</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">📐</span>
+        <h3>Spec-Driven Development (Methodology)</h3>
+        <p>A broader methodology where Markdown specifications serve as the requirements documentation and the primary instruction set for AI agents. Uses a hierarchy of spec files — constitution, spec, plan, and tasks — as the source of truth.</p>
+        <p style="margin-top:12px;color:#bc8cff;font-size:13px;">Works with GitHub Copilot, Claude Code, Gemini CLI, and more</p>
+      </div>
+    </div>
+
+    <!-- Platform availability -->
+    <div class="card" style="margin-top:32px;">
+      <h3 style="margin-bottom:16px;">Platform Availability</h3>
+      <div style="overflow-x:auto;">
+        <table class="platform-table">
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Feature</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🟣 VS Code</td>
+              <td>Plan agent (<span class="inline-code">/plan</span>)</td>
+              <td><span class="status-stable">✓ Stable (v1.99+)</span></td>
+            </tr>
+            <tr>
+              <td>🔵 Visual Studio</td>
+              <td>Planning in VS 2022 v17.14+</td>
+              <td><span class="status-preview">⟐ Public Preview</span></td>
+            </tr>
+            <tr>
+              <td>🟠 JetBrains</td>
+              <td>Plan mode</td>
+              <td><span class="status-preview">⟐ Public Preview</span></td>
+            </tr>
+            <tr>
+              <td>🟡 Eclipse</td>
+              <td>Plan mode</td>
+              <td><span class="status-preview">⟐ Public Preview</span></td>
+            </tr>
+            <tr>
+              <td>⚪ Xcode</td>
+              <td>Plan mode</td>
+              <td><span class="status-preview">⟐ Public Preview</span></td>
+            </tr>
+            <tr>
+              <td>🟢 Copilot CLI</td>
+              <td><span class="inline-code">/plan</span> command + <span class="inline-code">Shift+Tab</span> toggle</td>
+              <td><span class="status-ga">● GA</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: Plan → Implement → Verify Cycle -->
+<section class="section" style="background:rgba(22,27,34,0.5);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">The Core Loop</span>
+      <h2>Plan → Implement → Verify</h2>
+      <p>The fundamental rhythm of planning mode — a self-correcting loop that ensures quality at every step.</p>
+    </div>
+
+    <div class="cycle-diagram">
+      <div class="cycle-step plan">
+        <h4>📋 PLAN</h4>
+        <p>Analyze codebase<br>Design architecture<br>Define steps</p>
+      </div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step implement">
+        <h4>⚡ IMPLEMENT</h4>
+        <p>Code changes<br>Terminal commands<br>File edits</p>
+      </div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step verify">
+        <h4>✅ VERIFY</h4>
+        <p>Run tests<br>Lint &amp; build<br>Check output</p>
+      </div>
+      <span class="cycle-arrow">→</span>
+      <div class="cycle-step correct">
+        <h4>🔄 SELF-CORRECT</h4>
+        <p>Fix errors<br>Adjust approach<br>Iterate</p>
+      </div>
+    </div>
+
+    <div class="card" style="max-width:800px;margin:32px auto 0;">
+      <h3>How the Agent Executes the Loop</h3>
+      <ol class="steps-list" style="margin-top:16px;">
+        <li><strong>Analyze context</strong> — <span>Read codebase, understand requirements, resolve ambiguity</span></li>
+        <li><strong>Propose edits</strong> — <span>Suggest code changes and terminal commands aligned to the plan</span></li>
+        <li><strong>Monitor outputs</strong> — <span>Watch for compile errors, test failures, and lint warnings</span></li>
+        <li><strong>Self-correct</strong> — <span>Automatically fix issues, adjust approach, and re-verify</span></li>
+        <li><strong>Repeat</strong> — <span>Continue until all plan steps are complete and verified</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: How to Use Planning Mode -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Getting Started</span>
+      <h2>How to Use Planning Mode</h2>
+      <p>Two workflows — pick the one that fits your environment.</p>
+    </div>
+
+    <div class="grid-2">
+      <!-- VS Code -->
+      <div class="card">
+        <h3 style="color:#bc8cff;">🟣 In VS Code</h3>
+        <ol class="steps-list" style="margin-top:16px;">
+          <li><strong>Open Chat</strong> — <span>Press <span class="inline-code">Ctrl+Alt+I</span> and select <strong style="color:#bc8cff;">Plan</strong> from the agents dropdown</span></li>
+          <li><strong>Describe your task</strong> — <span>Enter a high-level goal with context</span></li>
+          <li><strong>Research phase</strong> — <span>The Plan agent analyzes your codebase and asks clarifying questions</span></li>
+          <li><strong>Review the plan</strong> — <span>Get a structured plan with checkboxes and verification steps</span></li>
+          <li><strong>Iterate</strong> — <span>Refine through follow-up prompts until the plan is right</span></li>
+          <li><strong>Execute</strong> — <span>Choose "Start Implementation" or "Open in Editor"</span></li>
+        </ol>
+        <div class="code-block" style="margin-top:16px;">
+          <span class="comment">// In VS Code Chat (Plan agent selected)</span><br>
+          <span class="prompt">/plan</span> <span class="string">Implement user authentication with OAuth2 and JWT.</span><br>
+          <span class="string">Use our existing Express middleware in src/middleware/auth.ts.</span><br>
+          <span class="string">Follow the repository pattern in src/repositories/.</span><br>
+          <span class="string">Include integration tests with our Vitest setup.</span>
+        </div>
+        <p style="margin-top:12px;font-size:13px;color:#8b949e;">
+          <strong style="color:#e6edf3;">Settings:</strong>
+          <span class="inline-code">chat.planAgent.defaultModel</span> — select planning model<br>
+          <span class="inline-code">github.copilot.chat.implementAgent.model</span> — select implementation model
+        </p>
+      </div>
+
+      <!-- CLI -->
+      <div class="card">
+        <h3 style="color:#3fb950;">🟢 In Copilot CLI</h3>
+        <ol class="steps-list" style="margin-top:16px;">
+          <li><strong>Toggle plan mode</strong> — <span>Press <span class="inline-code">Shift+Tab</span> or use the <span class="inline-code">/plan</span> command</span></li>
+          <li><strong>Copilot analyzes</strong> — <span>Researches your codebase and asks clarifying questions</span></li>
+          <li><strong>Review plan.md</strong> — <span>Structured plan with checkboxes is saved to session state</span></li>
+          <li><strong>Edit the plan</strong> — <span>Press <span class="inline-code">Ctrl+Y</span> to open in your default editor</span></li>
+          <li><strong>Approve</strong> — <span>Confirm the plan and let the agent implement step-by-step</span></li>
+          <li><strong>Verify</strong> — <span>Agent runs tests, lint, and build automatically</span></li>
+        </ol>
+        <div class="code-block" style="margin-top:16px;">
+          <span class="comment"># One-off plan command</span><br>
+          <span class="prompt">$</span> <span class="keyword">copilot</span><br>
+          <span class="prompt">&gt;</span> <span class="flag">/plan</span> <span class="string">Add OAuth2 authentication with Google and GitHub providers</span><br><br>
+          <span class="comment"># Or toggle plan mode for the session</span><br>
+          <span class="prompt">&gt;</span> <span class="flag">Shift+Tab</span> <span class="comment"># Toggles plan mode on/off</span><br><br>
+          <span class="comment"># View and manage your plan</span><br>
+          <span class="prompt">&gt;</span> <span class="flag">/session plan</span> <span class="comment"># View current plan</span><br>
+          <span class="prompt">&gt;</span> <span class="flag">Ctrl+Y</span> <span class="comment">      # Edit in external editor</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- When to use -->
+    <div class="card" style="margin-top:32px;">
+      <h3 style="margin-bottom:16px;">When to Use Plan Mode</h3>
+      <div class="grid-2" style="gap:24px;">
+        <div>
+          <h4 style="color:#3fb950;font-size:14px;margin-bottom:12px;">✅ Use Plan Mode For</h4>
+          <ul style="list-style:none;font-size:14px;color:#8b949e;">
+            <li style="padding:6px 0;">• Complex multi-file changes</li>
+            <li style="padding:6px 0;">• Refactoring with many touch points</li>
+            <li style="padding:6px 0;">• New features touching multiple modules</li>
+            <li style="padding:6px 0;">• Architecture decisions that matter</li>
+            <li style="padding:6px 0;">• Greenfield project setup</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="color:#f85149;font-size:14px;margin-bottom:12px;">❌ Skip Plan Mode For</h4>
+          <ul style="list-style:none;font-size:14px;color:#8b949e;">
+            <li style="padding:6px 0;">• Small single-file fixes</li>
+            <li style="padding:6px 0;">• Simple variable renaming</li>
+            <li style="padding:6px 0;">• Local, contained bug fixes</li>
+            <li style="padding:6px 0;">• Single configuration changes</li>
+            <li style="padding:6px 0;">• Quick documentation edits</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: Spec-Driven Development -->
+<section class="section" style="background:rgba(22,27,34,0.5);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">The Methodology</span>
+      <h2>Spec-Driven Development</h2>
+      <p>A four-phase workflow where Markdown specifications serve as both requirements documentation and the primary instruction set for AI agents.</p>
+    </div>
+
+    <blockquote style="max-width:700px;margin:0 auto 40px;padding:16px 24px;border-left:3px solid #58a6ff;color:#8b949e;font-style:italic;background:rgba(88,166,255,0.05);border-radius:0 8px 8px 0;">
+      "SDD is not about writing exhaustive, dry requirements documents. It's about making your technical decisions explicit, reviewable, and evolvable. Think of it as version control for your thinking."
+      <cite style="display:block;margin-top:8px;font-style:normal;color:#58a6ff;font-size:13px;">— Den Delimarsky, Microsoft for Developers, September 2025</cite>
+    </blockquote>
+
+    <!-- SDD Flow -->
+    <div class="sdd-flow">
+      <!-- Step 0: Constitution -->
+      <div class="sdd-step">
+        <div class="sdd-step-marker">
+          <div class="sdd-step-dot" style="background:rgba(139,148,158,0.2);color:#8b949e;">⚙</div>
+          <div class="sdd-step-line" style="background:linear-gradient(to bottom, #8b949e, #bc8cff);"></div>
+        </div>
+        <div class="sdd-step-content">
+          <div class="sdd-file" style="color:#8b949e;">constitution.md</div>
+          <h4>Non-Negotiable Principles</h4>
+          <p>Foundation layer — opinionated stack decisions, coding standards, architectural constraints. Set once, referenced by every phase.</p>
+        </div>
+      </div>
+
+      <!-- Step 1: Specify -->
+      <div class="sdd-step">
+        <div class="sdd-step-marker">
+          <div class="sdd-step-dot" style="background:rgba(188,140,255,0.2);color:#bc8cff;">1</div>
+          <div class="sdd-step-line" style="background:linear-gradient(to bottom, #bc8cff, #58a6ff);"></div>
+        </div>
+        <div class="sdd-step-content">
+          <div class="sdd-file" style="color:#bc8cff;">/specify → spec.md</div>
+          <h4>What &amp; Why</h4>
+          <p>Define the problem, user stories, acceptance criteria, and scope — <strong style="color:#e6edf3;">without</strong> technical decisions. Focus on motivations, stakeholders, and success criteria.</p>
+          <div class="code-block" style="margin-top:12px;font-size:12px;">
+<span class="comment"># spec.md — User Profile Editing</span>
+
+<span class="keyword">## Problem Statement</span>
+Users cannot update their profile information after account creation.
+
+<span class="keyword">## User Stories</span>
+- As a user, I can update my display name and bio
+- As a user, I can upload a new avatar (max 2MB, JPEG/PNG)
+- As a user, I can change my email with verification
+
+<span class="keyword">## Acceptance Criteria</span>
+- [ ] Profile changes save within 2 seconds
+- [ ] Invalid uploads show clear error messages
+- [ ] Email changes require clicking a verification link
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Plan -->
+      <div class="sdd-step">
+        <div class="sdd-step-marker">
+          <div class="sdd-step-dot" style="background:rgba(88,166,255,0.2);color:#58a6ff;">2</div>
+          <div class="sdd-step-line" style="background:linear-gradient(to bottom, #58a6ff, #3fb950);"></div>
+        </div>
+        <div class="sdd-step-content">
+          <div class="sdd-file" style="color:#58a6ff;">/plan → plan.md</div>
+          <h4>How</h4>
+          <p>Define the technical architecture — frameworks, libraries, data models, API contracts, and integration points. Grounded by the constitution.</p>
+          <div class="code-block" style="margin-top:12px;font-size:12px;">
+<span class="comment"># plan.md — User Profile Editing</span>
+
+<span class="keyword">## Architecture</span>
+- Express.js REST API with existing JWT auth middleware
+- Multer for file uploads, Sharp for image processing
+- PostgreSQL with existing Knex.js migrations
+
+<span class="keyword">## API Design</span>
+- PATCH /api/users/:id — Update name, bio
+- POST /api/users/:id/avatar — Upload avatar
+- POST /api/users/:id/email — Request email change
+
+<span class="keyword">## Data Model Changes</span>
+- Add avatar_url (VARCHAR 512) to users table
+- Create email_verifications table
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Tasks -->
+      <div class="sdd-step">
+        <div class="sdd-step-marker">
+          <div class="sdd-step-dot" style="background:rgba(63,185,80,0.2);color:#3fb950;">3</div>
+          <div class="sdd-step-line" style="background:linear-gradient(to bottom, #3fb950, #d29922);"></div>
+        </div>
+        <div class="sdd-step-content">
+          <div class="sdd-file" style="color:#3fb950;">/tasks → tasks.md</div>
+          <h4>Executable Work</h4>
+          <p>Break spec + plan into small, reviewable, dependency-ordered tasks. Each task is implementable and testable in isolation — like TDD for your AI agent.</p>
+          <div class="code-block" style="margin-top:12px;font-size:12px;">
+<span class="comment"># tasks.md — User Profile Editing</span>
+
+<span class="keyword">## Phase 1: Data Layer</span>
+- [ ] Add avatar_url column migration
+- [ ] Create email_verifications table migration
+- [ ] Update UserRepository with profile update methods
+- [ ] Write unit tests for UserRepository changes
+
+<span class="keyword">## Phase 2: API Layer</span>
+- [ ] Create PATCH /api/users/:id endpoint
+- [ ] Create POST /api/users/:id/avatar endpoint
+- [ ] Add Multer middleware for file uploads
+- [ ] Write integration tests for new endpoints
+
+<span class="keyword">## Phase 3: Email Verification</span>
+- [ ] Create email verification service
+- [ ] Add POST /api/users/:id/email endpoint
+- [ ] Write tests for email change flow
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Implement -->
+      <div class="sdd-step">
+        <div class="sdd-step-marker">
+          <div class="sdd-step-dot" style="background:rgba(210,153,34,0.2);color:#d29922;">4</div>
+          <div class="sdd-step-line" style="background:transparent;"></div>
+        </div>
+        <div class="sdd-step-content">
+          <div class="sdd-file" style="color:#d29922;">Agent Execution</div>
+          <h4>Implement → Test → Verify → Commit</h4>
+          <p>The agent tackles tasks one by one. Instead of reviewing thousand-line code dumps, you review focused changes. The agent knows <em>what</em> (spec), <em>how</em> (plan), and <em>what to work on</em> (tasks). Your role: verify at each checkpoint.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 6: The Spec Kit -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Tooling</span>
+      <h2>GitHub Spec Kit</h2>
+      <p>An open-source toolkit from GitHub that scaffolds the complete SDD workflow — works with Copilot, Claude Code, Gemini CLI, and more.</p>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="card" style="margin-bottom:20px;">
+          <h3>Install Spec Kit</h3>
+          <div class="code-block" style="margin-top:12px;">
+            <span class="comment"># Install and initialize Spec Kit</span><br>
+            <span class="prompt">$</span> <span class="keyword">uvx</span> <span class="flag">--from</span> <span class="string">git+https://github.com/github/spec-kit.git</span> \<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;specify init <span class="file">my-project</span>
+          </div>
+          <p style="margin-top:12px;">Creates the full SDD scaffolding with templates, prompt files, and helper scripts — ready to use in 30 seconds.</p>
+        </div>
+        <div class="card">
+          <h3>Slash Commands</h3>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="inline-code" style="color:#bc8cff;min-width:80px;">/specify</span>
+              <span style="color:#8b949e;font-size:14px;">Generate a detailed specification from your requirements</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="inline-code" style="color:#58a6ff;min-width:80px;">/plan</span>
+              <span style="color:#8b949e;font-size:14px;">Translate the spec into a technical implementation plan</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="inline-code" style="color:#3fb950;min-width:80px;">/tasks</span>
+              <span style="color:#8b949e;font-size:14px;">Break the plan into executable, testable work items</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Scaffolded File Structure</h3>
+        <div class="file-tree" style="margin-top:12px;">
+          <span class="dir">├── .github/</span><br>
+          <span class="dir">│&nbsp;&nbsp; └── prompts/</span><br>
+          <span class="file">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="highlight">plan.prompt.md</span></span><br>
+          <span class="file">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="highlight">specify.prompt.md</span></span><br>
+          <span class="file">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── <span class="highlight">tasks.prompt.md</span></span><br>
+          <br>
+          <span class="dir">└── .specify/</span><br>
+          <span class="dir">&nbsp;&nbsp;&nbsp; ├── memory/</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp; ├── <span class="highlight">constitution.md</span></span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp; └── constitution_update_checklist.md</span><br>
+          <span class="dir">&nbsp;&nbsp;&nbsp; ├── scripts/</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp; ├── check-task-prerequisites.ps1</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp; ├── create-new-feature.ps1</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp; ├── setup-plan.ps1</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp; └── update-agent-context.ps1</span><br>
+          <span class="dir">&nbsp;&nbsp;&nbsp; └── templates/</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── plan-template.md</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── spec-template.md</span><br>
+          <span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── tasks-template.md</span>
+        </div>
+        <p style="margin-top:16px;font-size:13px;color:#8b949e;"><strong style="color:#e6edf3;">Cross-agent by design</strong> — templates work with GitHub Copilot, Claude Code, Gemini CLI, and most modern coding agents.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 7: Plan.md Structure -->
+<section class="section" style="background:rgba(22,27,34,0.5);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Anatomy of a Plan</span>
+      <h2>What a Good plan.md Looks Like</h2>
+      <p>A well-structured plan gives the agent everything it needs — context, steps, verification criteria, and dependency order.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:16px 20px;border-bottom:1px solid #30363d;background:rgba(188,140,255,0.05);">
+          <span style="color:#bc8cff;font-weight:600;font-size:14px;">📄 plan.md</span>
+          <span style="color:#8b949e;font-size:12px;margin-left:8px;">— Generated by /plan</span>
+        </div>
+        <div class="code-block" style="border:none;border-radius:0;margin:0;">
+<span class="keyword"># Implementation Plan: User Profile Editing</span>
+
+<span class="keyword">## Overview</span>
+Add profile editing capabilities to the Express.js
+API, including name/bio updates, avatar upload, and
+email change with verification.
+
+<span class="keyword">## Constraints</span>
+- Use existing JWT auth middleware (src/middleware/auth.ts)
+- Follow repository pattern (src/repositories/)
+- Avatar max size: 2MB, JPEG/PNG only
+- All changes logged to activity audit table
+
+<span class="keyword">## Implementation Steps</span>
+
+<span class="keyword">### Phase 1: Data Layer</span>
+- [ ] Create migration: add avatar_url to users
+- [ ] Create migration: email_verifications table
+- [ ] Update UserRepository with CRUD methods
+- [ ] Write unit tests for repository changes
+
+<span class="keyword">### Phase 2: API Endpoints</span>
+- [ ] PATCH /api/users/:id — update name, bio
+- [ ] POST /api/users/:id/avatar — upload avatar
+- [ ] POST /api/users/:id/email — request change
+- [ ] Add input validation middleware
+- [ ] Write integration tests
+
+<span class="keyword">### Phase 3: Email Verification</span>
+- [ ] Implement verification token generation
+- [ ] Create GET /api/verify-email/:token
+- [ ] Send verification emails via SendGrid
+- [ ] Write end-to-end tests
+
+<span class="keyword">## Verification</span>
+- [ ] All tests pass (npm test)
+- [ ] Lint passes (npm run lint)
+- [ ] Build succeeds (npm run build)
+- [ ] Manual test: update profile via API
+- [ ] Manual test: avatar upload flow
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:20px;">
+          <h3>Key Principles</h3>
+          <ul style="list-style:none;margin-top:12px;font-size:14px;">
+            <li style="padding:8px 0;border-bottom:1px solid #21262d;color:#8b949e;">
+              <strong style="color:#3fb950;">✓ Clear problem statement</strong> — What problem does this solve?
+            </li>
+            <li style="padding:8px 0;border-bottom:1px solid #21262d;color:#8b949e;">
+              <strong style="color:#3fb950;">✓ Phased implementation</strong> — Backend → API → Frontend, ordered by dependency
+            </li>
+            <li style="padding:8px 0;border-bottom:1px solid #21262d;color:#8b949e;">
+              <strong style="color:#3fb950;">✓ Checkboxes for tracking</strong> — The agent updates status as it executes
+            </li>
+            <li style="padding:8px 0;border-bottom:1px solid #21262d;color:#8b949e;">
+              <strong style="color:#3fb950;">✓ Explicit constraints</strong> — Existing patterns, limits, and requirements
+            </li>
+            <li style="padding:8px 0;border-bottom:1px solid #21262d;color:#8b949e;">
+              <strong style="color:#3fb950;">✓ Verification steps</strong> — What "done" looks like, with concrete commands
+            </li>
+            <li style="padding:8px 0;color:#8b949e;">
+              <strong style="color:#3fb950;">✓ Testable in isolation</strong> — Each task produces a reviewable, focused change
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Session Storage (CLI)</h3>
+          <div class="file-tree" style="margin-top:12px;">
+            <span class="dir">~/.copilot/session-state/{session-id}/</span><br>
+            <span class="file">├── events.jsonl <span style="color:#8b949e;font-size:12px;"># Full session history</span></span><br>
+            <span class="file">├── workspace.yaml <span style="color:#8b949e;font-size:12px;"># Metadata</span></span><br>
+            <span class="highlight">├── plan.md <span style="color:#8b949e;font-size:12px;"># Implementation plan ★</span></span><br>
+            <span class="file">├── checkpoints/ <span style="color:#8b949e;font-size:12px;"># Compaction history</span></span><br>
+            <span class="file">└── files/ <span style="color:#8b949e;font-size:12px;"># Persistent artifacts</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 8: Benefits for Teams -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Impact</span>
+      <h2>Why Planning Leads to Better Outcomes</h2>
+      <p>Measured productivity gains and qualitative benefits from teams using planning workflows.</p>
+    </div>
+
+    <!-- Metrics -->
+    <div class="grid-4" style="margin-bottom:40px;">
+      <div class="card metric-card">
+        <div class="metric-value">22–34%</div>
+        <div class="metric-label">AI suggestion acceptance rate on active coding days</div>
+      </div>
+      <div class="card metric-card">
+        <div class="metric-value">12–18%</div>
+        <div class="metric-label">Lead time reduction on repetitive work</div>
+      </div>
+      <div class="card metric-card">
+        <div class="metric-value">10–20%</div>
+        <div class="metric-label">PR throughput lift on sprint weeks</div>
+      </div>
+      <div class="card metric-card">
+        <div class="metric-value">20–40%</div>
+        <div class="metric-label">Time savings on boilerplate tasks</div>
+      </div>
+    </div>
+
+    <!-- Qualitative benefits -->
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-icon">🎯</span>
+        <h3>Higher Success Rates</h3>
+        <p>Models achieve measurably higher success rates when given a concrete plan to follow rather than vague instructions.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔄</span>
+        <h3>Repeatability</h3>
+        <p>Regenerate code from the same plan. Specs are reusable across implementations — even across different languages.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔗</span>
+        <h3>Traceability</h3>
+        <p>Every implementation decision traces back to a spec → plan → task chain. Know <em>why</em> every line of code exists.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🛡️</span>
+        <h3>Quality Gates</h3>
+        <p>Systematic, phase-by-phase approvals prevent drift from requirements. Each checkpoint is a verification opportunity.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧠</span>
+        <h3>Reduced Context Loss</h3>
+        <p>Plans persist as artifacts, preventing the AI from "forgetting" decisions mid-session. Context survives compaction.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">👥</span>
+        <h3>Team Alignment</h3>
+        <p>Specs become a shared source of truth across product, engineering, QA, and AI agents. Everyone references the same document.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 9: Autopilot & Fleet Mode -->
+<section class="section" style="background:rgba(22,27,34,0.5);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Autonomous Execution</span>
+      <h2>From Plans to Autopilot</h2>
+      <p>Planning feeds directly into autonomous execution — in the IDE, CLI, or cloud.</p>
+    </div>
+
+    <div class="grid-2">
+      <!-- Four Modes -->
+      <div class="card">
+        <h3 style="margin-bottom:16px;">The Four Modes of Copilot</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="mode-card" style="background:rgba(188,140,255,0.06);border-radius:8px;padding:16px;">
+            <div class="mode-icon" style="background:rgba(188,140,255,0.15);color:#bc8cff;font-size:20px;">📋</div>
+            <div class="mode-info">
+              <h3 style="color:#bc8cff;">Plan Mode</h3>
+              <p>Clarify intent and structure before writing code</p>
+              <div class="mode-when">↳ Complex features, architectural work</div>
+            </div>
+          </div>
+          <div class="mode-card" style="background:rgba(88,166,255,0.06);border-radius:8px;padding:16px;">
+            <div class="mode-icon" style="background:rgba(88,166,255,0.15);color:#58a6ff;font-size:20px;">⚡</div>
+            <div class="mode-info">
+              <h3 style="color:#58a6ff;">Agent Mode</h3>
+              <p>Implement incrementally with autonomous execution</p>
+              <div class="mode-when">↳ After planning, for step-by-step execution</div>
+            </div>
+          </div>
+          <div class="mode-card" style="background:rgba(63,185,80,0.06);border-radius:8px;padding:16px;">
+            <div class="mode-icon" style="background:rgba(63,185,80,0.15);color:#3fb950;font-size:20px;">✏️</div>
+            <div class="mode-info">
+              <h3 style="color:#3fb950;">Edit Mode</h3>
+              <p>Refine and polish code with targeted changes</p>
+              <div class="mode-when">↳ Small adjustments, formatting, polish</div>
+            </div>
+          </div>
+          <div class="mode-card" style="background:rgba(210,153,34,0.06);border-radius:8px;padding:16px;">
+            <div class="mode-icon" style="background:rgba(210,153,34,0.15);color:#d29922;font-size:20px;">💬</div>
+            <div class="mode-info">
+              <h3 style="color:#d29922;">Ask Mode</h3>
+              <p>Review, explain, or question decisions</p>
+              <div class="mode-when">↳ Understanding code, Q&amp;A, exploration</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How planning feeds execution -->
+      <div>
+        <div class="card" style="margin-bottom:20px;">
+          <h3>How Planning Feeds Agent Execution</h3>
+          <ol class="steps-list" style="margin-top:12px;">
+            <li><strong>Plan</strong> — <span>Creates structured plan.md with implementation steps</span></li>
+            <li><strong>Agent reads plan</strong> — <span>Agent mode picks up the plan and executes step-by-step</span></li>
+            <li><strong>Session memory</strong> — <span>Plan persists in session state for continuous reference</span></li>
+            <li><strong>Verification</strong> — <span>Agent runs tests and builds after each step automatically</span></li>
+            <li><strong>Self-correction</strong> — <span>Agent reads errors, adjusts approach, and retries</span></li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Execution Options</h3>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px;">
+            <div style="padding:12px 16px;background:#0d1117;border-radius:8px;border:1px solid #21262d;">
+              <strong style="color:#58a6ff;font-size:13px;">VS Code — Interactive</strong>
+              <p style="font-size:13px;color:#8b949e;margin-top:4px;">"Start Implementation" in the current session with real-time oversight</p>
+            </div>
+            <div style="padding:12px 16px;background:#0d1117;border-radius:8px;border:1px solid #21262d;">
+              <strong style="color:#3fb950;font-size:13px;">CLI — Autopilot</strong>
+              <p style="font-size:13px;color:#8b949e;margin-top:4px;">Agent executes the plan autonomously while you monitor or work on other tasks</p>
+            </div>
+            <div style="padding:12px 16px;background:#0d1117;border-radius:8px;border:1px solid #21262d;">
+              <strong style="color:#bc8cff;font-size:13px;">Coding Agent — Cloud</strong>
+              <p style="font-size:13px;color:#8b949e;margin-top:4px;">Assign an issue to Copilot — it creates a branch, implements, runs tests, and opens a PR</p>
+            </div>
+            <div style="padding:12px 16px;background:#0d1117;border-radius:8px;border:1px solid #21262d;">
+              <strong style="color:#d29922;font-size:13px;">CLI — /delegate</strong>
+              <p style="font-size:13px;color:#8b949e;margin-top:4px;">Spin off sub-agents for tangential work while keeping the main session focused</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 10: Best Practices -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Tips &amp; Patterns</span>
+      <h2>Best Practices for Effective Planning</h2>
+      <p>Patterns that lead to better plans, faster execution, and more predictable results.</p>
+    </div>
+
+    <!-- Do / Don't -->
+    <div class="tip-grid" style="margin-bottom:32px;">
+      <div class="card tip-do" style="padding-left:24px;">
+        <h4 style="margin-bottom:12px;">✅ DO</h4>
+        <ul style="list-style:none;font-size:14px;color:#8b949e;">
+          <li style="padding:6px 0;">• Start with a clear problem statement</li>
+          <li style="padding:6px 0;">• Break into phases (backend → API → frontend)</li>
+          <li style="padding:6px 0;">• Include explicit verification steps</li>
+          <li style="padding:6px 0;">• Reference existing code patterns in your codebase</li>
+          <li style="padding:6px 0;">• Include constraints and non-functional requirements</li>
+          <li style="padding:6px 0;">• Make each task testable in isolation</li>
+        </ul>
+      </div>
+      <div class="card tip-dont" style="padding-left:24px;">
+        <h4 style="margin-bottom:12px;">❌ DON'T</h4>
+        <ul style="list-style:none;font-size:14px;color:#8b949e;">
+          <li style="padding:6px 0;">• Skip straight to implementation steps</li>
+          <li style="padding:6px 0;">• Leave plans vague ("implement the feature")</li>
+          <li style="padding:6px 0;">• Ignore dependency ordering between tasks</li>
+          <li style="padding:6px 0;">• Forget rollback and error handling steps</li>
+          <li style="padding:6px 0;">• Create thousand-line monolithic tasks</li>
+          <li style="padding:6px 0;">• Skip the "specify" phase and jump to code</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Prompt engineering -->
+    <div class="card" style="margin-bottom:32px;">
+      <h3>High-Quality Planning Prompt</h3>
+      <p style="margin-top:8px;">Detailed first prompts produce better plans. Include context, constraints, and existing patterns.</p>
+      <div class="code-block" style="margin-top:16px;">
+        <span class="prompt">/plan</span> <span class="string">Implement user profile editing for our Express.js API.</span><br><br>
+        <span class="keyword">Requirements:</span><br>
+        <span class="string">- Authenticated users can update name, bio, and avatar</span><br>
+        <span class="string">- Avatar upload limited to 2MB, JPEG/PNG only</span><br>
+        <span class="string">- Email changes require verification</span><br>
+        <span class="string">- All changes audited in activity log</span><br><br>
+        <span class="keyword">Existing patterns:</span><br>
+        <span class="string">- Use existing JWT auth middleware in src/middleware/auth.ts</span><br>
+        <span class="string">- Follow the repository pattern in src/repositories/</span><br>
+        <span class="string">- Include integration tests using our Vitest setup</span><br><br>
+        <span class="keyword">Constraints:</span><br>
+        <span class="string">- PostgreSQL with Knex.js migrations</span><br>
+        <span class="string">- Must work with existing CI pipeline (lint + test + build)</span><br>
+        <span class="string">- Follow REST API conventions in existing endpoints</span>
+      </div>
+    </div>
+
+    <!-- Best scenarios -->
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-icon">🌱</span>
+        <h3>Greenfield (0→1)</h3>
+        <p>New projects benefit most from upfront specs — prevents the agent from producing generic, off-brand solutions. Define your stack, patterns, and principles before writing a single line.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔧</span>
+        <h3>Feature Work (N→N+1)</h3>
+        <p>Adding to existing systems — specs force clarity on integration points, data contracts, and backward compatibility. Reference existing patterns explicitly.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🏗️</span>
+        <h3>Legacy Modernization</h3>
+        <p>Capture business logic in specs first, then rebuild without inheriting tech debt. The spec preserves intent while the implementation gets a clean slate.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 11: Getting Started -->
+<section class="section" style="background:rgba(22,27,34,0.5);">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Quick Start</span>
+      <h2>Create Your First Plan in 2 Minutes</h2>
+      <p>Three ways to start planning — pick your environment.</p>
+    </div>
+
+    <div class="grid-3">
+      <!-- VS Code -->
+      <div class="card" style="border-color:rgba(188,140,255,0.3);">
+        <h3 style="color:#bc8cff;">VS Code</h3>
+        <div class="code-block" style="margin-top:12px;font-size:12px;">
+<span class="comment"># 1. Open Copilot Chat</span>
+<span class="flag">Ctrl+Alt+I</span>
+
+<span class="comment"># 2. Select Plan agent from dropdown</span>
+
+<span class="comment"># 3. Describe your task</span>
+<span class="prompt">/plan</span> <span class="string">Add user registration
+with email verification</span>
+
+<span class="comment"># 4. Review, refine, execute</span>
+        </div>
+      </div>
+
+      <!-- CLI -->
+      <div class="card" style="border-color:rgba(63,185,80,0.3);">
+        <h3 style="color:#3fb950;">Copilot CLI</h3>
+        <div class="code-block" style="margin-top:12px;font-size:12px;">
+<span class="comment"># 1. Open Copilot CLI</span>
+<span class="prompt">$</span> <span class="keyword">copilot</span>
+
+<span class="comment"># 2. Enter plan mode</span>
+<span class="prompt">&gt;</span> <span class="flag">/plan</span> <span class="string">Add user registration
+with email verification</span>
+
+<span class="comment"># 3. Review the generated plan</span>
+<span class="prompt">&gt;</span> <span class="flag">/session plan</span>
+
+<span class="comment"># 4. Edit in your editor</span>
+<span class="prompt">&gt;</span> <span class="flag">Ctrl+Y</span>
+        </div>
+      </div>
+
+      <!-- Spec Kit -->
+      <div class="card" style="border-color:rgba(210,153,34,0.3);">
+        <h3 style="color:#d29922;">Spec Kit (Full SDD)</h3>
+        <div class="code-block" style="margin-top:12px;font-size:12px;">
+<span class="comment"># 1. Initialize Spec Kit</span>
+<span class="prompt">$</span> <span class="keyword">uvx</span> <span class="flag">--from</span> \
+  <span class="string">git+https://github.com/</span>
+  <span class="string">github/spec-kit.git</span> \
+  specify init <span class="file">my-app</span>
+
+<span class="comment"># 2. Define your spec</span>
+<span class="prompt">&gt;</span> <span class="flag">/specify</span> <span class="string">User registration
+with email verification</span>
+
+<span class="comment"># 3. Generate plan + tasks</span>
+<span class="prompt">&gt;</span> <span class="flag">/plan</span>
+<span class="prompt">&gt;</span> <span class="flag">/tasks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLI Session commands reference -->
+    <div class="card" style="margin-top:32px;">
+      <h3>Useful Session Commands (CLI)</h3>
+      <div style="overflow-x:auto;">
+        <table class="platform-table" style="margin-top:12px;">
+          <thead>
+            <tr><th>Command</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="inline-code">/plan</span></td><td>Enter plan mode or create a plan for a specific task</td></tr>
+            <tr><td><span class="inline-code">Shift+Tab</span></td><td>Toggle plan mode on/off for the session</td></tr>
+            <tr><td><span class="inline-code">/session plan</span></td><td>View the current session plan</td></tr>
+            <tr><td><span class="inline-code">/session files</span></td><td>View artifacts created during the session</td></tr>
+            <tr><td><span class="inline-code">Ctrl+Y</span></td><td>Open plan.md in your default Markdown editor</td></tr>
+            <tr><td><span class="inline-code">/delegate</span></td><td>Spin off a sub-agent for tangential work</td></tr>
+            <tr><td><span class="inline-code">/compact</span></td><td>Manually trigger context compaction</td></tr>
+            <tr><td><span class="inline-code">/chronicle standup</span></td><td>Generate a standup report from session history</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Videos -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Watch &amp; Learn</span>
+      <h2>Featured Videos</h2>
+      <p>Deep dives into planning mode and spec-driven development.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="video-embed">
+          <iframe src="https://www.youtube.com/embed/em3vIT9aUsg" title="Spec Kit: GitHub's NEW tool That FINALLY Fixes AI Coding" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="video-meta" style="padding:16px 20px;">
+          <h3>Spec Kit: GitHub's NEW tool That FINALLY Fixes AI Coding</h3>
+          <p>367K views — Deep dive into Spec Kit and spec-driven development workflow</p>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="video-embed">
+          <iframe src="https://www.youtube.com/embed/rxIjBKM-XvU" title="Introducing Plan Mode" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <div class="video-meta" style="padding:16px 20px;">
+          <h3>Introducing Plan Mode</h3>
+          <p>28K views — Official introduction to GitHub Copilot's planning capabilities</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2 style="font-size:28px;margin-bottom:12px;">Stop Vibe-Coding. Start Specifying.</h2>
+    <p style="color:#8b949e;font-size:16px;max-width:600px;margin:0 auto 24px;">Planning Mode and Spec-Driven Development give your AI agents the clarity they need to produce reliable, maintainable code that matches your intent.</p>
+    <div>
+      <a href="https://github.com/github/spec-kit" class="cta-btn cta-primary" target="_blank" rel="noopener">Get Spec Kit →</a>
+      <a href="https://code.visualstudio.com/docs/copilot/agents/planning" class="cta-btn cta-secondary" target="_blank" rel="noopener">VS Code Planning Docs</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer style="border-top:1px solid #30363d;padding:32px 24px;text-align:center;color:#8b949e;font-size:14px;margin-top:64px;">
+  <p>Built with 🛡️ by <a href="https://htek.dev" style="color:#58a6ff;text-decoration:none;">htek.dev</a> | Powered by GitHub Pages</p>
+  <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
+</footer>
+
+</body>
+</html>
