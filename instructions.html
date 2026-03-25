@@ -229,6 +229,8 @@
       .step { flex-direction: column; gap: 12px; }
     }
   </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 </head>
 <body>
 
@@ -1022,5 +1024,12 @@ Aim for 80%+ code coverage.
   <p style="margin-top:8px;"><a href="https://github.com/htekdev/safe-agentic-development" style="color:#58a6ff;text-decoration:none;">View Source on GitHub</a></p>
 </footer>
 
+<script>
+document.querySelectorAll('pre code').forEach(function(el) {
+  if (!el.querySelector('span[style]')) {
+    hljs.highlightElement(el);
+  }
+});
+</script>
 </body>
 </html>

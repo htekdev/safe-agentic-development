@@ -258,6 +258,8 @@
       .lifecycle-diagram { padding: 16px; }
     }
   </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 </head>
 <body>
   <!-- Navigation -->
@@ -1641,5 +1643,12 @@ const session = await joinSession({
       observer.observe(el);
     });
   </script>
+<script>
+document.querySelectorAll('pre code').forEach(function(el) {
+  if (!el.querySelector('span[style]')) {
+    hljs.highlightElement(el);
+  }
+});
+</script>
 </body>
 </html>

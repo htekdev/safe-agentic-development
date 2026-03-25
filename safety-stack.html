@@ -519,6 +519,8 @@
     .source-cite a { color: #484f58; }
     .source-cite a:hover { color: #58a6ff; }
   </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 </head>
 <body>
 
@@ -1228,5 +1230,12 @@ When a new issue is opened:
   });
 </script>
 
+<script>
+document.querySelectorAll('pre code').forEach(function(el) {
+  if (!el.querySelector('span[style]')) {
+    hljs.highlightElement(el);
+  }
+});
+</script>
 </body>
 </html>
